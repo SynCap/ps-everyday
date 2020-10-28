@@ -33,9 +33,13 @@ function Write-Theme {
     }
 
     # Writes the drive portion
+    $pathSeparator = $sl.promptSymbols.PathSeparatorSymbol
+    if ($pwd.ToString().Length -lt $Host.UI.RawUI.WindowSize.Width / 3) {
+        $pathSeparator = " ${pathSeparator} "
+    }
     $path = ' '
-    $path += (Get-FullPath -dir $pwd).Replace('\', $sl.PromptSymbols.PathSeparator) + ' '
-    $prompt += Write-Prompt -Object $path.PadLeft(13,' ') -ForegroundColor $sl.Colors.PromptForegroundColor -BackgroundColor $sl.Colors.PromptBackgroundColor
+    $path += (Get-FullPath -dir $pwd).Replace('\', $PathSeparator) + ' '
+    $prompt += Write-Prompt -Object $path.PadLeft(7,' ') -ForegroundColor $sl.Colors.PromptForegroundColor -BackgroundColor $sl.Colors.PromptBackgroundColor
 
     $status = Get-VCSStatus
     if ($status) {
@@ -62,18 +66,18 @@ function Write-Theme {
         $prompt += Write-Prompt -Object "$($with.ToUpper()) " -BackgroundColor $sl.Colors.WithBackgroundColor -ForegroundColor $sl.Colors.WithForegroundColor
     }
     $prompt += Write-Prompt -Object ($sl.PromptSymbols.PromptIndicator) -ForegroundColor $sl.Colors.PromptSymbolColor
-    $prompt += ' '
+    $prompt += "`e[0m "
     $prompt
 }
 
 $sl = $global:ThemeSettings #local settings
 $sl.PromptSymbols.StartSymbol = '' # [char]::ConvertFromUtf32(0x9889)
 $sl.PromptSymbols.PromptIndicator = [char]::ConvertFromUtf32(0xE0B1) #(0x276F) - ❯
-$sl.PromptSymbols.PathSeparator = ' {0} ' -f [char]::ConvertFromUtf32(0xe0bb)
+$sl.PromptSymbols.PathSeparatorSymbol = "`e[36m{0}`e[97m" -f [char]::ConvertFromUtf32(0xe0bb)
 $sl.PromptSymbols.SegmentStartSymbol = [char]::ConvertFromUtf32(0xE0b2)
 $sl.PromptSymbols.SegmentForwardSymbol = [char]::ConvertFromUtf32(0xE0bc)
 $sl.PromptSymbols.SegmentBackwardSymbol = [char]::ConvertFromUtf32(0xE0be)
-$sl.PromptSymbols.SegmentFinishSymbol = [char]::ConvertFromUtf32(0xE0b8)
+$sl.PromptSymbols.SegmentFinishSymbol = [char]::ConvertFromUtf32(0xE0b0)
 # $sl.PromptSymbols.Chevron = [char]::ConvertFromUtf32(0xE0b1)
 
 #       

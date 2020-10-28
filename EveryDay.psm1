@@ -176,7 +176,7 @@ function draw {
     Write-Host $Text -ForegroundColor $Fg -BackgroundColor $Bg -NoNewline
 }
 
-function print($Params){Write-Host -NoNewLine ($Params -join '')}
+function print($Params){[System.Console]::Write($Params -join '')}
 function println($Params){print $Params;""}
 
 # ANSI colors table

@@ -77,7 +77,7 @@ function Write-Theme {
 $sl = $global:ThemeSettings #local settings
 $sl.PromptSymbols.StartSymbol = '' # [char]::ConvertFromUtf32(0x9889)
 $sl.PromptSymbols.PromptIndicator = [char]::ConvertFromUtf32(0xE0B1) #(0x276F) - ❯
-$sl.PromptSymbols.PathSeparatorSymbol = "`e[36m{0}`e[97m" -f [char]::ConvertFromUtf32(0xe0bb) # 0x2573
+$sl.PromptSymbols.PathSeparatorSymbol = "`e[96m{0}`e[97m" -f [char]::ConvertFromUtf32(0xe0bb) # 0x2573
 $sl.PromptSymbols.SegmentStartSymbol = [char]::ConvertFromUtf32(0xE0c5)
 $sl.PromptSymbols.SegmentForwardSymbol = [char]::ConvertFromUtf32(0xE0bc)
 $sl.PromptSymbols.SegmentBackwardSymbol = [char]::ConvertFromUtf32(0xE0be)

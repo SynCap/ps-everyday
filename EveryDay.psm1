@@ -198,6 +198,15 @@ function logMon($LogFilePath, $match = "Error") {
     Get-Content $LogFilePath -Wait | Where { $_ -Match $match }
 }
 
+function tail  {
+    param (
+        [Parameter(Mandatory=$true,ValueFromPipeline=$true)]
+        $Name,
+        [int]$Last=5
+    )
+    Get-Content $Name -Last $Last
+}
+
 set-alias grep -Value Select-String -Force
 filter mgrep {
     param {

@@ -181,13 +181,11 @@ function println($Params){print $Params;""}
 
 # ANSI colors table
 function Show-AnsiColors {
-    # $g = ' ' * (( $Host.UI.RawUI.WindowSize.Width - 80 ) / 9 ); # gutter for wide window
     print "`e[0m",(hr _ 80)
     foreach ($j in 40..47 + 100..107) {
         '';foreach ($i in 30..37) {print ' ',"`e[$i;$j","`me[$i;$j`m",($j -gt 47 ?'':' '),"`e[0m"};
         '';foreach ($i in 90..97) {print ' ',"`e[$i;$j","`me[$i;$j`m",($j -gt 47 ?'':' '),"`e[0m"};
     }
-    # print "`e[0m",(hr `– 80),`n
 }
 
 <#

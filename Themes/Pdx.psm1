@@ -78,7 +78,6 @@ $sl.PromptSymbols.SegmentStartSymbol = [char]::ConvertFromUtf32(0xE0b2)
 $sl.PromptSymbols.SegmentForwardSymbol = [char]::ConvertFromUtf32(0xE0bc)
 $sl.PromptSymbols.SegmentBackwardSymbol = [char]::ConvertFromUtf32(0xE0be)
 $sl.PromptSymbols.SegmentFinishSymbol = [char]::ConvertFromUtf32(0xE0b0)
-# $sl.PromptSymbols.Chevron = [char]::ConvertFromUtf32(0xE0b1)
 
 #       
 # a0 a1 a2 a3

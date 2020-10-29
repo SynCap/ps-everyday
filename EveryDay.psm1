@@ -414,17 +414,17 @@ function Set-EvdTheme {
 
 function EasyView($Seconds=.5) { process { $_; Start-Sleep -Seconds $Seconds}}
 
-$PowerLineSymbols = @(
-    [char[]]"        ",
-    [char[]]" a0 a1 a2 a3 ",
-    [char[]]"                                ",
-    [char[]]" b0 b1 b2 b3 b4 b5 b6 b7 b8 b9 ba bb bc bd be bf ",
-    [char[]]"                                ",
-    [char[]]" c0 c1 c2 c3 c4 c5 c6 c7 c8 c9 ca cb cc cd ce cf ",
-    [char[]]"          ",
-    [char[]]" d0 d1 d2 d3 d4 -E6- "
+$Global:PowerLineSymbols = @(
+    "`t       ",
+    "`ta0 a1 a2 a3 ",
+    "`t                               ",
+    "`tb0 b1 b2 b3 b4 b5 b6 b7 b8 b9 ba bb bc bd be bf ",
+    "`t                               ",
+    "`tc0 c1 c2 c3 c4 c5 c6 c7 c8 c9 ca cb cc cd ce cf ",
+    "`t         ",
+    "`td0 d1 d2 d3 d4 -E6- "
 )
 
-$Bars = [char[]]'│┆┊┃┇┋';
+$Global:Bars = [char[]]'│┆┊┃┇┋';
 
 Set-EvdTheme CLX;

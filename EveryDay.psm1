@@ -43,8 +43,8 @@ function attr($f) { (Get-ItemProperty $f).Attributes }
 # Colored pretty wide list, like BASH ls
 function .l {
     Param (
-        [Parameter(ValueFromPipeline=$true,position=0)]
         # [System.IO.FileSystemInfo[]]
+        [Parameter(ValueFromPipeline=$true,position=0)]
         [String[]]
         $Path = '.'
     )

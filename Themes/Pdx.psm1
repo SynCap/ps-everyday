@@ -37,8 +37,12 @@ function Write-Theme {
     if ($pwd.ToString().Length -lt $Host.UI.RawUI.WindowSize.Width / 3) {
         $pathSeparator = " ${pathSeparator} "
     }
-    $path = ' '
-    $path += (Get-FullPath -dir $pwd).Replace('\', $PathSeparator) + ' '
+    $path = Get-FullPath -dir $pwd
+    if ($path -eq '~') {
+        $path = '   {0}   ' -f $sl.promptSymbols.homeChars[2]
+    } else {
+        $path = ' {0} ' -f ($path).Replace('\', $PathSeparator)
+    }
     $prompt += Write-Prompt -Object $path.PadLeft(7,' ') -ForegroundColor $sl.Colors.PromptForegroundColor -BackgroundColor $sl.Colors.PromptBackgroundColor
 
     $status = Get-VCSStatus
@@ -73,11 +77,21 @@ function Write-Theme {
 $sl = $global:ThemeSettings #local settings
 $sl.PromptSymbols.StartSymbol = '' # [char]::ConvertFromUtf32(0x9889)
 $sl.PromptSymbols.PromptIndicator = [char]::ConvertFromUtf32(0xE0B1) #(0x276F) - ❯
-$sl.PromptSymbols.PathSeparatorSymbol = "`e[36m{0}`e[97m" -f [char]::ConvertFromUtf32(0xe0bb)
-$sl.PromptSymbols.SegmentStartSymbol = [char]::ConvertFromUtf32(0xE0b2)
+$sl.PromptSymbols.PathSeparatorSymbol = "`e[96m{0}`e[97m" -f [char]::ConvertFromUtf32(0xe0bb) # 0x2573
+$sl.PromptSymbols.SegmentStartSymbol = [char]::ConvertFromUtf32(0xE0c5)
 $sl.PromptSymbols.SegmentForwardSymbol = [char]::ConvertFromUtf32(0xE0bc)
 $sl.PromptSymbols.SegmentBackwardSymbol = [char]::ConvertFromUtf32(0xE0be)
-$sl.PromptSymbols.SegmentFinishSymbol = [char]::ConvertFromUtf32(0xE0b0)
+$sl.PromptSymbols.SegmentFinishSymbol = [char]::ConvertFromUtf32(0xE0c4)
+# $sl.PromptSymbols.Chevron = [char]::ConvertFromUtf32(0xE0b1)
+
+# ﮟﳐ
+$sl.PromptSymbols.homeChars = (
+    [char]::ConvertFromUtf32(0xfb9f),
+    [char]::ConvertFromUtf32(0xf7db),
+    [char]::ConvertFromUtf32(0xf46d),
+    [char]::ConvertFromUtf32(0xfcd0)
+)
+
 
 #       
 # a0 a1 a2 a3

@@ -425,3 +425,6 @@ $PowerLineSymbols = @(
     [char[]]"          ",
     [char[]]" d0 d1 d2 d3 d4 -E6- "
 )
+
+$Bars = [char[]]'│┆┊┃┇┋';
+

@@ -249,8 +249,9 @@ function gAddIgnore($mode = 'universal', [Alias('n')] [Switch]$New) {
 
     print "`e[93;40m",".gitignore","`e[0m"," from ","`e[96;40m","gitignore.io","`e[om`n"
     "-" * 35
-    println ($New ? "Created new:" : "Added:") -ForegroundColor Yellow
-    $mode | Sort-Object
+    println "`e[93m",($New ? "Created new:" : "Added:")
+    println "`e[33m", $mode,"`e[0m"
+    $rules | Sort-Object
 }
 
 # initialize git repository here

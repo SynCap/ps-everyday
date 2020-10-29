@@ -177,8 +177,8 @@ function draw {
     Write-Host $Text -ForegroundColor $Fg -BackgroundColor $Bg -NoNewline
 }
 
-function print($Params){[System.Console]::Write($Params -join '')}
-function println($Params){print $Params;""}
+function print([Parameter(ValueFromPipeline=$true,position=0)][String[]]$Params){[System.Console]::Write($Params -join '')}
+function println([Parameter(ValueFromPipeline=$true,position=0)][String[]]$Params){[System.Console]::WriteLine($Params -join '')}
 
 # ANSI colors table
 function Show-AnsiColors {

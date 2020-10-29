@@ -412,3 +412,4 @@ function Set-EvdTheme {
 }
 
 Set-EvdTheme Pdx
+function EasyView($Seconds=.5) { process { $_; Start-Sleep -Seconds $Seconds}}

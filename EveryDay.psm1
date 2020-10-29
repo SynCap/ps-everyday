@@ -1,3 +1,4 @@
+Import-Module Jumper
 
 ##############################################################################
 # folder tree navigation
@@ -400,3 +401,5 @@ function Set-EvdTheme {
     }
     Set-Prompt
 }
+
+Set-EvdTheme Pdx

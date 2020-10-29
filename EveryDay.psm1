@@ -1,4 +1,3 @@
-Import-Module Jumper
 
 ##############################################################################
 # folder tree navigation
@@ -428,3 +427,4 @@ $Global:PowerLineSymbols = @(
 $Global:Bars = [char[]]'│┆┊┃┇┋';
 
 Set-EvdTheme CLX;
+Import-Module Jumper

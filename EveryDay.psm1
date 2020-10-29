@@ -360,10 +360,6 @@ function Edit-Theme ($name) {
     }
 }
 
-# задержка вывода построчно
-# использование: SlowMotion proga.exe
-function SlowMotion { process { $_; Start-Sleep -seconds .5}}
-
 # demo для PSReadLine
 # куча всяких фишек а-ля редактор
 function ImportKbExtra {

@@ -413,8 +413,6 @@ function Set-EvdTheme {
 
 function EasyView($Seconds=.5) { process { $_; Start-Sleep -Seconds $Seconds}}
 
-
-Set-EvdTheme Clx
 $PowerLineSymbols = @(
     [char[]]"        ",
     [char[]]" a0 a1 a2 a3 ",
@@ -428,3 +426,4 @@ $PowerLineSymbols = @(
 
 $Bars = [char[]]'│┆┊┃┇┋';
 
+Set-EvdTheme CLX;

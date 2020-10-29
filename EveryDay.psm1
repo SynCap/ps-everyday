@@ -411,5 +411,5 @@ function Set-EvdTheme {
     Set-Prompt
 }
 
-Set-EvdTheme Pdx
 function EasyView($Seconds=.5) { process { $_; Start-Sleep -Seconds $Seconds}}
+Set-EvdTheme Clx

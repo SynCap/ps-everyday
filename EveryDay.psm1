@@ -1,4 +1,3 @@
-Import-Module Jumper
 
 ##############################################################################
 # folder tree navigation
@@ -43,8 +42,8 @@ function attr($f) { (Get-ItemProperty $f).Attributes }
 # Colored pretty wide list, like BASH ls
 function .l {
     Param (
-        [Parameter(ValueFromPipeline=$true,position=0)]
         # [System.IO.FileSystemInfo[]]
+        [Parameter(ValueFromPipeline=$true,position=0)]
         [String[]]
         $Path = '.'
     )
@@ -177,8 +176,8 @@ function draw {
     Write-Host $Text -ForegroundColor $Fg -BackgroundColor $Bg -NoNewline
 }
 
-function print($Params){[System.Console]::Write($Params -join '')}
-function println($Params){print $Params;""}
+function print([Parameter(ValueFromPipeline=$true,position=0)][String[]]$Params){[System.Console]::Write($Params -join '')}
+function println([Parameter(ValueFromPipeline=$true,position=0)][String[]]$Params){[System.Console]::WriteLine($Params -join '')}
 
 # ANSI colors table
 function Show-AnsiColors {
@@ -249,8 +248,9 @@ function gAddIgnore($mode = 'universal', [Alias('n')] [Switch]$New) {
 
     print "`e[93;40m",".gitignore","`e[0m"," from ","`e[96;40m","gitignore.io","`e[om`n"
     "-" * 35
-    println ($New ? "Created new:" : "Added:") -ForegroundColor Yellow
-    $mode | Sort-Object
+    println "`e[93m",($New ? "Created new:" : "Added:")
+    println "`e[33m", $mode,"`e[0m"
+    $rules | Sort-Object
 }
 
 # initialize git repository here
@@ -360,10 +360,6 @@ function Edit-Theme ($name) {
     }
 }
 
-# задержка вывода построчно
-# использование: SlowMotion proga.exe
-function SlowMotion { process { $_; Start-Sleep -seconds .5}}
-
 # demo для PSReadLine
 # куча всяких фишек а-ля редактор
 function ImportKbExtra {
@@ -391,12 +387,20 @@ Set-Alias whlp -Value whelp
 
 
 # Register-EngineEvent PowerShell.Exiting -Action { "Exiting $(Get-Date)" >> C:\TEMP\log.txt }
+function Get-EvdTheme {
+    $themes = @()
+    Get-ChildItem -Path "$PSScriptRoot\Themes\*" -Include '*.psm1' -Exclude Tools.ps1 | Sort-Object Name | ForEach-Object -Process {
+        $themes += [PSCustomObject]@{
+                Name = $_.BaseName
+                Location = $_.FullName
+        }
+    }
+    $themes
+}
 
 function Set-EvdTheme {
-    param(
-        [Parameter(Mandatory=$true)]
-        [string]
-        $Name
+    param (
+        [Parameter(Mandatory=$true)] [string] $Name
     )
     if (Test-Path "$PSScriptRoot\Themes\${Name}.psm1") {
         Set-Theme "$PSScriptRoot\Themes\${Name}.psm1"
@@ -406,24 +410,25 @@ function Set-EvdTheme {
     }
     else {
         Write-Warning "Theme $Name not found. Available themes are:"
-        Get-Theme
+        Get-EvdTheme
     }
     Set-Prompt
 }
 
 function EasyView($Seconds=.5) { process { $_; Start-Sleep -Seconds $Seconds}}
 
-$PowerLineSymbols = @(
-    [char[]]"        ",
-    [char[]]" a0 a1 a2 a3 ",
-    [char[]]"                                ",
-    [char[]]" b0 b1 b2 b3 b4 b5 b6 b7 b8 b9 ba bb bc bd be bf ",
-    [char[]]"                                ",
-    [char[]]" c0 c1 c2 c3 c4 c5 c6 c7 c8 c9 ca cb cc cd ce cf ",
-    [char[]]"          ",
-    [char[]]" d0 d1 d2 d3 d4 -E6- "
+$Global:PowerLineSymbols = @(
+    "`t       ",
+    "`ta0 a1 a2 a3 ",
+    "`t                               ",
+    "`tb0 b1 b2 b3 b4 b5 b6 b7 b8 b9 ba bb bc bd be bf ",
+    "`t                               ",
+    "`tc0 c1 c2 c3 c4 c5 c6 c7 c8 c9 ca cb cc cd ce cf ",
+    "`t         ",
+    "`td0 d1 d2 d3 d4 -E6- "
 )
 
-$Bars = [char[]]'│┆┊┃┇┋';
+$Global:Bars = [char[]]'│┆┊┃┇┋';
 
 Set-EvdTheme CLX;
+Import-Module Jumper

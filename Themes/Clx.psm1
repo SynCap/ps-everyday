@@ -34,8 +34,7 @@ function Write-Theme {
 
     # Writes the postfix to the prompt
 
-    $timeStamp = Get-Date -Format "HH:mm:ss"
-    $timestamp = "$timeStamp┊"
+    $timestamp = "{0:HH}:{0:mm}:{0:ss}┋" -f (Get-Date)
 
     $prompt += Write-Prompt $timeStamp -BackgroundColor $sl.Colors.PromptBackgroundColor -ForegroundColor $sl.Colors.ClockForeground
 
@@ -48,7 +47,7 @@ function Write-Theme {
     if ($path -eq '~') {
         $path = '   {0}   ' -f $sl.promptSymbols.homeChars[2]
     } else {
-        $path = ' {0} ' -f ($path).Replace('\', $PathSeparator)
+        $path = '{0} ' -f ($path).Replace('\', $PathSeparator)
     }
     $prompt += Write-Prompt -Object $path.PadLeft(7,' ') -ForegroundColor $sl.Colors.PromptForegroundColor -BackgroundColor $sl.Colors.PromptBackgroundColor
 
@@ -78,8 +77,8 @@ $sl.PromptSymbols.StartSymbol           = '' # [char]::ConvertFromUtf32(0x9889)
 $sl.PromptSymbols.PromptIndicator       = [char]::ConvertFromUtf32(0xE0B1) #(0x276F) - ❯
 $sl.PromptSymbols.PathSeparatorSymbol   = "`e[96m{0}`e[97m" -f [char]::ConvertFromUtf32(0xe0bb) # 0x2573
 $sl.PromptSymbols.SegmentStartSymbol    = [char]::ConvertFromUtf32(0xE0c7)
-$sl.PromptSymbols.SegmentForwardSymbol  = [char]::ConvertFromUtf32(0xE0bc)
 $sl.PromptSymbols.SegmentBackwardSymbol = [char]::ConvertFromUtf32(0xE0be)
+$sl.PromptSymbols.SegmentForwardSymbol  = [char]::ConvertFromUtf32(0xE0c6)
 $sl.PromptSymbols.SegmentFinishSymbol   = [char]::ConvertFromUtf32(0xE0bc)
 
 # ﮟﳐ

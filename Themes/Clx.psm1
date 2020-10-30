@@ -35,7 +35,7 @@ function Write-Theme {
     # Writes the postfix to the prompt
 
     $timeStamp = Get-Date -Format "HH:mm:ss"
-    $timestamp = " $timeStamp ┊"
+    $timestamp = "$timeStamp┊"
 
     $prompt += Write-Prompt $timeStamp -BackgroundColor $sl.Colors.PromptBackgroundColor -ForegroundColor $sl.Colors.ClockForeground
 

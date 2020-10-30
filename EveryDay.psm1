@@ -387,6 +387,16 @@ Set-Alias whlp -Value whelp
 
 
 # Register-EngineEvent PowerShell.Exiting -Action { "Exiting $(Get-Date)" >> C:\TEMP\log.txt }
+function Get-EvdTheme {
+    $themes = @()
+    Get-ChildItem -Path "$PSScriptRoot\Themes\*" -Include '*.psm1' -Exclude Tools.ps1 | Sort-Object Name | ForEach-Object -Process {
+        $themes += [PSCustomObject]@{
+                Name = $_.BaseName
+                Location = $_.FullName
+        }
+    }
+    $themes
+}
 
 function Set-EvdTheme {
     param (
@@ -400,7 +410,7 @@ function Set-EvdTheme {
     }
     else {
         Write-Warning "Theme $Name not found. Available themes are:"
-        Get-Theme
+        Get-EvdTheme
     }
     Set-Prompt
 }

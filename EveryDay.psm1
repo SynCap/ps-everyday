@@ -389,10 +389,8 @@ Set-Alias whlp -Value whelp
 # Register-EngineEvent PowerShell.Exiting -Action { "Exiting $(Get-Date)" >> C:\TEMP\log.txt }
 
 function Set-EvdTheme {
-    param(
-        [Parameter(Mandatory=$true)]
-        [string]
-        $Name
+    param (
+        [Parameter(Mandatory=$true)] [string] $Name
     )
     if (Test-Path "$PSScriptRoot\Themes\${Name}.psm1") {
         Set-Theme "$PSScriptRoot\Themes\${Name}.psm1"

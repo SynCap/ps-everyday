@@ -398,6 +398,13 @@ $Global:PowerLineSymbols = @(
     "`td0 d1 d2 d3 d4 -E6- "
 )
 
+filter TotalCmd {
+    param([Parameter(ValueFromPipeline)] $Path)
+    $Cmd = "{0}\totalcmd\TOTALCMD64.EXE" -f $env:ProgramFiles
+    $Params =  @('/O','/T','/A',$Path)
+    & $Cmd $Params
+}
+
 $Global:Bars = [char[]]'│┆┊┃┇┋';
 
 Set-EvdTheme CLX;

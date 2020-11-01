@@ -239,13 +239,11 @@ function gAddIgnore($mode = 'universal', [Alias('n')] [Switch]$New) {
         'universal' {$rules = 'windows,linux,macos,visualstudiocode,sublimetext,vim'}
         default {$rules = $mode}
     }
-
     if ($New) {
         gIgnore $rules > .gitgnore
     } else {
         gIgnore $rules >> .gitgnore
     }
-
     print "`e[93;40m",".gitignore","`e[0m"," from ","`e[96;40m","gitignore.io","`e[om`n"
     "-" * 35
     println "`e[93m",($New ? "Created new:" : "Added:")
@@ -255,10 +253,8 @@ function gAddIgnore($mode = 'universal', [Alias('n')] [Switch]$New) {
 
 # initialize git repository here
 function InitGitRepo($remoteUrl) {
-
     Get-Date;
     hr;
-
     # create .gitignore file if not exists
     if (-Not (Test-Path '.gitignore')) {
         draw "Create new " DarkRed;
@@ -269,27 +265,19 @@ function InitGitRepo($remoteUrl) {
         & $env:EDITOR .gitignore;
         hr;
     }
-
     # init repository in current directory and push it to origin
-
     git init
-
     git add .
     git commit -m 'init'
-
     if ( $remoteUrl -ne $null ) {
         hr
         git remote add origin $remoteUrl
         git push -u origin master
     }
-
     hr
-
     git checkout -b develop
-
     git log
     git branch --all
-
     echo $(lf)
 }
 
@@ -333,24 +321,6 @@ function dev {
 function bld {
     yarn build
 }
-
-# ----------------------------------------------------------------------------
-##############################################################################
-# History and Keyboard helpers and options
-
-# function _h($id) {
-#     if ($id -eq $null) {
-#         Get-History
-#     } else {
-#         Invoke-History $id
-#     }
-# }
-# Set-Alias h -Value _h
-
-# function h. {
-#     Clear-History
-#     # rm (Get-PSReadLineOption | select -ExpandProperty HistorySavePath)
-# }
 
 # загрузить в Sublime тему от o-my-posh
 function Edit-Theme ($name) {

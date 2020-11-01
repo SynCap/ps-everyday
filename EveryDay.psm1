@@ -161,7 +161,7 @@ $lf = [System.Environment]::NewLine
 # here
 function lf {[System.Environment]::NewLine}
 
-function hr($Char = '-', [int]$Count = 0) {$Char * ($Count ? $Count : $Host.UI.RawUI.WindowSize.Width)}
+function hr($Char = '-', [single]$Count = .4) {$Char * ($Count -gt 1 ? $Count -bor 0 : $Host.UI.RawUI.WindowSize.Width * $Count -bor 0)}
 
 # цветной вывод c поддержкой встроенных цветов PowerShell'a
 function draw {

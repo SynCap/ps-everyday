@@ -202,8 +202,11 @@ function hr{
     param(
         [Alias('c')][Parameter(position=0)][String] $Char=
             # [Char]::ConvertFromUtf32(0x2248), # ≈ - Almost equal to
-            [Char]::ConvertFromUtf32(0x2014), # 0151 — Em dash
+            # [Char]::ConvertFromUtf32(0x2012), # Figure dash
+            [Char]::ConvertFromUtf32(0x2013), # En dash
+            # [Char]::ConvertFromUtf32(0x2014), # 0151 — Em dash
             # [Char]::ConvertFromUtf32(0x2015), # Horizontal bar
+            # [Char]::ConvertFromUtf32(0x2500), # Box drawing light horizontal
         [Alias('q')][Parameter(position=1)][Single] $Count = .4 # ≈40% of window width
     )
     switch ($Count) {

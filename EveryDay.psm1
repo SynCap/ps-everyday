@@ -101,7 +101,7 @@ function .spf ($s) {
     if ($s -in $keys) {
         [Environment]::GetFolderPath($s)
     } else {
-        [Enum]::GetNames([System.Environment+SpecialFolder]).GetEnumerator() | sort
+        [Enum]::GetNames([System.Environment+SpecialFolder]).GetEnumerator()
     }
 }
 

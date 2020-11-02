@@ -114,6 +114,29 @@ function .exps ($s) {
     $s = $s -Match '%\$(?<sdir>.*?)%'?$Matches.sdir:$s
 }
 
+<#
+AdminTools              Favorites               StartMenu
+ApplicationData         Fonts                   Startup
+CDBurning               History                 System
+CommonAdminTools        InternetCache           SystemX86
+CommonApplicationData   LocalApplicationData    Templates
+CommonDesktopDirectory  LocalizedResources      UserProfile
+CommonDocuments         MyComputer              Windows
+CommonMusic             MyDocuments             Equals
+CommonOemLinks          MyMusic                 Format
+CommonPictures          MyPictures              GetName
+CommonProgramFiles      MyVideos                GetNames
+CommonProgramFilesX86   NetworkShortcuts        GetUnderlyingType
+CommonPrograms          Personal                GetValues
+CommonStartMenu         PrinterShortcuts        IsDefined
+CommonStartup           ProgramFiles            Parse
+CommonTemplates         ProgramFilesX86         ReferenceEquals
+CommonVideos            Programs                ToObject
+Cookies                 Recent                  TryParse
+Desktop                 Resources
+DesktopDirectory        SendTo
+#>
+
 # Аналог GNU uname или DOS ver
 function ver {
     $Properties = 'Caption', 'Version', 'BuildType', 'OSArchitecture', 'CSName', 'RegisteredUser', 'SerialNumber';

@@ -1,464 +1,53 @@
+# Import-Module ./
 
-##############################################################################
-# folder tree navigation
-#
-
-# Управление сессионной переменной окружения PATH
-function .pc {$env:Path.Split(';')[-3..-1]}
-function .pp {if($env:Path -NotLike "*;$(pwd)"){$env:Path+=";$(pwd)"};.pc}
-function .pd {$env:Path=$env:Path.Split(';')[0..-2].Join(';');.pc}
-
-function .. { cd .. }
-function ... { cd ..\.. }
-function .... { cd ..\..\.. }
-
-Set-Alias _path -Value Resolve-Path
-
-function stat($fName) {
-    Get-ItemProperty $fName | Select-Object *
+function Import-EvdModulesAll {
+    ls (Join-Path $PSScriptRoot 'Evd*.psm1') | %{Import-Module $_ -Force}
 }
 
-function Get-PathInfo($path) {
-    if ($path  -match '^(?<path>(?<drive>.*:)?.*[\\/])?(?<filename>(?<basename>[^\\/]*)(?<extension>\.[^.]*?))$') {
-        $Info = @{
-            FullName = $Matches.0;
-            Drive = $Matches.drive;
-            Path = $Matches.path;
-            BaseName = $Matches.BaseName;
-            Extension = $Matches.extension;
-            Name = $Matches.filename;
-        };
-        $Info.ParentName = $Info.Path.Split('[\\/]')[-1]
-    }
-    $Info
-}
+function Import-EvdModule {
+    <#
+        .Synopsys
 
-Set-Alias props -Value Get-ItemProperty
-function attr($f) { (Get-ItemProperty $f).Attributes }
+            Reload EveryDay PSM pack's submodule or all submodules.
 
-##############################################################################
-# file system utils
+        .Description
 
-# Colored pretty wide list, like BASH ls
-function .l {
-    Param (
-        # [System.IO.FileSystemInfo[]]
-        [Parameter(ValueFromPipeline=$true,position=0)]
-        [String[]]
-        $Path = '.'
-    )
-    # reset colors to defaults
-    $r="`e[0m";
-    # расширения "исполняемых" файлов
-    $exe = $($env:PATHEXT.replace('.','').split(';'))
-    Get-ChildItem $Path |
-        %{
-            $f = $_ # внутри switch: $_ ~~ проверяемое значение
-            if ( $f.Name.Split('.')[-1] -in $exe ) {
-                $c = 36; # запускаемые файлы
-            } else {
-                $c = 32; # базовый цвет = 32 -- тёмно-зелёный (Green `e[32m)
-                switch -regex ($f.Mode) {
-                    'd' {$c += 60} # папки более якрике - 30+60 = `e[92m
-                    'h' {$c += 4} # смещаем цвет в Teal/Cyan 36/96
-                }
-            }
-            @{('{0}{1}{2}' -f "`e[${c}m",$_.PSChildName,"`e[0m") = ''}
-        } | Format-Wide -AutoSize
-}
+            Reloads all or cpecific submodle(s) of EveryDay PSM family. To
+            import or reload exact module use Import-EvdModule
+            `<SubModule_Name>` where `<SubModule_Name>` is part of modules'
+            filename after `Evd` and just till extension. Module with name
+            `Theme` lives in `EvdTheme.psm1` file so to reload that module use
+            `Import-EvdModule Theme`.
 
-# Like PS's ls but with extra sort
-function .ll {
-    param (
-        [Parameter(Position=0,ValueFromPipeline=$true)]$Path,
-        [Alias('f')][Switch]$Force = $false,
-        [Alias('h')][Switch]$Hidden = $false
-    )
-    Get-ChildItem $Path -Force:$Force -Hidden:$Hidden | `
-        Sort-Object `
-            @{Expression='Mode';Descending=$true},`
-            @{Expression='Extension';Descending=$false},`
-            @{Expression='Name'}
-}
+            To reload all Evd modules use `Import-EvdModule -f` or better
+            `Import-EvdModulesAll`.
 
-function touch {
-  Param(
-    [Parameter(ValueFromPipeline)]
-    [string[]]$Path = $PWD
-  )
-  foreach ($p in $Path) {
-      if (Test-Path -LiteralPath $p) {
-        (Get-Item -Path $p).LastWriteTime = Get-Date
-      } else {
-        New-Item -Type File -Path $p
-      }
-  }
-}
+            To reload several modules use `Import-EvdModule Mod1,Mod2,Mod3` or
+            `(Mod1,Mod2,Mod3) | Import-EvdModule`
 
-# разворачивает %<строки>%
-function .spf ($s) {
-    $keys = [Enum]::GetNames([System.Environment+SpecialFolder])
-    if ($s -in $keys) {
-        [Environment]::GetFolderPath($s)
-    } else {
-        [Enum]::GetNames([System.Environment+SpecialFolder]).GetEnumerator()
-    }
-}
-
-function .exp ($s) {[System.Environment]::ExpandEnvironmentVariables($s)}
-
-function .exps ($s) {
-    $re = '%\$(?<sdir>.*?)%';
-    while ($s -Match $re) {
-        $_.dir
-    }
-    $s = $s -Match '%\$(?<sdir>.*?)%'?$Matches.sdir:$s
-}
-
-<#
-AdminTools              Favorites               StartMenu
-ApplicationData         Fonts                   Startup
-CDBurning               History                 System
-CommonAdminTools        InternetCache           SystemX86
-CommonApplicationData   LocalApplicationData    Templates
-CommonDesktopDirectory  LocalizedResources      UserProfile
-CommonDocuments         MyComputer              Windows
-CommonMusic             MyDocuments             Equals
-CommonOemLinks          MyMusic                 Format
-CommonPictures          MyPictures              GetName
-CommonProgramFiles      MyVideos                GetNames
-CommonProgramFilesX86   NetworkShortcuts        GetUnderlyingType
-CommonPrograms          Personal                GetValues
-CommonStartMenu         PrinterShortcuts        IsDefined
-CommonStartup           ProgramFiles            Parse
-CommonTemplates         ProgramFilesX86         ReferenceEquals
-CommonVideos            Programs                ToObject
-Cookies                 Recent                  TryParse
-Desktop                 Resources
-DesktopDirectory        SendTo
-#>
-
-# Аналог GNU uname или DOS ver
-function ver {
-    $Properties = 'Caption', 'Version', 'BuildType', 'OSArchitecture', 'CSName', 'RegisteredUser', 'SerialNumber';
-    Get-CimInstance Win32_OperatingSystem | Select-Object $Properties
-}
-
-# Аналог башевской which, вычисляем полный путь + расширение
-function which($cmd) {
-    $o = (Get-Command $cmd);
-    ($o.Path.Count -eq 1) ? $o.Path : $o.Definition
-}
-
-# Рекурсивное удаление нескольких папок/файлов
-# Полный путь из относительного
-# @example:
-# cwd == 'C:\User\Name'
-# Пишет чего убить собрался, матерится если нет папки/файла, но прёт дальше
-# @example: rmr dist,.cache
-# @example: rmr( 'dist', '.cache' )
-# @example: rmr .dist , .cache
-
-function rm2($f) {
-    $f | ForEach-Object{
-        $p = _path($_);
-        if (Test-Path $p) {
-            draw 'Remove ';
-            draw $p,$lf Yellow;
-            Remove-Item $_ -Force -Recurse
-        } else {
-            draw 'Nothing like ' DarkRed;
-            draw $p,$lf Red
-        }
-    }
-}
-
-Set-Alias rmr rm2
-
-# ❯ echo "Line feed$lf here"
-# Line feed
-#  here
-$lf = [System.Environment]::NewLine
-
-# ❯ echo "line feed$(lf)here"
-# line feed
-# here
-function lf {[System.Environment]::NewLine}
-
-function .c {
-    param (
-        [Alias('f')][Parameter(position=0)] $FgColor,
-        [Alias('b')][Parameter(position=1)] $BgColor
-    )
-    if($FgColor && $BgColor) {
-        "`e[${FgColor};${BgColor}m"
-    } else {
-        if ($FgColor) { "`e[${FgColor}m"}
-        if ($BgColor) { "`e[${BgColor}m"}
-    }
-}
-
-function hr{
+    #>
     param(
-        [Alias('c')][Parameter(position=0)][String] $Char=
-            # [Char]::ConvertFromUtf32(0x2248), # ≈ - Almost equal to
-            # [Char]::ConvertFromUtf32(0x2012), # Figure dash
-            [Char]::ConvertFromUtf32(0x2013), # En dash
-            # [Char]::ConvertFromUtf32(0x2014), # 0151 — Em dash
-            # [Char]::ConvertFromUtf32(0x2015), # Horizontal bar
-            # [Char]::ConvertFromUtf32(0x2500), # Box drawing light horizontal
-        [Alias('q')][Parameter(position=1)][Single] $Count = .4 # ≈40% of window width
+        [Parameter(ValueFromPipeline)] [String[]] $Name,
+        [Alias('f')] [Switch] $Force
     )
-    switch ($Count) {
-        0 {$Count = $Host.UI.RawUI.WindowSize.Width;Break}
-        {$_ -lt 1} {$Count = $Host.UI.RawUI.WindowSize.Width * $Count -bor 0;Break}
+    if (!$Name -and $Force) {
+        Import-EvdModulesAll
     }
-    $Char * $Count
-}
-
-# цветной вывод c поддержкой встроенных цветов PowerShell'a
-function draw {
-    param (
-        [Parameter(Mandatory, Position=0)]
-        [string[]]$Text,
-        [Parameter(Position=1)]
-        $Fg = $Host.UI.RawUI.ForegroundColor,
-        [Parameter(Position=2)]
-        $Bg = $Host.UI.RawUI.BackgroundColor
-    )
-    Write-Host $Text -ForegroundColor $Fg -BackgroundColor $Bg -NoNewline
-}
-
-function print([Parameter(ValueFromPipeline=$true,position=0)][String[]]$Params){[System.Console]::Write($Params -join '')}
-function println([Parameter(ValueFromPipeline=$true,position=0)][String[]]$Params){[System.Console]::WriteLine($Params -join '')}
-
-# ANSI colors table
-function Show-AnsiColors {
-    print "`e[0m",(hr _ 80)
-    foreach ($j in 40..47 + 100..107) {
-        '';foreach ($i in 30..37) {print ' ',"`e[$i;$j","`me[$i;$j`m",($j -gt 47 ?'':' '),"`e[0m"};
-        '';foreach ($i in 90..97) {print ' ',"`e[$i;$j","`me[$i;$j`m",($j -gt 47 ?'':' '),"`e[0m"};
+    if (Test-Path ($mp=(Join-Path $PSScriptRoot "Evd${Name}.psm1"))) {
+        Import-Module $mp -Force
     }
 }
 
-<#
-.Synopsys
-Quick info about current screen settings
-#>
-function .scr([switch]$c) {cls;$host.ui.RawUI;if($c){Show-AnsiColors}}
-
-function logMon($LogFilePath, $match = "Error") {
-    Get-Content $LogFilePath -Wait | Where { $_ -Match $match }
+function Write-EvdLog ( $Message ) {
+    "$(Get-Date)`t$Message" >> $(Join-Path $PSScriptRoot 'EveryDay-PSM.log')
 }
 
-function tail  {
-    param (
-        [Parameter(Mandatory=$true,ValueFromPipeline=$true)]
-        $Name,
-        [int]$Last=5
-    )
-    Get-Content $Name -Last $Last
+Register-EngineEvent PowerShell.Exiting -Action {
+    Write-EvdLog "Close PowerShell Console"
 }
 
-set-alias grep -Value Select-String -Force
-filter mgrep {
-    param {
-        [Alias('patt','p')]
-        $Pattern,
-        [Alias('c')]
-        $Color = "`e[97m"
-    }
-    $_ | Select-String $patt | %{$_ -replace "($patt)", "$Color`$1`e[0m"}
-}
+Set-Alias -Name reevd  -Value Import-EvdModule
+Set-Alias -Name evdlog -Value Write-EvdLog
 
-##############################################################################
-##############################################################################
-# GIT utils
-
-# make .gitignore file here via gitignore.io
-#
-# show posible configuratios list
-# @example: gitignore list
-#
-# make common configuration
-# @example: gitignore windows,macos,node
-function gIgnore($mode) {
-    curl -L -s "https://www.gitignore.io/api/$([string]$mode)"
-}
-
-function gAddIgnore($mode = 'universal', [Alias('n')] [Switch]$New) {
-    Switch ($mode) {
-        'list' {gIgnore list;return};
-        'universal' {$rules = 'windows,linux,macos,visualstudiocode,sublimetext,vim'}
-        default {$rules = $mode}
-    }
-    if ($New) {
-        gIgnore $rules > .gitgnore
-    } else {
-        gIgnore $rules >> .gitgnore
-    }
-    print "`e[93;40m",".gitignore","`e[0m"," from ","`e[96;40m","gitignore.io","`e[om`n"
-    "-" * 35
-    println "`e[93m",($New ? "Created new:" : "Added:")
-    println "`e[33m", $mode,"`e[0m"
-    $rules | Sort-Object
-}
-
-# initialize git repository here
-function InitGitRepo($remoteUrl) {
-    Get-Date;
-    hr;
-    # create .gitignore file if not exists
-    if (-Not (Test-Path '.gitignore')) {
-        draw "Create new " DarkRed;
-        draw " .gitignore " Red Yellow;
-        echo "";
-        gIgnore 'windows,linux,macos,visualstudiocode,sublimetext,vim,node' > '.\.gitignore';
-        "$(lf)# Parcel$(lf)/dist/$(lf)/.cache/$(lf)" >> './.gitignore';
-        & $env:EDITOR .gitignore;
-        hr;
-    }
-    # init repository in current directory and push it to origin
-    git init
-    git add .
-    git commit -m 'init'
-    if ( $remoteUrl -ne $null ) {
-        hr
-        git remote add origin $remoteUrl
-        git push -u origin master
-    }
-    hr
-    git checkout -b develop
-    git log
-    git branch --all
-    echo $(lf)
-}
-
-##############################################################################
-##############################################################################
-# DEV Common Tasks
-
-function sass2styl($f, [string]$OutDir = '.') {
-    draw 'Convert file: '
-    draw $f.FullName Cyan
-    echo ''
-    if ($f.Extension -ne '.scss') {
-        Write-Warning 'Extension is not SCSS!'
-    }
-    curl -F "file=@$($f.FullName)" http://sass2stylus.com/api > "$OutDir\$($f.BaseName).styl"
-}
-
-function clrNuxt {
-    rmr('.nuxt/','dist/','node_modules/.cache/')
-}
-
-function clrParcel {
-    rmr('.cache/','dist/')
-}
-
-function nxt {
-    clrNuxt;
-    node .\node_modules\nuxt\bin\nuxt.js
-}
-
-function pcl {
-    clrParcel;
-    node .\node_modules\parcel\bin\cli.js
-}
-
-function dev {
-    cls;
-    yarn dev
-}
-
-function bld {
-    yarn build
-}
-
-# загрузить в Sublime тему от o-my-posh
-function Edit-Theme ($name) {
-    Get-Theme | Where-Object Name -ilike $name | %{
-        Write-Verbose "Open theme `"{0}`" in SublimeText`n{1}" -f $_.Name,$_.Location
-        subl $_.Location
-    }
-}
-
-# demo для PSReadLine
-# куча всяких фишек а-ля редактор
-function ImportKbExtra {
-    $fName = Join-Path (stat $PROFILE).DirectoryName kb.ps1 -Resolve
-    . $fName
-}
-
-Set-PSReadLineOption -EditMode Vi
-
-Set-PSReadLineKeyHandler -Key Ctrl+w -Function BackwardDeleteWord
-Set-PSReadLineKeyHandler -Key Ctrl+k -Function ForwardDeleteLine
-Set-PSReadLineKeyHandler -Key Ctrl+a -Function GotoFirstNonBlankOfLine
-
-Set-PSReadLineOption -HistorySearchCursorMovesToEnd
-
-Set-Alias subl -Value "C:\Program Files\Sublime Text 3\subl.exe"
-
-##----------------------------------------------------------------------------
-##############################################################################
-# HELP shortcuts
-
-function whelp ($what) {Get-Help $what -ShowWindow}
-function ohelp ($what) {Get-Help $what -Online}
-Set-Alias whlp -Value whelp
-
-
-# Register-EngineEvent PowerShell.Exiting -Action { "Exiting $(Get-Date)" >> C:\TEMP\log.txt }
-function Get-EvdTheme {
-    $themes = @()
-    Get-ChildItem -Path "$PSScriptRoot\Themes\*" -Include '*.psm1' -Exclude Tools.ps1 | Sort-Object Name | ForEach-Object -Process {
-        $themes += [PSCustomObject]@{
-                Name = $_.BaseName
-                Location = $_.FullName
-        }
-    }
-    $themes
-}
-
-function Set-EvdTheme {
-    param (
-        [Parameter(Mandatory=$true)] [string] $Name
-    )
-    if (Test-Path "$PSScriptRoot\Themes\${Name}.psm1") {
-        Set-Theme "$PSScriptRoot\Themes\${Name}.psm1"
-    }
-    elseif (Test-Path "$Name") {
-        Set-Theme "$Name"
-    }
-    else {
-        Write-Warning "Theme $Name not found. Available themes are:"
-        Get-EvdTheme
-    }
-    Set-Prompt
-}
-
-function EasyView($Seconds=.5) { process { $_; Start-Sleep -Seconds $Seconds}}
-
-$Global:PowerLineSymbols = @(
-    "`t       ",
-    "`ta0 a1 a2 a3 ",
-    "`t                               ",
-    "`tb0 b1 b2 b3 b4 b5 b6 b7 b8 b9 ba bb bc bd be bf ",
-    "`t                               ",
-    "`tc0 c1 c2 c3 c4 c5 c6 c7 c8 c9 ca cb cc cd ce cf ",
-    "`t         ",
-    "`td0 d1 d2 d3 d4 -E6- "
-)
-
-filter TotalCmd {
-    param([Parameter(ValueFromPipeline)] $Path)
-    $Cmd = "{0}\totalcmd\TOTALCMD64.EXE" -f $env:ProgramFiles
-    $Params =  @('/O','/T','/A',$Path)
-    & $Cmd $Params
-}
-
-$Global:Bars = [char[]]'│┆┊┃┇┋';
-
-Set-EvdTheme CLX;
+Import-EvdModulesAll
 Import-Module Jumper

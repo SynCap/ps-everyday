@@ -185,6 +185,19 @@ $lf = [System.Environment]::NewLine
 # here
 function lf {[System.Environment]::NewLine}
 
+function .c {
+    param (
+        [Alias('f')][Parameter(position=0)] $FgColor,
+        [Alias('b')][Parameter(position=1)] $BgColor
+    )
+    if($FgColor && $BgColor) {
+        "`e[${FgColor};${BgColor}m"
+    } else {
+        if ($FgColor) { "`e[${FgColor}m"}
+        if ($BgColor) { "`e[${BgColor}m"}
+    }
+}
+
 function hr{
     param(
         [Alias('c')][Parameter(position=0)][String] $Char=

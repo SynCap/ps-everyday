@@ -83,14 +83,15 @@ function .ll {
 
 function touch {
   Param(
-    [Parameter(Mandatory=$true)]
-    [string]$Path
+    [Parameter(ValueFromPipeline)]
+    [string[]]$Path = $PWD
   )
-
-  if (Test-Path -LiteralPath $Path) {
-    (Get-Item -Path $Path).LastWriteTime = Get-Date
-  } else {
-    New-Item -Type File -Path $Path
+  foreach ($p in $Path) {
+      if (Test-Path -LiteralPath $p) {
+        (Get-Item -Path $p).LastWriteTime = Get-Date
+      } else {
+        New-Item -Type File -Path $p
+      }
   }
 }
 
@@ -100,7 +101,7 @@ function .spf ($s) {
     if ($s -in $keys) {
         [Environment]::GetFolderPath($s)
     } else {
-        [Enum]::GetNames([System.Environment+SpecialFolder]).GetEnumerator() | sort
+        [Enum]::GetNames([System.Environment+SpecialFolder]).GetEnumerator()
     }
 }
 
@@ -113,6 +114,29 @@ function .exps ($s) {
     }
     $s = $s -Match '%\$(?<sdir>.*?)%'?$Matches.sdir:$s
 }
+
+<#
+AdminTools              Favorites               StartMenu
+ApplicationData         Fonts                   Startup
+CDBurning               History                 System
+CommonAdminTools        InternetCache           SystemX86
+CommonApplicationData   LocalApplicationData    Templates
+CommonDesktopDirectory  LocalizedResources      UserProfile
+CommonDocuments         MyComputer              Windows
+CommonMusic             MyDocuments             Equals
+CommonOemLinks          MyMusic                 Format
+CommonPictures          MyPictures              GetName
+CommonProgramFiles      MyVideos                GetNames
+CommonProgramFilesX86   NetworkShortcuts        GetUnderlyingType
+CommonPrograms          Personal                GetValues
+CommonStartMenu         PrinterShortcuts        IsDefined
+CommonStartup           ProgramFiles            Parse
+CommonTemplates         ProgramFilesX86         ReferenceEquals
+CommonVideos            Programs                ToObject
+Cookies                 Recent                  TryParse
+Desktop                 Resources
+DesktopDirectory        SendTo
+#>
 
 # Аналог GNU uname или DOS ver
 function ver {
@@ -161,7 +185,36 @@ $lf = [System.Environment]::NewLine
 # here
 function lf {[System.Environment]::NewLine}
 
-function hr($Char = '-', [int]$Count = 0) {$Char * ($Count ? $Count : $Host.UI.RawUI.WindowSize.Width)}
+function .c {
+    param (
+        [Alias('f')][Parameter(position=0)] $FgColor,
+        [Alias('b')][Parameter(position=1)] $BgColor
+    )
+    if($FgColor && $BgColor) {
+        "`e[${FgColor};${BgColor}m"
+    } else {
+        if ($FgColor) { "`e[${FgColor}m"}
+        if ($BgColor) { "`e[${BgColor}m"}
+    }
+}
+
+function hr{
+    param(
+        [Alias('c')][Parameter(position=0)][String] $Char=
+            # [Char]::ConvertFromUtf32(0x2248), # ≈ - Almost equal to
+            # [Char]::ConvertFromUtf32(0x2012), # Figure dash
+            [Char]::ConvertFromUtf32(0x2013), # En dash
+            # [Char]::ConvertFromUtf32(0x2014), # 0151 — Em dash
+            # [Char]::ConvertFromUtf32(0x2015), # Horizontal bar
+            # [Char]::ConvertFromUtf32(0x2500), # Box drawing light horizontal
+        [Alias('q')][Parameter(position=1)][Single] $Count = .4 # ≈40% of window width
+    )
+    switch ($Count) {
+        0 {$Count = $Host.UI.RawUI.WindowSize.Width;Break}
+        {$_ -lt 1} {$Count = $Host.UI.RawUI.WindowSize.Width * $Count -bor 0;Break}
+    }
+    $Char * $Count
+}
 
 # цветной вывод c поддержкой встроенных цветов PowerShell'a
 function draw {
@@ -397,6 +450,13 @@ $Global:PowerLineSymbols = @(
     "`t         ",
     "`td0 d1 d2 d3 d4 -E6- "
 )
+
+filter TotalCmd {
+    param([Parameter(ValueFromPipeline)] $Path)
+    $Cmd = "{0}\totalcmd\TOTALCMD64.EXE" -f $env:ProgramFiles
+    $Params =  @('/O','/T','/A',$Path)
+    & $Cmd $Params
+}
 
 $Global:Bars = [char[]]'│┆┊┃┇┋';
 

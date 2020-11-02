@@ -184,7 +184,20 @@ $lf = [System.Environment]::NewLine
 # here
 function lf {[System.Environment]::NewLine}
 
-function hr($Char = '-', [single]$Count = .4) {$Char * ($Count -gt 1 ? $Count -bor 0 : $Host.UI.RawUI.WindowSize.Width * $Count -bor 0)}
+function hr{
+    param(
+        [Alias('c')][Parameter(position=0)][String] $Char=
+            # [Char]::ConvertFromUtf32(0x2248), # ≈ - Almost equal to
+            [Char]::ConvertFromUtf32(0x2014), # 0151 — Em dash
+            # [Char]::ConvertFromUtf32(0x2015), # Horizontal bar
+        [Alias('q')][Parameter(position=1)][Single] $Count = .4 # ≈40% of window width
+    )
+    switch ($Count) {
+        0 {$Count = $Host.UI.RawUI.WindowSize.Width;Break}
+        {$_ -lt 1} {$Count = $Host.UI.RawUI.WindowSize.Width * $Count -bor 0;Break}
+    }
+    $Char * $Count
+}
 
 # цветной вывод c поддержкой встроенных цветов PowerShell'a
 function draw {

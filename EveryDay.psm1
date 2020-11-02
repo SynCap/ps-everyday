@@ -83,14 +83,15 @@ function .ll {
 
 function touch {
   Param(
-    [Parameter(Mandatory=$true)]
-    [string]$Path
+    [Parameter(ValueFromPipeline)]
+    [string[]]$Path = $PWD
   )
-
-  if (Test-Path -LiteralPath $Path) {
-    (Get-Item -Path $Path).LastWriteTime = Get-Date
-  } else {
-    New-Item -Type File -Path $Path
+  foreach ($p in $Path) {
+      if (Test-Path -LiteralPath $p) {
+        (Get-Item -Path $p).LastWriteTime = Get-Date
+      } else {
+        New-Item -Type File -Path $p
+      }
   }
 }
 

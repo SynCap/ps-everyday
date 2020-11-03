@@ -1,7 +1,20 @@
 # Import-Module ./
 
 function Import-EvdModulesAll {
-    ls (Join-Path $PSScriptRoot 'Evd*.psm1') | %{Import-Module $_ -Force}
+    param (
+        [Alias('f')] [Switch] $Force
+    )
+    Get-ChildItem (Join-Path $PSScriptRoot 'Evd*.psm1') | %{
+        if ($Force) {
+            Split-Path -Path (Join-Path $PSScriptRoot 'Evd*.psm1') -Leaf -Resolve | %{
+                Write-Verbose ("Try to Remove (ALL) Evd Module {0}" -f $_.Name)
+                Remove-Module $_.Name -Force
+                Write-EvdLog "Remove (ALL) Evd Module`t$_.Name"
+            }
+        }
+        Import-Module $_ -Force
+        Write-EvdLog "Import (ALL) Evd Module`t$_"
+    }
 }
 
 function Import-EvdModule {
@@ -19,7 +32,7 @@ function Import-EvdModule {
             `Theme` lives in `EvdTheme.psm1` file so to reload that module use
             `Import-EvdModule Theme`.
 
-            To reload all Evd modules use `Import-EvdModule -f` or better
+            To reload all Evd modules use `Import-EvdModule` or better
             `Import-EvdModulesAll`.
 
             To reload several modules use `Import-EvdModule Mod1,Mod2,Mod3` or
@@ -30,24 +43,37 @@ function Import-EvdModule {
         [Parameter(ValueFromPipeline)] [String[]] $Name,
         [Alias('f')] [Switch] $Force
     )
-    if (!$Name -and $Force) {
-        Import-EvdModulesAll
+    if (!$Name) {
+        Import-EvdModulesAll -Force
     }
     if (Test-Path ($mp=(Join-Path $PSScriptRoot "Evd${Name}.psm1"))) {
         Import-Module $mp -Force
+        Write-EvdLog "Import Evd Module`t${Name}"
     }
 }
 
+$LogDir = Join-Path $PSScriptRoot 'Logs'
+$LogFilesMask = '*.log'
+$DaysToKeepLogs = 10
+
+$TimeStampFormat ='yyyy MM-MMM dd-ddd HH:mm:ss.fffffff'
+$LogFileNameFormat = 'yyyy-MM-dd'
+# https://docs.microsoft.com/en-us/dotnet/standard/base-types/standard-date-and-time-format-strings
+# https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings?view=netframework-4.8
+# https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings?view=netframework-4.8
+
 function Write-EvdLog ( $Message ) {
-    "$(Get-Date)`t$Message" >> $(Join-Path $PSScriptRoot 'EveryDay-PSM.log')
+    Get-ChildItem $LogFilesMask -Filter $LogFilesMask |
+        where {$_.LastWriteTime -lt (Get-Date).AddDays(-$DaysToKeepLogs)} |
+            Remove-Item
+    "$(Get-Date -Format $TimeStampFormat)`t$Message" >> $(Join-Path $LogDir "$(Get-Date -Format $LogFileNameFormat).log")
 }
 
 Register-EngineEvent PowerShell.Exiting -Action {
-    Write-EvdLog "Close PowerShell Console"
+    Write-EvdLog "Close PowerShell Console;`t${PWD}"
 }
 
 Set-Alias -Name reevd  -Value Import-EvdModule
 Set-Alias -Name evdlog -Value Write-EvdLog
 
 Import-EvdModulesAll
-Import-Module Jumper

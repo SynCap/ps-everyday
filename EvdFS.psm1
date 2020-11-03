@@ -3,9 +3,9 @@ function stat($fName) {
     Get-ItemProperty $fName | Select-Object *
 }
 
-function .. { cd .. }
-function ... { cd ..\.. }
-function .... { cd ..\..\.. }
+function .. { Set-Location .. }
+function ... { Set-Location ..\.. }
+function .... { Set-Location ..\..\.. }
 
 Set-Alias props -Value Get-ItemProperty
 function attr($f) { (Get-ItemProperty $f).Attributes }
@@ -14,28 +14,29 @@ function attr($f) { (Get-ItemProperty $f).Attributes }
 function .l {
     Param (
         # [System.IO.FileSystemInfo[]]
-        [Parameter(ValueFromPipeline=$true,position=0)]
-        [String[]]
-        $Path = '.'
+        [Parameter(ValueFromPipeline,position=0)] [String[]] $Path = '.'
     )
-    # reset colors to defaults
-    $r="`e[0m";
-    # расширения "исполняемых" файлов
-    $exe = $($env:PATHEXT.replace('.','').split(';'))
-    Get-ChildItem $Path |
-        %{
-            $f = $_ # внутри switch: $_ ~~ проверяемое значение
-            if ( $f.Name.Split('.')[-1] -in $exe ) {
-                $c = 36; # запускаемые файлы
-            } else {
-                $c = 32; # базовый цвет = 32 -- тёмно-зелёный (Green `e[32m)
+    Process {
+        # reset colors to defaults
+        $r="`e[0m";
+        # расширения "исполняемых" файлов
+        $exe = $($env:PATHEXT.replace('.','').split(';'))
+        Get-ChildItem $Path -Force |
+            ForEach-Object {
+                $f = $_ # внутри switch: $_ ~~ проверяемое значение
+                if ( $f.Name.Split('.')[-1] -in $exe ) {
+                    $c = 31; # запускаемые файлы
+                    Write-VErbose "EXE file - ${f.Name}"
+                } else {
+                    $c = 32; # базовый цвет = 32 -- тёмно-зелёный (Green `e[32m)
+                }
                 switch -regex ($f.Mode) {
                     'd' {$c += 60} # папки более якрике - 30+60 = `e[92m
                     'h' {$c += 4} # смещаем цвет в Teal/Cyan 36/96
                 }
-            }
-            @{('{0}{1}{2}' -f "`e[${c}m",$_.PSChildName,"`e[0m") = ''}
-        } | Format-Wide -AutoSize
+                @{('{0}{1}{2}' -f "`e[${c}m",$_.PSChildName,$r) = ''}
+            } | Format-Wide -AutoSize
+    }
 }
 
 # Like PS's ls but with extra sort
@@ -45,11 +46,14 @@ function .ll {
         [Alias('f')][Switch]$Force = $false,
         [Alias('h')][Switch]$Hidden = $false
     )
-    Get-ChildItem $Path -Force:$Force -Hidden:$Hidden | `
-        Sort-Object `
-            @{Expression='Mode';Descending=$true},`
-            @{Expression='Extension';Descending=$false},`
-            @{Expression='Name'}
+
+    Process {
+        Get-ChildItem $Path -Force:$Force -Hidden:$Hidden | `
+            Sort-Object `
+                @{Expression='Mode';Descending=$true},`
+                @{Expression='Extension';Descending=$false},`
+                @{Expression='Name'}
+    }
 }
 
 # Like GNU touch changes file lastWriteTime or create new file if it not exists
@@ -79,15 +83,10 @@ function touch {
 
 function rm2($f) {
     $f | ForEach-Object{
-        $p = _path($_);
-        if (Test-Path $p) {
-            draw 'Remove ';
-            draw $p,$lf Yellow;
-            Remove-Item $_ -Force -Recurse
-        } else {
-            draw 'Nothing like ' DarkRed;
-            draw $p,$lf Red
-        }
+        print 'Remove ';
+        println "`e[33m", $_ ,"`e[0m"
+        Remove-Item $_ -Force -Recurse -ErrorVariable rmrErr -ErrorAction 'SilentlyContinue'
+        $rmrErr | %{println "`e[31m",$_.Exception.Message}
     }
 }
 
@@ -95,14 +94,13 @@ function rm2($f) {
 Set-Alias rmr rm2
 
 function logMon($LogFilePath, $match = "Error") {
-    Get-Content $LogFilePath -Wait | Where { $_ -Match $match }
+    Get-Content $LogFilePath -Wait | Where-Object { $_ -Match $match }
 }
 
-function tail  {
+filter tail  {
     param (
-        [Parameter(Mandatory=$true,ValueFromPipeline=$true)]
-        $Name,
-        [int]$Last=5
+        [Parameter(Mandatory,ValueFromPipeline)] $Name,
+        [int] $Last=5
     )
     Get-Content $Name -Last $Last
 }

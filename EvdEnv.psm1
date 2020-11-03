@@ -1,22 +1,23 @@
 
 # Управление сессионной переменной окружения PATH
 function .pc {$env:Path.Split(';')[-3..-1]}
-function .pp {if($env:Path -NotLike "*;$(pwd)"){$env:Path+=";$(pwd)"};.pc}
+function .pp {if($env:Path -NotLike "*;$pwd"){$env:Path+=";$pwd"};.pc}
 function .pd {$env:Path=$env:Path.Split(';')[0..-2].Join(';');.pc}
 
-$Global:EvdSPF = @{}
+# PowerShell:PSAvoidGlobalVars=$False
+$Script:EvdSPF = @{}
 function .spf ($SpecialFolderAlias) {
     # $keys = [Enum]::GetNames([System.Environment+SpecialFolder])
     if ($SpecialFolderAlias) {
         [Environment]::GetFolderPath($SpecialFolderAlias)
     } else {
         # [Enum]::GetNames([System.Environment+SpecialFolder]).GetEnumerator()
-        if (1 -gt $Global:EvdSPF.Count) {
+        if (1 -gt $Script:EvdSPF.Count) {
             [Enum]::GetNames([System.Environment+SpecialFolder]).GetEnumerator().forEach({
-                $Global:EvdSPF.Add($_, [Environment]::GetFolderPath($_))
+                $Script:EvdSPF.Add($_, [Environment]::GetFolderPath($_))
             })
         }
-        $Global:EvdSPF.GetEnumerator() | select Name,Value | Sort Name
+        $Script:EvdSPF.GetEnumerator() | Select-Object Name,Value | Sort-Object Name
     }
 }
 
@@ -28,7 +29,7 @@ function .exps ($s) {
     while ($s -Match $re) {
         $_.dir
     }
-    $s = $s -Match '%\$(?<sdir>.*?)%'?$Matches.sdir:$s
+    $s = $s -Match '%\$(?<sdir>.*?)%' ? $Matches.sdir : $s;
 }
 
 # Аналог GNU uname или DOS ver
@@ -50,4 +51,15 @@ filter TotalCmd {
     & $Cmd $Params
 }
 
-Set-Alias subl -Value "C:\Program Files\Sublime Text 3\subl.exe"
+# Set-Alias subl -Value "C:\Program Files\Sublime Text 3\subl.exe"
+
+$sublPath = Join-Path -Path $env:ProgramFiles -ChildPath "Sublime Text 3" "subl.exe"
+function subl {
+    param (
+        [Parameter(ValueFromPipeline)] [String[]] $Path = '.'
+    )
+    Process {
+        Write-Debug "`$args: $args"
+        & $sublPath ($Path, $args)
+    }
+}

@@ -1,3 +1,4 @@
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingWriteHost', '')]
 
 # ❯ echo "Line feed$lf here"
 # Line feed
@@ -51,17 +52,18 @@ function draw {
     Write-Host $Text -ForegroundColor $Fg -BackgroundColor $Bg -NoNewline
 }
 
-function print([Parameter(ValueFromPipeline=$true,position=0)][String[]]$Params){[System.Console]::Write($Params -join '')}
-function println([Parameter(ValueFromPipeline=$true,position=0)][String[]]$Params){[System.Console]::WriteLine($Params -join '')}
+function print([Parameter(ValueFromPipeline)][String[]]$Params){[System.Console]::Write($Params -join '')}
+function println([Parameter(ValueFromPipeline)][String[]]$Params){[System.Console]::WriteLine($Params -join '')}
 
 # ANSI colors table
-function Show-AnsiColors {
+function Show-AnsiColorSample {
     print "`e[0m",(hr _ 80)
     foreach ($j in 40..47 + 100..107) {
-        '';foreach ($i in 30..37) {print ' ',"`e[$i;$j","`me[$i;$j`m",($j -gt 47 ?'':' '),"`e[0m"};
-        '';foreach ($i in 90..97) {print ' ',"`e[$i;$j","`me[$i;$j`m",($j -gt 47 ?'':' '),"`e[0m"};
+        '';foreach ($i in 30..37){print ' ',"`e[$i;$j","`me[$i;$j`m",(($j -gt 47) ? '' : ' '),"`e[0m"};
+        '';foreach ($i in 90..97){print ' ',"`e[$i;$j","`me[$i;$j`m",(($j -gt 47) ? '' : ' '),"`e[0m"};
     }
 }
+Set-Alias -Name shansi -Value Show-AnsiColorSample
 
 <#
 .Synopsys
@@ -80,20 +82,19 @@ $Global:PowerLineSymbols = @(
     "`td0 d1 d2 d3 d4 -E6- "
 )
 
-$Global:Bars = [char[]]'│┆┊┃┇┋' + [char[]](
-        [Char]::ConvertFromUtf32(0x2248), # ≈ - Almost equal to
-        [Char]::ConvertFromUtf32(0x2012), # Figure dash
-        [Char]::ConvertFromUtf32(0x2013), # En dash
-        [Char]::ConvertFromUtf32(0x2014), # 0151 — Em dash
-        [Char]::ConvertFromUtf32(0x2015), # Horizontal bar
-        [Char]::ConvertFromUtf32(0x2500), # Box drawing light horizontal
-        [Char]::ConvertFromUtf32(0x2501), # Box drawing heavy horizontal
-        [Char]::ConvertFromUtf32(0x2550), # Box drawing double horizontal
-        [Char]::ConvertFromUtf32(0x254c), # Box drawing light double dash horizontal
-        [Char]::ConvertFromUtf32(0x254d)  # Box drawing light heavy double dash horizontal
-    ) +
-    [char[]]'▀▁▂▃▄▅▆▇█▉▊▋▌▍▎▏▐░▒▓▔' # -- 0x2580 .. 0x2594
-;
+$Global:Bars = [char[]]'│┆┊┃┇┋≈‒–—―─━═╌╍▀▁▂▃▄▅▆▇█▉▊▋▌▍▎▏▐░▒▓▔'
+
+# [Char]::ConvertFromUtf32(0x2248), # ≈ - Almost equal to
+# [Char]::ConvertFromUtf32(0x2012), # Figure dash
+# [Char]::ConvertFromUtf32(0x2013), # En dash
+# [Char]::ConvertFromUtf32(0x2014), # 0151 — Em dash
+# [Char]::ConvertFromUtf32(0x2015), # Horizontal bar
+# [Char]::ConvertFromUtf32(0x2500), # Box drawing light horizontal
+# [Char]::ConvertFromUtf32(0x2501), # Box drawing heavy horizontal
+# [Char]::ConvertFromUtf32(0x2550), # Box drawing double horizontal
+# [Char]::ConvertFromUtf32(0x254c), # Box drawing light double dash horizontal
+# [Char]::ConvertFromUtf32(0x254d)  # Box drawing light heavy double dash horizontal
+
 
 set-alias grep -Value Select-String -Force
 filter mgrep {

@@ -77,4 +77,3 @@ Set-Alias -Name reevd  -Value Import-EvdModule
 Set-Alias -Name evdlog -Value Write-EvdLog
 
 Import-EvdModulesAll
-Import-Module Jumper

@@ -1,3 +1,4 @@
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingWriteHost', '')]
 
 # ❯ echo "Line feed$lf here"
 # Line feed
@@ -58,8 +59,8 @@ function println([Parameter(ValueFromPipeline)][String[]]$Params){[System.Consol
 function Show-AnsiColorSample {
     print "`e[0m",(hr _ 80)
     foreach ($j in 40..47 + 100..107) {
-        '';foreach ($i in 30..37) {print ' ',"`e[$i;$j","`me[$i;$j`m",($j -gt 47 ?'':' '),"`e[0m"};
-        '';foreach ($i in 90..97) {print ' ',"`e[$i;$j","`me[$i;$j`m",($j -gt 47 ?'':' '),"`e[0m"};
+        '';foreach ($i in 30..37){print ' ',"`e[$i;$j","`me[$i;$j`m",(($j -gt 47) ? '' : ' '),"`e[0m"};
+        '';foreach ($i in 90..97){print ' ',"`e[$i;$j","`me[$i;$j`m",(($j -gt 47) ? '' : ' '),"`e[0m"};
     }
 }
 Set-Alias -Name shansi -Value Show-AnsiColorSample

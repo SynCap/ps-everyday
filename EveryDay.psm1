@@ -38,12 +38,25 @@ function Import-EvdModule {
     }
 }
 
+$LogDir = Join-Path $PSScriptRoot 'Logs'
+$LogFilesMask = '*.log'
+$DaysToKeepLogs = 10
+
+$TimeStampFormat ='yyyy MM-MMM dd-ddd HH:mm:ss.fffffff'
+$LogFileNameFormat = 'yyyy-MM-dd'
+# https://docs.microsoft.com/en-us/dotnet/standard/base-types/standard-date-and-time-format-strings
+# https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings?view=netframework-4.8
+# https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings?view=netframework-4.8
+
 function Write-EvdLog ( $Message ) {
-    "$(Get-Date)`t$Message" >> $(Join-Path $PSScriptRoot 'EveryDay-PSM.log')
+    Get-ChildItem $LogFilesMask -Filter $LogFilesMask |
+        where {$_.LastWriteTime -lt (Get-Date).AddDays(-$DaysToKeepLogs)} |
+            Remove-Item
+    "$(Get-Date -Format $TimeStampFormat)`t$Message" >> $(Join-Path $LogDir "$(Get-Date -Format $LogFileNameFormat).log")
 }
 
 Register-EngineEvent PowerShell.Exiting -Action {
-    Write-EvdLog "Close PowerShell Console"
+    Write-EvdLog "Close PowerShell Console;`t${PWD}"
 }
 
 Set-Alias -Name reevd  -Value Import-EvdModule

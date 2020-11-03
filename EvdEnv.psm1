@@ -50,4 +50,13 @@ filter TotalCmd {
     & $Cmd $Params
 }
 
-Set-Alias subl -Value "C:\Program Files\Sublime Text 3\subl.exe"
+# Set-Alias subl -Value "C:\Program Files\Sublime Text 3\subl.exe"
+
+$subl = Join-Path $env:ProgramFiles "Sublime Text 3" "subl.exe"
+function subl {
+    param (
+        [Parameter(Mandatory,ValueFromPipeline)] [String[]] $Path = '.'
+    )
+    echo $args
+    & $subl ($Path, $args)
+}

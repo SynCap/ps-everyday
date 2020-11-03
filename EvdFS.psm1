@@ -3,9 +3,9 @@ function stat($fName) {
     Get-ItemProperty $fName | Select-Object *
 }
 
-function .. { cd .. }
-function ... { cd ..\.. }
-function .... { cd ..\..\.. }
+function .. { Set-Location .. }
+function ... { Set-Location ..\.. }
+function .... { Set-Location ..\..\.. }
 
 Set-Alias props -Value Get-ItemProperty
 function attr($f) { (Get-ItemProperty $f).Attributes }
@@ -44,11 +44,14 @@ function .ll {
         [Alias('f')][Switch]$Force = $false,
         [Alias('h')][Switch]$Hidden = $false
     )
-    Get-ChildItem $Path -Force:$Force -Hidden:$Hidden | `
-        Sort-Object `
-            @{Expression='Mode';Descending=$true},`
-            @{Expression='Extension';Descending=$false},`
-            @{Expression='Name'}
+
+    Process {
+        Get-ChildItem $Path -Force:$Force -Hidden:$Hidden | `
+            Sort-Object `
+                @{Expression='Mode';Descending=$true},`
+                @{Expression='Extension';Descending=$false},`
+                @{Expression='Name'}
+    }
 }
 
 # Like GNU touch changes file lastWriteTime or create new file if it not exists

@@ -28,7 +28,7 @@ function gAddIgnore($mode = 'universal', [Alias('n')] [Switch]$New) {
     print "`e[93;40m",".gitignore","`e[0m"," from ","`e[96;40m","gitignore.io","`e[om`n"
     "-" * 35
     println "`e[93m",($New ? "Created new:" : "Added:")
-    println "`e[33m", $mode,"`e[0m"
+    println "`e[33m",($mode -join ','),"`e[0m"
     $rules | Sort-Object
 }
 
@@ -41,8 +41,7 @@ function InitGitRepo($remoteUrl) {
         draw "Create new " DarkRed;
         draw " .gitignore " Red Yellow;
         echo "";
-        gIgnore 'windows,linux,macos,visualstudiocode,sublimetext,vim,node' > '.\.gitignore';
-        "$(lf)# Parcel$(lf)/dist/$(lf)/.cache/$(lf)" >> './.gitignore';
+        gIgnore 'universal' > '.\.gitignore';
         & $env:EDITOR .gitignore;
         hr;
     }
@@ -59,5 +58,4 @@ function InitGitRepo($remoteUrl) {
     git checkout -b develop
     git log
     git branch --all
-    echo $(lf)
 }

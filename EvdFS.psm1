@@ -14,15 +14,14 @@ function attr($f) { (Get-ItemProperty $f).Attributes }
 function .l {
     Param (
         # [System.IO.FileSystemInfo[]]
-        [Parameter(ValueFromPipeline=$true,position=0)]
-        [String[]]
-        $Path = '.'
+        [Parameter(ValueFromPipeline,position=0)] [String[]] $Path = '.',
+        [Parameter(ValueFromPipelineByPropertyName)] [String[]] $LiteralPath,
     )
     # reset colors to defaults
     $r="`e[0m";
     # расширения "исполняемых" файлов
     $exe = $($env:PATHEXT.replace('.','').split(';'))
-    Get-ChildItem $Path |
+    Get-ChildItem $Path -Force $Force -Filter $Filter |
         %{
             $f = $_ # внутри switch: $_ ~~ проверяемое значение
             if ( $f.Name.Split('.')[-1] -in $exe ) {

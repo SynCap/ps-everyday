@@ -24,12 +24,15 @@ function .spf ($SpecialFolderAlias) {
 # разворачивает %$<строки>%
 function .exp ($s) {[System.Environment]::ExpandEnvironmentVariables($s)}
 
-function .exps ($s) {
-    $re = '%\$(?<sdir>.*?)%';
-    while ($s -Match $re) {
-        $_.dir
+function .exps ([parameter(ValueFromPipeline)][string]$s) {
+    $re = '#\(\s*(\w+?)\s*\)'
+    $s -replace $re, {
+        try{
+            [Environment]::GetFolderPath($_.Groups[1].Value)
+        } catch {
+            ''
+        }
     }
-    $s = $s -Match '%\$(?<sdir>.*?)%' ? $Matches.sdir : $s;
 }
 
 # Аналог GNU uname или DOS ver

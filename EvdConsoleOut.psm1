@@ -80,20 +80,19 @@ $Global:PowerLineSymbols = @(
     "`td0 d1 d2 d3 d4 -E6- "
 )
 
-$Global:Bars = [char[]]'│┆┊┃┇┋' + [char[]](
-        [Char]::ConvertFromUtf32(0x2248), # ≈ - Almost equal to
-        [Char]::ConvertFromUtf32(0x2012), # Figure dash
-        [Char]::ConvertFromUtf32(0x2013), # En dash
-        [Char]::ConvertFromUtf32(0x2014), # 0151 — Em dash
-        [Char]::ConvertFromUtf32(0x2015), # Horizontal bar
-        [Char]::ConvertFromUtf32(0x2500), # Box drawing light horizontal
-        [Char]::ConvertFromUtf32(0x2501), # Box drawing heavy horizontal
-        [Char]::ConvertFromUtf32(0x2550), # Box drawing double horizontal
-        [Char]::ConvertFromUtf32(0x254c), # Box drawing light double dash horizontal
-        [Char]::ConvertFromUtf32(0x254d)  # Box drawing light heavy double dash horizontal
-    ) +
-    [char[]]'▀▁▂▃▄▅▆▇█▉▊▋▌▍▎▏▐░▒▓▔' # -- 0x2580 .. 0x2594
-;
+$Global:Bars = [char[]]'│┆┊┃┇┋≈‒–—―─━═╌╍▀▁▂▃▄▅▆▇█▉▊▋▌▍▎▏▐░▒▓▔'
+
+# [Char]::ConvertFromUtf32(0x2248), # ≈ - Almost equal to
+# [Char]::ConvertFromUtf32(0x2012), # Figure dash
+# [Char]::ConvertFromUtf32(0x2013), # En dash
+# [Char]::ConvertFromUtf32(0x2014), # 0151 — Em dash
+# [Char]::ConvertFromUtf32(0x2015), # Horizontal bar
+# [Char]::ConvertFromUtf32(0x2500), # Box drawing light horizontal
+# [Char]::ConvertFromUtf32(0x2501), # Box drawing heavy horizontal
+# [Char]::ConvertFromUtf32(0x2550), # Box drawing double horizontal
+# [Char]::ConvertFromUtf32(0x254c), # Box drawing light double dash horizontal
+# [Char]::ConvertFromUtf32(0x254d)  # Box drawing light heavy double dash horizontal
+
 
 set-alias grep -Value Select-String -Force
 filter mgrep {

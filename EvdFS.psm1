@@ -14,27 +14,29 @@ function attr($f) { (Get-ItemProperty $f).Attributes }
 function .l {
     Param (
         # [System.IO.FileSystemInfo[]]
-        [Parameter(ValueFromPipeline,position=0)] [String[]] $Path = '.',
-        [Parameter(ValueFromPipelineByPropertyName)] [String[]] $LiteralPath,
+        [Parameter(ValueFromPipeline,position=0)] [String[]] $Path = '.'
     )
-    # reset colors to defaults
-    $r="`e[0m";
-    # расширения "исполняемых" файлов
-    $exe = $($env:PATHEXT.replace('.','').split(';'))
-    Get-ChildItem $Path -Force $Force -Filter $Filter |
-        %{
-            $f = $_ # внутри switch: $_ ~~ проверяемое значение
-            if ( $f.Name.Split('.')[-1] -in $exe ) {
-                $c = 36; # запускаемые файлы
-            } else {
-                $c = 32; # базовый цвет = 32 -- тёмно-зелёный (Green `e[32m)
+    Process {
+        # reset colors to defaults
+        $r="`e[0m";
+        # расширения "исполняемых" файлов
+        $exe = $($env:PATHEXT.replace('.','').split(';'))
+        Get-ChildItem $Path -Force |
+            ForEach-Object {
+                $f = $_ # внутри switch: $_ ~~ проверяемое значение
+                if ( $f.Name.Split('.')[-1] -in $exe ) {
+                    $c = 31; # запускаемые файлы
+                    Write-VErbose "EXE file - ${f.Name}"
+                } else {
+                    $c = 32; # базовый цвет = 32 -- тёмно-зелёный (Green `e[32m)
+                }
                 switch -regex ($f.Mode) {
                     'd' {$c += 60} # папки более якрике - 30+60 = `e[92m
                     'h' {$c += 4} # смещаем цвет в Teal/Cyan 36/96
                 }
-            }
-            @{('{0}{1}{2}' -f "`e[${c}m",$_.PSChildName,"`e[0m") = ''}
-        } | Format-Wide -AutoSize
+                @{('{0}{1}{2}' -f "`e[${c}m",$_.PSChildName,$r) = ''}
+            } | Format-Wide -AutoSize
+    }
 }
 
 # Like PS's ls but with extra sort

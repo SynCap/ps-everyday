@@ -83,15 +83,10 @@ function touch {
 
 function rm2($f) {
     $f | ForEach-Object{
-        $p = _path($_);
-        if (Test-Path $p) {
-            draw 'Remove ';
-            draw $p,$lf Yellow;
-            Remove-Item $_ -Force -Recurse
-        } else {
-            draw 'Nothing like ' DarkRed;
-            draw $p,$lf Red
-        }
+        print 'Remove ';
+        println "`e[33m", $_ ,"`e[0m"
+        Remove-Item $_ -Force -Recurse -ErrorVariable rmrErr -ErrorAction 'SilentlyContinue'
+        $rmrErr | %{println "`e[31m",$_.Exception.Message}
     }
 }
 
@@ -99,14 +94,13 @@ function rm2($f) {
 Set-Alias rmr rm2
 
 function logMon($LogFilePath, $match = "Error") {
-    Get-Content $LogFilePath -Wait | Where { $_ -Match $match }
+    Get-Content $LogFilePath -Wait | Where-Object { $_ -Match $match }
 }
 
-function tail  {
+filter tail  {
     param (
-        [Parameter(Mandatory=$true,ValueFromPipeline=$true)]
-        $Name,
-        [int]$Last=5
+        [Parameter(Mandatory,ValueFromPipeline)] $Name,
+        [int] $Last=5
     )
     Get-Content $Name -Last $Last
 }

@@ -51,8 +51,8 @@ function draw {
     Write-Host $Text -ForegroundColor $Fg -BackgroundColor $Bg -NoNewline
 }
 
-function print([Parameter(ValueFromPipeline=$true,position=0)][String[]]$Params){[System.Console]::Write($Params -join '')}
-function println([Parameter(ValueFromPipeline=$true,position=0)][String[]]$Params){[System.Console]::WriteLine($Params -join '')}
+function print([Parameter(ValueFromPipeline)][String[]]$Params){[System.Console]::Write($Params -join '')}
+function println([Parameter(ValueFromPipeline)][String[]]$Params){[System.Console]::WriteLine($Params -join '')}
 
 # ANSI colors table
 function Show-AnsiColorSample {

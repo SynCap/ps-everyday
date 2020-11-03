@@ -14,7 +14,7 @@ function gIgnore($mode) {
     curl -L -s "https://www.gitignore.io/api/$([string]$mode)"
 }
 
-function gAddIgnore($mode = 'universal', [Alias('n')] [Switch]$New) {
+function gAddIgnore([String[]] $mode = 'universal', [Alias('n')] [Switch] $New) {
     Switch ($mode) {
         'list' {gIgnore list;return};
         'universal' {$rules = 'windows,linux,macos,visualstudiocode,sublimetext,vim'}
@@ -39,9 +39,8 @@ function InitGitRepo($remoteUrl) {
     # create .gitignore file if not exists
     if (-Not (Test-Path '.gitignore')) {
         draw "Create new " DarkRed;
-        draw " .gitignore " Red Yellow;
-        echo "";
-        gIgnore 'universal' > '.\.gitignore';
+        draw " .gitignore `n" Red Yellow;
+        gIgnore -New
         & $env:EDITOR .gitignore;
         hr;
     }
@@ -49,7 +48,7 @@ function InitGitRepo($remoteUrl) {
     git init
     git add .
     git commit -m 'init'
-    if ( $remoteUrl -ne $null ) {
+    if ( $null -ne $remoteUrl ) {
         hr
         git remote add origin $remoteUrl
         git push -u origin master

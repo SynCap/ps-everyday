@@ -16,14 +16,14 @@ function gIgnore($mode) {
 
 function gAddIgnore([String[]] $mode = 'universal', [Alias('n')] [Switch] $New) {
     Switch ($mode) {
-        'list' {gIgnore list;return};
-        'universal' {$rules = 'windows,linux,macos,visualstudiocode,sublimetext,vim'}
+        'list' {gIgnore list;break};
+        'universal' {$rules = 'windows,linux,macos,visualstudiocode,sublimetext,vim';break}
         default {$rules = $mode}
     }
     if ($New) {
-        gIgnore $rules > .gitgnore
+        gIgnore $rules > .gitignore
     } else {
-        gIgnore $rules >> .gitgnore
+        gIgnore $rules >> .gitignore
     }
     print "`e[93;40m",".gitignore","`e[0m"," from ","`e[96;40m","gitignore.io","`e[om`n"
     "-" * 35
@@ -40,7 +40,7 @@ function InitGitRepo($remoteUrl) {
     if (-Not (Test-Path '.gitignore')) {
         draw "Create new " DarkRed;
         draw " .gitignore `n" Red Yellow;
-        gIgnore -New
+        gAddIgnore -New
         & $env:EDITOR .gitignore;
         hr;
     }

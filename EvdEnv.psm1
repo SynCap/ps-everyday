@@ -7,11 +7,9 @@ function .pd {$env:Path=$env:Path.Split(';')[0..-2].Join(';');.pc}
 # PowerShell:PSAvoidGlobalVars=$False
 $Script:EvdSPF = @{}
 function .spf ($SpecialFolderAlias) {
-    # $keys = [Enum]::GetNames([System.Environment+SpecialFolder])
     if ($SpecialFolderAlias) {
         [Environment]::GetFolderPath($SpecialFolderAlias)
     } else {
-        # [Enum]::GetNames([System.Environment+SpecialFolder]).GetEnumerator()
         if (1 -gt $Script:EvdSPF.Count) {
             [Enum]::GetNames([System.Environment+SpecialFolder]).GetEnumerator().forEach({
                 $Script:EvdSPF.Add($_, [Environment]::GetFolderPath($_))
@@ -24,12 +22,15 @@ function .spf ($SpecialFolderAlias) {
 # разворачивает %$<строки>%
 function .exp ($s) {[System.Environment]::ExpandEnvironmentVariables($s)}
 
-function .exps ($s) {
-    $re = '%\$(?<sdir>.*?)%';
-    while ($s -Match $re) {
-        $_.dir
+function .exps ([parameter(ValueFromPipeline)][string]$s) {
+    $re = '#\(\s*(\w+?)\s*\)'
+    $s -replace $re, {
+        try{
+            [Environment]::GetFolderPath($_.Groups[1].Value)
+        } catch {
+            ''
+        }
     }
-    $s = $s -Match '%\$(?<sdir>.*?)%' ? $Matches.sdir : $s;
 }
 
 # Аналог GNU uname или DOS ver
@@ -51,15 +52,5 @@ filter TotalCmd {
     & $Cmd $Params
 }
 
-# Set-Alias subl -Value "C:\Program Files\Sublime Text 3\subl.exe"
-
-$sublPath = Join-Path -Path $env:ProgramFiles -ChildPath "Sublime Text 3" "subl.exe"
-function subl {
-    param (
-        [Parameter(ValueFromPipeline)] [String[]] $Path = '.'
-    )
-    Process {
-        Write-Debug "`$args: $args"
-        & $sublPath ($Path, $args)
-    }
-}
+Set-Alias subl -Value $Env:Editor
+$Global:subl = $Env:Editor

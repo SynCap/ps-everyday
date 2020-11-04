@@ -7,11 +7,9 @@ function .pd {$env:Path=$env:Path.Split(';')[0..-2].Join(';');.pc}
 # PowerShell:PSAvoidGlobalVars=$False
 $Script:EvdSPF = @{}
 function .spf ($SpecialFolderAlias) {
-    # $keys = [Enum]::GetNames([System.Environment+SpecialFolder])
     if ($SpecialFolderAlias) {
         [Environment]::GetFolderPath($SpecialFolderAlias)
     } else {
-        # [Enum]::GetNames([System.Environment+SpecialFolder]).GetEnumerator()
         if (1 -gt $Script:EvdSPF.Count) {
             [Enum]::GetNames([System.Environment+SpecialFolder]).GetEnumerator().forEach({
                 $Script:EvdSPF.Add($_, [Environment]::GetFolderPath($_))

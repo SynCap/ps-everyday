@@ -52,15 +52,5 @@ filter TotalCmd {
     & $Cmd $Params
 }
 
-# Set-Alias subl -Value "C:\Program Files\Sublime Text 3\subl.exe"
-
-$sublPath = Join-Path -Path $env:ProgramFiles -ChildPath "Sublime Text 3" "subl.exe"
-function subl {
-    param (
-        [Parameter(ValueFromPipeline)] [String[]] $Path = '.'
-    )
-    Process {
-        Write-Debug "`$args: $args"
-        & $sublPath ($Path, $args)
-    }
-}
+Set-Alias subl -Value $Env:Editor
+$Global:subl = $Env:Editor

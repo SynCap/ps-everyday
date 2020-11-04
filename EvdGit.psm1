@@ -40,7 +40,7 @@ function InitGitRepo($remoteUrl) {
     if (-Not (Test-Path '.gitignore')) {
         draw "Create new " DarkRed;
         draw " .gitignore `n" Red Yellow;
-        gIgnore -New
+        gAddIgnore -New
         & $env:EDITOR .gitignore;
         hr;
     }

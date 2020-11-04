@@ -45,7 +45,7 @@ function Write-Theme {
     }
     $path = Get-FullPath -dir $pwd
     if ($path -eq '~') {
-        $path = '   {0}   ' -f $sl.promptSymbols.homeChars[2]
+        $path = '   {0}   ' -f $sl.promptSymbols.homeChars[0]
     } else {
         $path = '{0} ' -f ($path).Replace('\', $PathSeparator)
     }
@@ -83,6 +83,7 @@ $sl.PromptSymbols.SegmentFinishSymbol   = [char]::ConvertFromUtf32(0xE0bc)
 
 # ﮟﳐ
 $sl.PromptSymbols.homeChars = (
+    [char]::ConvertFromUtf32(0x2263),
     [char]::ConvertFromUtf32(0xfb9f),
     [char]::ConvertFromUtf32(0xf7db),
     [char]::ConvertFromUtf32(0xf46d),

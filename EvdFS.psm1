@@ -104,3 +104,7 @@ filter tail  {
     )
     Get-Content $Name -Last $Last
 }
+
+function Mount-Symlink ($Target, $Link) {
+    New-Item -Path $Link -Value $Target -ItemType SymbolicLink
+}

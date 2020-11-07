@@ -1,10 +1,10 @@
-# Import-Module ./
-
+<#
+#>
 function Import-EvdModulesAll {
     param (
         [Alias('f')] [Switch] $Force
     )
-    Get-ChildItem (Join-Path $PSScriptRoot 'Evd*.psm1') | %{
+    Get-ChildItem (Join-Path $PSScriptRoot 'Inc\*.psm1') | %{
         if ($Force) {
             Split-Path -Path (Join-Path $PSScriptRoot 'Evd*.psm1') -Leaf -Resolve | %{
                 Write-Verbose ("Try to Remove (ALL) Evd Module {0}" -f $_.Name)
@@ -63,6 +63,10 @@ $LogFileNameFormat = 'yyyy-MM-dd'
 # https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings?view=netframework-4.8
 
 function Write-EvdLog ( $Message ) {
+    <#
+        .synopsis
+            Writes log info into file
+    #>
     Get-ChildItem $LogFilesMask -Filter $LogFilesMask |
         where {$_.LastWriteTime -lt (Get-Date).AddDays(-$DaysToKeepLogs)} |
             Remove-Item

@@ -39,17 +39,44 @@ function ver {
     Get-CimInstance Win32_OperatingSystem | Select-Object $Properties
 }
 
-# Аналог башевской which, вычисляем полный путь + расширение
 function which($cmd) {
+    <#
+        .synopsis
+            Shortcut of Get-Command
+            Аналог башевской which, вычисляем полный путь + расширение
+        .Description
+            BASH's `which` command analogue, return full path and extension in case of file, or content of
+            function/commandlet. Get-Command used under hood.
+    #>
     $o = (Get-Command $cmd);
-    ($o.Path.Count -eq 1) ? $o.Path : $o.Definition
+    if (0 -gt $o.Path.Count){
+        $o.Path
+    } else {
+        "[{0}]" -f $o.CommandType
+        if ($o.Source) {"Source`t: {0}" -f $o.Source }
+        if ($o.HelpUri) {"helpUri`t: {0}" -f $o.HelpUri }
+        "`e[36m{0}`e[0m" -f $o.Definition
+    }
 }
 
-filter TotalCmd {
-    param([Parameter(ValueFromPipeline)] $Path)
+function TCmd {
+    <#
+    .Synopsis
+        Open folder on Total Commander
+    .Description
+        Open directory or in Total Commander in new tab within active panel.
+        If $Path specifies the file, open folder and select that file if exists.
+    #>
+    param([Parameter(ValueFromPipeline)] $Path = '.')
     $Cmd = "{0}\totalcmd\TOTALCMD64.EXE" -f $env:ProgramFiles
-    $Params =  @('/O','/T','/A',$Path)
+    $Params =  @( '/O','/T','/S', (Resolve-Path $Path).Path )
     & $Cmd $Params
+}
+
+function lg {
+    # [Console]::Write("`ec")
+    Clear-Host
+    lazygit.exe
 }
 
 Set-Alias subl -Value $Env:Editor

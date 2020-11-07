@@ -45,10 +45,17 @@ function which($cmd) {
     ($o.Path.Count -eq 1) ? $o.Path : $o.Definition
 }
 
-filter TotalCmd {
-    param([Parameter(ValueFromPipeline)] $Path)
+function TCmd {
+    <#
+    .Synopsis
+        Open folder on Total Commander
+    .Description
+        Open directory or in Total Commander in new tab within active panel.
+        If $Path specifies the file, open folder and select that file if exists.
+    #>
+    param([Parameter(ValueFromPipeline)] $Path = '.')
     $Cmd = "{0}\totalcmd\TOTALCMD64.EXE" -f $env:ProgramFiles
-    $Params =  @('/O','/T','/A',$Path)
+    $Params =  @( '/O','/T','/S', (Resolve-Path $Path).Path )
     & $Cmd $Params
 }
 

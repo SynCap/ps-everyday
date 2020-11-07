@@ -49,7 +49,14 @@ function which($cmd) {
             function/commandlet. Get-Command used under hood.
     #>
     $o = (Get-Command $cmd);
-    ($o.Path.Count -eq 1) ? $o.Path : $o.Definition
+    if (0 -gt $o.Path.Count){
+        $o.Path
+    } else {
+        "[{0}]" -f $o.CommandType
+        if ($o.Source) {"Source`t: {0}" -f $o.Source }
+        if ($o.HelpUri) {"helpUri`t: {0}" -f $o.HelpUri }
+        "`e[36m{0}`e[0m" -f $o.Definition
+    }
 }
 
 function TCmd {
@@ -64,6 +71,12 @@ function TCmd {
     $Cmd = "{0}\totalcmd\TOTALCMD64.EXE" -f $env:ProgramFiles
     $Params =  @( '/O','/T','/S', (Resolve-Path $Path).Path )
     & $Cmd $Params
+}
+
+function lg {
+    # [Console]::Write("`ec")
+    Clear-Host
+    lazygit.exe
 }
 
 Set-Alias subl -Value $Env:Editor

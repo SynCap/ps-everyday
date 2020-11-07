@@ -39,8 +39,15 @@ function ver {
     Get-CimInstance Win32_OperatingSystem | Select-Object $Properties
 }
 
-# Аналог башевской which, вычисляем полный путь + расширение
 function which($cmd) {
+    <#
+        .synopsis
+            Shortcut of Get-Command
+            Аналог башевской which, вычисляем полный путь + расширение
+        .Description
+            BASH's `which` command analogue, return full path and extension in case of file, or content of
+            function/commandlet. Get-Command used under hood.
+    #>
     $o = (Get-Command $cmd);
     ($o.Path.Count -eq 1) ? $o.Path : $o.Definition
 }

@@ -49,7 +49,7 @@ function which($cmd) {
             function/commandlet. Get-Command used under hood.
     #>
     $o = (Get-Command $cmd);
-    if (0 -gt $o.Path.Count){
+    if (3 -lt $o.Count -or $o.CommandType -eq 'Application'){
         $o.Path
     } else {
         "[{0}]" -f $o.CommandType

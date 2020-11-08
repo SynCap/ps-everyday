@@ -12,16 +12,20 @@ function attr($f) { (Get-ItemProperty $f).Attributes }
 
 # Colored pretty wide list, like BASH ls
 function .l {
+    [CmdletBinding(SupportsShouldProcess)]
     Param (
         # [System.IO.FileSystemInfo[]]
-        [Parameter(ValueFromPipeline,position=0)] [String[]] $Path = '.'
+        [Parameter(ValueFromPipeline,position=0)] [String[]] $Path = '.',
+        [Alias('Attr','a')][String[]] $Attributes,
+        [Alias()][int] $Cols = 0
     )
     Process {
+        Write-Verbose @Params
         # reset colors to defaults
         $r="`e[0m";
         # расширения "исполняемых" файлов
         $exe = $($env:PATHEXT.replace('.','').split(';'))
-        Get-ChildItem $Path -Force |
+        Get-ChildItem $Path @Params |
             ForEach-Object {
                 $f = $_ # внутри switch: $_ ~~ проверяемое значение
                 if ( $f.Name.Split('.')[-1] -in $exe ) {
@@ -35,7 +39,7 @@ function .l {
                     'h' {$c += 4} # смещаем цвет в Teal/Cyan 36/96
                 }
                 @{('{0}{1}{2}' -f "`e[${c}m",$_.PSChildName,$r) = ''}
-            } | Format-Wide -AutoSize
+            } | Format-Wide @Params
     }
 }
 

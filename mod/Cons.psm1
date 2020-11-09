@@ -60,8 +60,11 @@ function println([Parameter(ValueFromPipeline)][String[]]$Params){[System.Consol
 
 # ANSI colors table
 function Show-AnsiColorSample {
+    param (
+        $Lines = ( 40..47 + 100..107 )
+    )
     print "`e[0m",(hr _ 80)
-    foreach ($j in 40..47 + 100..107) {
+    foreach ($j in $Lines) {
         '';foreach ($i in 30..37){print ' ',"`e[$i;$j","`me[$i;$j`m",(($j -gt 47) ? '' : ' '),"`e[0m"};
         '';foreach ($i in 90..97){print ' ',"`e[$i;$j","`me[$i;$j`m",(($j -gt 47) ? '' : ' '),"`e[0m"};
     }

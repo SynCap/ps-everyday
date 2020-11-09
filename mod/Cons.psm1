@@ -110,7 +110,7 @@ filter mgrep {
         [Alias('c')]
         $Color = "`e[97m"
     }
-    $_ | Select-String $patt | %{$_ -replace "($patt)", "$Color`$1`e[0m"}
+    $_ | Select-String $patt | ForEach-Object {$_ -replace "($patt)", "$Color`$1`e[0m"}
 }
 
 function EasyView($Seconds=.5) { process { $_; Start-Sleep -Seconds $Seconds}}

@@ -112,3 +112,38 @@ filter tail  {
 function Mount-Symlink ($Target, $Link) {
     New-Item -Path $Link -Value $Target -ItemType SymbolicLink
 }
+
+. (Join-Path (Split-Path $Profile) 'Scripts' 'Misc' 'New-DynamicParameter.ps1')
+
+function Get-FreeSpace {
+    [CmdletBinding()]
+    Param()
+    DynamicParam {
+        # Get drive names for ValidateSet attribute
+        $DriveList = ([System.IO.DriveInfo]::GetDrives()).Name
+
+        # Create new dynamic parameter
+        New-DynamicParameter -Name Drive -ValidateSet $DriveList -Type ([array]) -Position 0 -Mandatory
+    }
+
+    Process {
+        # Dynamic parameters don't have corresponding variables created,
+        # you need to call New-DynamicParameter with CreateVariables switch to fix that.
+        New-DynamicParameter -CreateVariables -BoundParameters $PSBoundParameters
+
+        $DriveInfo = [System.IO.DriveInfo]::GetDrives() | Where-Object {$Drive -contains $_.Name}
+        $DriveInfo |
+            ForEach-Object {
+            if (!$_.TotalFreeSpace) {
+                $FreePct = 0
+            } else {
+                $FreePct = [System.Math]::Round($_.TotalFreeSpace / $_.TotalSize, 2)
+            }
+            New-Object -TypeName psobject -Property @{
+                Drive     = $_.Name
+                DriveType = $_.DriveType
+                'Free(%)' = $FreePct
+            }
+        }
+    }
+}

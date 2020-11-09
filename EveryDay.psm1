@@ -8,11 +8,11 @@ function Import-EvdModulesAll {
         if ($Force) {
             Split-Path -Path (Join-Path $PSScriptRoot 'Evd*.psm1') -Leaf -Resolve | %{
                 Write-Verbose ("Try to Remove (ALL) Evd Module {0}" -f $_.Name)
-                Remove-Module $_.Name -Force
+                Remove-Module $_.Name -Force -ErrorAction 'SilentlyContinue'
                 Write-EvdLog "Remove (ALL) Evd Module`t$_.Name"
             }
         }
-        Import-Module $_ -Force
+        Import-Module $_ -Force -ErrorAction 'SilentlyContinue'
         Write-EvdLog "Import (ALL) Evd Module`t$_"
     }
 }

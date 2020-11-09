@@ -62,6 +62,7 @@ function Write-Theme {
     $prompt += Write-Prompt $sl.PromptSymbols.SegmentFinishSymbol -ForegroundColor $lastColor
 
     $prompt += Set-Newline
+    $prompt += Write-Prompt $sl.PromptSymbols.SegmentFinishSymbol -ForegroundColor $lastColor
 
     if ($with) {
         $prompt += Write-Prompt -Object "$($with.ToUpper()) " -BackgroundColor $sl.Colors.WithBackgroundColor -ForegroundColor $sl.Colors.WithForegroundColor
@@ -76,7 +77,7 @@ $sl = $global:ThemeSettings #local settings
 $sl.PromptSymbols.StartSymbol           = '' # [char]::ConvertFromUtf32(0x9889)
 $sl.PromptSymbols.PromptIndicator       = [char]::ConvertFromUtf32(0xE0B1) #(0x276F) - ❯
 $sl.PromptSymbols.PathSeparatorSymbol   = "`e[96m{0}`e[97m" -f [char]::ConvertFromUtf32(0xe0bb) # 0x2573
-$sl.PromptSymbols.SegmentStartSymbol    = [char]::ConvertFromUtf32(0xE0c7)
+$sl.PromptSymbols.SegmentStartSymbol    = [char]::ConvertFromUtf32(0xE0ba)
 $sl.PromptSymbols.SegmentBackwardSymbol = [char]::ConvertFromUtf32(0xE0be)
 $sl.PromptSymbols.SegmentForwardSymbol  = [char]::ConvertFromUtf32(0xE0c6)
 $sl.PromptSymbols.SegmentFinishSymbol   = [char]::ConvertFromUtf32(0xE0bc)

@@ -61,7 +61,7 @@ function println([Parameter(ValueFromPipeline)][String[]]$Params){[System.Consol
 # ANSI colors table
 function Show-AnsiColorSample {
     param (
-        $Lines = ( 40..47 + 100..107 )
+        [Alias('l')] $Lines = ( 40..47 + 100..107 )
     )
     print "`e[0m",(hr _ 80)
     foreach ($j in $Lines) {

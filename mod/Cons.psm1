@@ -47,12 +47,12 @@ function draw {
     param (
         [Parameter(Mandatory, Position=0)]
         [string[]]$Text,
-        [Parameter(Position=1)]
-        $Fg = $Host.UI.RawUI.ForegroundColor,
-        [Parameter(Position=2)]
-        $Bg = $Host.UI.RawUI.BackgroundColor
+        [Alias('Foreground', 'ForegroundColor')] [Parameter(Position=1)]
+        $FG = $Host.UI.RawUI.ForegroundColor,
+        [Alias('Background', 'BackgroundColor')] [Parameter(Position=2)]
+        $BG = $Host.UI.RawUI.BackgroundColor
     )
-    Write-Host $Text -ForegroundColor $Fg -BackgroundColor $Bg -NoNewline
+    Write-Host $Text -ForegroundColor $FG -BackgroundColor $BG -NoNewline
 }
 
 function print([Parameter(ValueFromPipeline)][String[]]$Params){[System.Console]::Write($Params -join '')}

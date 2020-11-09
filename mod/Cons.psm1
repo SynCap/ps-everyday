@@ -26,7 +26,7 @@ function .c {
     }
 }
 
-function .cls {[System.Console]::Write("`ec")}
+function .cls {[Console]::Write("`ec")}
 
 function hr{
     param(

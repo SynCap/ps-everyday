@@ -48,7 +48,7 @@ function which($cmd) {
             BASH's `which` command analogue, return full path and extension in case of file, or content of
             function/commandlet. Get-Command used under hood.
     #>
-    $o = (Get-Command $cmd);
+    $o = (Get-Command $cmd -ErrorAction 'SilentlyContinue');
     if ([System.Management.Automation.CommandTypes]::Application){
         $o.Path
     } else {

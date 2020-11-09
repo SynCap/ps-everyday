@@ -14,18 +14,20 @@ function attr($f) { (Get-ItemProperty $f).Attributes }
 function .l {
     [CmdletBinding(SupportsShouldProcess)]
     Param (
-        # [System.IO.FileSystemInfo[]]
-        [Parameter(ValueFromPipeline,position=0)] [String[]] $Path = '.',
-        [Alias('Attr','a')][String[]] $Attributes,
-        [Alias()][int] $Cols = 0
+        [Parameter(ValueFromPipeline,position=0)] [String[]] $Path = '.'
+        #,
+        # [Parameter(ValidateSet('Hidden','Directory','System','Archive', ...))]
+        # [Alias('Attr','a')][String[]] $Attributes,
+        # [Parameter(ValidateRange(0,20))]
+        # [Alias()][int] $Cols = 0
     )
     Process {
-        Write-Verbose @Params
+        Write-Verbose @PSBoundParams
         # reset colors to defaults
         $r="`e[0m";
         # расширения "исполняемых" файлов
         $exe = $($env:PATHEXT.replace('.','').split(';'))
-        Get-ChildItem $Path @Params |
+        Get-ChildItem $Path @PSBoundParams |
             ForEach-Object {
                 $f = $_ # внутри switch: $_ ~~ проверяемое значение
                 if ( $f.Name.Split('.')[-1] -in $exe ) {
@@ -39,7 +41,7 @@ function .l {
                     'h' {$c += 4} # смещаем цвет в Teal/Cyan 36/96
                 }
                 @{('{0}{1}{2}' -f "`e[${c}m",$_.PSChildName,$r) = ''}
-            } | Format-Wide @Params
+            } | Format-Wide @PSBoundParams
     }
 }
 

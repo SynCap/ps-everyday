@@ -62,7 +62,7 @@ function Write-Theme {
     $prompt += Write-Prompt $sl.PromptSymbols.SegmentFinishSymbol -ForegroundColor $lastColor
 
     $prompt += Set-Newline
-    $prompt += Write-Prompt $sl.PromptSymbols.SegmentFinishSymbol -ForegroundColor $lastColor
+    $prompt += Write-Prompt $sl.PromptSymbols.SegmentFinishSymbol -ForegroundColor $sl.Colors.PromptBackgroundColor
 
     if ($with) {
         $prompt += Write-Prompt -Object "$($with.ToUpper()) " -BackgroundColor $sl.Colors.WithBackgroundColor -ForegroundColor $sl.Colors.WithForegroundColor

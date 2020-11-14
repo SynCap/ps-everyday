@@ -60,7 +60,7 @@ function .ll {
                 @{Expression='Extension';Descending=$false},`
                 @{Expression='Name'} |`
             Format-Table `
-                Mode,LastWriteTime,Name,Extension `
+                Mode,LastWriteTime,Length,Name,Extension `
                 -AutoSize
     }
 }

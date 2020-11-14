@@ -66,8 +66,7 @@ function .ll {
 
 function touch {
   Param(
-    [Parameter(ValueFromPipeline)]
-    [string[]]$Path = $PWD
+    [Parameter(ValueFromPipeline)] [string[]] $Path = $PWD
   )
   foreach ($p in $Path) {
       if (Test-Path -LiteralPath $p) {
@@ -92,7 +91,7 @@ function rm2($f) {
         print 'Remove ';
         println "`e[33m", $_ ,"`e[0m"
         Remove-Item $_ -Force -Recurse -ErrorVariable rmrErr -ErrorAction 'SilentlyContinue'
-        $rmrErr | %{println "`e[31m",$_.Exception.Message}
+        $rmrErr | Foreach-Object{println "`e[31m",$_.Exception.Message}
     }
 }
 
@@ -115,7 +114,7 @@ function Mount-Symlink ($Target, $Link) {
     New-Item -Path $Link -Value $Target -ItemType SymbolicLink
 }
 
-. (Join-Path (Split-Path $Profile) 'Scripts' 'Misc' 'New-DynamicParameter.ps1')
+. (Join-Path -Path (Split-Path $Profile) 'Scripts' 'Misc' 'New-DynamicParameter.ps1')
 
 function Get-FreeSpace {
     [CmdletBinding()]

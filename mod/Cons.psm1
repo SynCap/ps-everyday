@@ -101,8 +101,10 @@ $Global:Bars = [char[]]'│┆┊┃┇┋≈‒–—―─━═╌╍▀▁�
 # [Char]::ConvertFromUtf32(0x254c), # Box drawing light double dash horizontal
 # [Char]::ConvertFromUtf32(0x254d)  # Box drawing light heavy double dash horizontal
 
+function Show-Bars {$Global:Bars | ForEach-Object -Begin {$i=0} -Process { @{$("{0,5:d}. 0x{1:x} : {2}" -f $i++,[int]$_,$_) = $_}} | Format-Wide -a}
 
 set-alias grep -Value Select-String -Force
+
 filter mgrep {
     param {
         [Alias('patt','p')]

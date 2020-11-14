@@ -141,7 +141,7 @@ function Get-FreeSpace {
             if (!$_.TotalFreeSpace) {
                 $FreePct = 0
             } else {
-                $FreePct = [System.Math]::Round($_.TotalFreeSpace / $_.TotalSize, 2)
+                $FreePct = [System.Math]::Round(100 * $_.TotalFreeSpace / $_.TotalSize, 2)
             }
             New-Object -TypeName psobject -Property @{
                 Drive     = $_.Name

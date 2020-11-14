@@ -58,7 +58,10 @@ function .ll {
             Sort-Object `
                 @{Expression='Mode';Descending=$true},`
                 @{Expression='Extension';Descending=$false},`
-                @{Expression='Name'}
+                @{Expression='Name'} |`
+            Format-Table `
+                Mode,LastWriteTime,Name,Extension `
+                -AutoSize
     }
 }
 

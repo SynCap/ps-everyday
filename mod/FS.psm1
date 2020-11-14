@@ -22,25 +22,25 @@ function .l {
         # [Alias()][int] $Cols = 0
     )
     Process {
-        Write-Verbose @PSBoundParams
-        # reset colors to defaults
-        $r="`e[0m";
+
         # расширения "исполняемых" файлов
         $exe = $($env:PATHEXT.replace('.','').split(';'))
         Get-ChildItem $Path @PSBoundParams |
             ForEach-Object {
                 $f = $_ # внутри switch: $_ ~~ проверяемое значение
                 if ( $f.Name.Split('.')[-1] -in $exe ) {
-                    $c = 31; # запускаемые файлы
-                    Write-VErbose "EXE file - ${f.Name}"
+                    $c = 33; # запускаемые файлы (EXE;COM;BAT;CMD;... ;PS1 :) )
+                    $b = 44;
                 } else {
                     $c = 32; # базовый цвет = 32 -- тёмно-зелёный (Green `e[32m)
+                    $b = 40;
                 }
                 switch -regex ($f.Mode) {
                     'd' {$c += 60} # папки более якрике - 30+60 = `e[92m
                     'h' {$c += 4} # смещаем цвет в Teal/Cyan 36/96
                 }
-                @{('{0}{1}{2}' -f "`e[${c}m",$_.PSChildName,$r) = ''}
+                $color = "`e[$c;${b}m"
+                @{('{0}{1}{2}' -f $color,$_.PSChildName,"`e[0m") = ''}
             } | Format-Wide @PSBoundParams
     }
 }

@@ -76,6 +76,7 @@ Set-Alias -Name shansi -Value Show-AnsiColorSample
 Quick info about current screen settings
 #>
 function .scr([switch]$c) {$host.ui.RawUI;if($c){Show-AnsiColorSample}}
+function .scrr{cls;.scr;shansi 40}
 
 $Global:PowerLineSymbols = @(
     "`t       ",

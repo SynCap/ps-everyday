@@ -134,33 +134,31 @@ function ShortSize ($val) {
 
 function Get-FreeSpace {
     [CmdletBinding()]
-    Param()
-    DynamicParam {
-        # Get drive names for ValidateSet attribute
-        $DriveList = ([System.IO.DriveInfo]::GetDrives()).Name
+    Param (
+        [Parameter(
+            ValueFromPipeline,
+            ValueFromPipelineByPropertyName,
+            Position=0,
+            ValueFromRemainingArguments
+        )] $Drive
+    )
 
-        # Create new dynamic parameter
-        New-DynamicParameter -Name Drive -ValidateSet $DriveList -Type ([array]) -Position 0 -Mandatory
-    }
-
-    Process {
-        # Dynamic parameters don't have corresponding variables created,
-        # you need to call New-DynamicParameter with CreateVariables switch to fix that.
-        New-DynamicParameter -CreateVariables -BoundParameters $PSBoundParameters
-
-        $DriveInfo = [System.IO.DriveInfo]::GetDrives() | Where-Object {$Drive -contains $_.Name}
-        $DriveInfo |
+    [System.IO.DriveInfo]::GetDrives() |
+        Where-Object {$_.IsReady -and $Drive -contains $_.Name} |
             ForEach-Object {
-            if (!$_.TotalFreeSpace) {
-                $FreePct = 0
-            } else {
-                $FreePct = [System.Math]::Round(100 * $_.TotalFreeSpace / $_.TotalSize, 2)
+                if (!$_.TotalFreeSpace) {
+                    $FreePct = 0
+                    $Free = 0
+                } else {
+                    $FreePct = [System.Math]::Round(100 * $_.TotalFreeSpace / $_.TotalSize, 2)
+                    $Free = ShortSize $_.TotalFreeSpace
+                }
+
+                New-Object -TypeName psobject -Property @{
+                    Drive     = $_.Name
+                    DriveType = $_.DriveType
+                    '%' = $FreePct
+                    'Space' = $Free
+                }
             }
-            New-Object -TypeName psobject -Property @{
-                Drive     = $_.Name
-                DriveType = $_.DriveType
-                'Free(%)' = $FreePct
-            }
-        }
-    }
 }

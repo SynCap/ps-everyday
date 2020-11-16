@@ -62,7 +62,7 @@ function .ll {
             Format-Table `
                 Mode,
                 LastWriteTime,
-                @{l='Size';e={'Directory' -in $_.Attributes ?'':( 2kb -gt $_.Length ? ('{0,7} ' -f $_.Length) : ('{0,7:n1}k' -f ($_.Length/1kb)) )}},
+                @{l='Size';e={'Directory' -in $_.Attributes ? '' : ( 2kb -gt $_.Length ? ('{0,7} ' -f $_.Length) : ('{0,7:n1}k' -f ($_.Length/1kb)) )}},
                 @{l='Name';e={"`e[32m{0}`e[0m" -f $_.BaseName}},
                 @{l='Ext';e={($_.Extension.Length)?$_.Extension.Substring(1):''}},
                 FullName `

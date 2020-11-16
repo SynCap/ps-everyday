@@ -123,7 +123,14 @@ function Mount-Symlink ($Target, $Link) {
     New-Item -Path $Link -Value $Target -ItemType SymbolicLink
 }
 
-. (Join-Path -Path (Split-Path $Profile) 'Scripts' 'Misc' 'New-DynamicParameter.ps1')
+function ShortSize ($val) {
+    switch ($val) {
+        {$val -gt 1Gb} {return '{0:n1}G' -f ($val/1Gb)}
+        {$val -gt 1Mb} {return '{0:n1}M' -f ($val/1Mb)}
+        {$val -gt 1Kb} {return '{0:n1}k' -f ($val/1Kb)}
+        default {return '{0:n0} ' -f $val}
+    }
+}
 
 function Get-FreeSpace {
     [CmdletBinding()]

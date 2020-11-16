@@ -38,16 +38,16 @@ function Write-Theme {
 
     $prompt += Write-Prompt $timeStamp -BackgroundColor $sl.Colors.PromptBackgroundColor -ForegroundColor $sl.Colors.ClockForeground
 
-    # Writes the drive portion
+    # Writes the Path portion
     $pathSeparator = $sl.promptSymbols.PathSeparatorSymbol
-    if ($pwd.ToString().Length -lt $Host.UI.RawUI.WindowSize.Width / 3) {
-        $pathSeparator = " ${pathSeparator} "
-    }
     $path = Get-FullPath -dir $pwd
+
     if ($path -eq '~') {
         $path = '   {0}   ' -f $sl.promptSymbols.homeChars[2]
     } else {
-        $path = '{0} ' -f ($path).Replace('\', $PathSeparator)
+        if ($path.Length -lt [Console]::WindowWidth / 3) { $pathSeparator = " ${pathSeparator} " }
+        if ($path.Length -gt [Console]::WindowWidth / 2) { $path = $path -replace '^(~|\w+:).*[/\\](.*)[\\/]?$','$1\ .. \$2' }
+        $path = $path.Replace('\', $PathSeparator)
     }
     $prompt += Write-Prompt -Object $path.PadLeft(7,' ') -ForegroundColor $sl.Colors.PromptForegroundColor -BackgroundColor $sl.Colors.PromptBackgroundColor
 

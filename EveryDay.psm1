@@ -1,6 +1,8 @@
-<#
-#>
 function Import-EvdModulesAll {
+    <#
+        .Synopsis
+            Load all submodules of EveryDay pack
+    #>
     param (
         [Alias('f')] [Switch] $Force
     )
@@ -8,18 +10,18 @@ function Import-EvdModulesAll {
         if ($Force) {
             Split-Path -Path (Join-Path $PSScriptRoot 'Evd*.psm1') -Leaf -Resolve | %{
                 Write-Verbose ("Try to Remove (ALL) Evd Module {0}" -f $_.Name)
-                Remove-Module $_.Name -Force
+                Remove-Module $_.Name -Force -ErrorAction 'SilentlyContinue'
                 Write-EvdLog "Remove (ALL) Evd Module`t$_.Name"
             }
         }
-        Import-Module $_ -Force
+        Import-Module $_ -ErrorAction 'SilentlyContinue' -Force
         Write-EvdLog "Import (ALL) Evd Module`t$_"
     }
 }
 
 function Import-EvdModule {
     <#
-        .Synopsys
+        .Synopsis
 
             Reload EveryDay PSM pack's submodule or all submodules.
 
@@ -37,8 +39,8 @@ function Import-EvdModule {
 
             To reload several modules use `Import-EvdModule Mod1,Mod2,Mod3` or
             `(Mod1,Mod2,Mod3) | Import-EvdModule`
-
     #>
+
     param(
         [Parameter(ValueFromPipeline)] [String[]] $Name,
         [Alias('f')] [Switch] $Force
@@ -68,7 +70,7 @@ function Write-EvdLog ( $Message ) {
             Writes log info into file
     #>
     Get-ChildItem $LogFilesMask -Filter $LogFilesMask |
-        where {$_.LastWriteTime -lt (Get-Date).AddDays(-$DaysToKeepLogs)} |
+        Where-Object {$_.LastWriteTime -lt (Get-Date).AddDays(-$DaysToKeepLogs)} |
             Remove-Item
     "$(Get-Date -Format $TimeStampFormat)`t$Message" >> $(Join-Path $LogDir "$(Get-Date -Format $LogFileNameFormat).log")
 }

@@ -6,6 +6,7 @@ function .pd {$env:Path=$env:Path.Split(';')[0..-2].Join(';');.pc}
 
 # PowerShell:PSAvoidGlobalVars=$False
 $Script:EvdSPF = @{}
+
 function .spf ($SpecialFolderAlias) {
     if ($SpecialFolderAlias) {
         [Environment]::GetFolderPath($SpecialFolderAlias)
@@ -48,8 +49,8 @@ function which($cmd) {
             BASH's `which` command analogue, return full path and extension in case of file, or content of
             function/commandlet. Get-Command used under hood.
     #>
-    $o = (Get-Command $cmd);
-    if (3 -lt $o.Count -or $o.CommandType -eq 'Application'){
+    $o = (Get-Command $cmd -ErrorAction 'SilentlyContinue');
+    if ([System.Management.Automation.CommandTypes]::Application){
         $o.Path
     } else {
         "[{0}]" -f $o.CommandType

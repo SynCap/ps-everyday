@@ -1,4 +1,7 @@
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingWriteHost', '')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingWriteHost', '', Scope='Script')]
+
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', 'Bars')]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', 'PowerLineSymbols')]
 
 # ❯ echo "Line feed$lf here"
 # Line feed
@@ -23,7 +26,7 @@ function .c {
     }
 }
 
-function .cls {[System.Console]::Write("`ec")}
+function .cls {[Console]::Write("`ec")}
 
 function hr{
     param(
@@ -44,12 +47,12 @@ function draw {
     param (
         [Parameter(Mandatory, Position=0)]
         [string[]]$Text,
-        [Parameter(Position=1)]
-        $Fg = $Host.UI.RawUI.ForegroundColor,
-        [Parameter(Position=2)]
-        $Bg = $Host.UI.RawUI.BackgroundColor
+        [Alias('Foreground', 'ForegroundColor')] [Parameter(Position=1)]
+        $FG = $Host.UI.RawUI.ForegroundColor,
+        [Alias('Background', 'BackgroundColor')] [Parameter(Position=2)]
+        $BG = $Host.UI.RawUI.BackgroundColor
     )
-    Write-Host $Text -ForegroundColor $Fg -BackgroundColor $Bg -NoNewline
+    Write-Host $Text -ForegroundColor $FG -BackgroundColor $BG -NoNewline
 }
 
 function print([Parameter(ValueFromPipeline)][String[]]$Params){[System.Console]::Write($Params -join '')}
@@ -57,8 +60,11 @@ function println([Parameter(ValueFromPipeline)][String[]]$Params){[System.Consol
 
 # ANSI colors table
 function Show-AnsiColorSample {
+    param (
+        [Alias('l')] [Parameter(position=0)] $Lines = ( 40..47 + 100..107 )
+    )
     print "`e[0m",(hr _ 80)
-    foreach ($j in 40..47 + 100..107) {
+    foreach ($j in $Lines) {
         '';foreach ($i in 30..37){print ' ',"`e[$i;$j","`me[$i;$j`m",(($j -gt 47) ? '' : ' '),"`e[0m"};
         '';foreach ($i in 90..97){print ' ',"`e[$i;$j","`me[$i;$j`m",(($j -gt 47) ? '' : ' '),"`e[0m"};
     }
@@ -69,7 +75,8 @@ Set-Alias -Name shansi -Value Show-AnsiColorSample
 .Synopsys
 Quick info about current screen settings
 #>
-function .scr([switch]$c) {cls;$host.ui.RawUI;if($c){Show-AnsiColors}}
+function .scr([switch]$c) {$host.ui.RawUI;if($c){Show-AnsiColorSample}}
+function .scrr{cls;.scr;shansi 40}
 
 $Global:PowerLineSymbols = @(
     "`t       ",
@@ -95,8 +102,10 @@ $Global:Bars = [char[]]'│┆┊┃┇┋≈‒–—―─━═╌╍▀▁�
 # [Char]::ConvertFromUtf32(0x254c), # Box drawing light double dash horizontal
 # [Char]::ConvertFromUtf32(0x254d)  # Box drawing light heavy double dash horizontal
 
+function Show-Bars {$Global:Bars | ForEach-Object -Begin {$i=0} -Process { @{$("{0,5:d}. 0x{1:x} : {2}" -f $i++,[int]$_,$_) = $_}} | Format-Wide -a}
 
 set-alias grep -Value Select-String -Force
+
 filter mgrep {
     param {
         [Alias('patt','p')]
@@ -104,7 +113,7 @@ filter mgrep {
         [Alias('c')]
         $Color = "`e[97m"
     }
-    $_ | Select-String $patt | %{$_ -replace "($patt)", "$Color`$1`e[0m"}
+    $_ | Select-String $patt | ForEach-Object {$_ -replace "($patt)", "$Color`$1`e[0m"}
 }
 
 function EasyView($Seconds=.5) { process { $_; Start-Sleep -Seconds $Seconds}}

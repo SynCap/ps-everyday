@@ -6,6 +6,7 @@ function .pd {$env:Path=$env:Path.Split(';')[0..-2].Join(';');.pc}
 
 # PowerShell:PSAvoidGlobalVars=$False
 $Script:EvdSPF = @{}
+
 function .spf ($SpecialFolderAlias) {
     if ($SpecialFolderAlias) {
         [Environment]::GetFolderPath($SpecialFolderAlias)

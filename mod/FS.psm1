@@ -46,7 +46,7 @@ function ls. {
 }
 
 # Like PS's ls but with extra sort
-function .ll {
+function ll {
     param (
         [Parameter(Position=0,ValueFromPipeline=$true)]$Path,
         [Alias('f')][Switch]$Force = $false,

@@ -11,7 +11,7 @@ Set-Alias props -Value Get-ItemProperty
 function attr($f) { (Get-ItemProperty $f).Attributes }
 
 # Colored pretty wide list, like BASH ls
-function .l {
+function ls. {
     [CmdletBinding(SupportsShouldProcess)]
     Param (
         [Parameter(ValueFromPipeline,position=0)] [String[]] $Path = '.'

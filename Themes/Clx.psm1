@@ -46,7 +46,12 @@ function Write-Theme {
         $path = '   {0}   ' -f $sl.promptSymbols.homeChars[2]
     } else {
         if ($path.Length -lt [Console]::WindowWidth / 3) { $pathSeparator = " ${pathSeparator} " }
-        if ($path.Length -gt [Console]::WindowWidth / 2) { $path = $path -replace '^(~|\w+:).*[/\\](.*)[\\/]?$','$1\ .. \$2' }
+        if ($path.Length -gt ($pathFieldWidth = [Console]::WindowWidth / 2 - 10)) {
+            $m = $path -match '^(.*)[/\\](.+)$';
+            $ellipsed = $Matches[1].Substring(0, $pathFieldWidth - 3 - $Matches[2].Length)
+            $path = $ellipsed + '… ' + $pathSeparator + "`e[1;93m" + $Matches[2]
+            # $path = $path -replace '^(~|\w+:).*[/\\](.*)[\\/]?$','$1\ .. \$2'
+        }
         $path = $path.Replace('\', $PathSeparator)
     }
     $prompt += Write-Prompt -Object $path.PadLeft(7,' ') -ForegroundColor $sl.Colors.PromptForegroundColor -BackgroundColor $sl.Colors.PromptBackgroundColor

@@ -45,6 +45,11 @@ function Write-Theme {
     if ($path -eq '~') {
         $path = '   {0}   ' -f $sl.promptSymbols.homeChars[2]
     } else {
+        #     if ($path -match $subst.Patttern){
+        #         $path = $path -replace $subst.Patttern, $subst.Label
+        #         continue
+        #     }
+        # }
         if ($path.Length -lt [Console]::WindowWidth / 3) { $pathSeparator = " ${pathSeparator} " }
         if ($path.Length -gt ($pathFieldWidth = [Console]::WindowWidth / 2 - 10)) {
             $m = $path -match '^(.*)[/\\](.+)$';
@@ -116,3 +121,9 @@ $sl.Colors.ClockBackground = [ConsoleColor]::Gray
 $sl.Colors.SessionInfoBackgroundColor = [ConsoleColor]::DarkYellow
 $sl.Colors.AdminIconForegroundColor = [consoleColor]::Black
 $sl.Colors.CommandFailedIconForegroundColor = [ConsoleColor]::DarkRed
+
+$Script:PathSubstitutions = @(
+    @{Label='Ubuntu ❯ ';Pattern='C:\Users\SynCap\AppData\Local\Packages\CanonicalGroupLimited.Ubuntu20.04onWindows_79rhkp1fndgsc\LocalState\rootfs'},
+    @{Label='KALI ❯ ';Pattern='C:\Users\SynCap\AppData\Local\Packages\KaliLinux.54290C8133FEE_ey8k8hqnwqnmg\LocalState\rootfs'},
+    @{Label='WSL#$1 ❯ ';Pattern='^Microsoft\.PowerShell\.Core\\FileSystem::\\\\wsl\$\\(\w+).*\\?'}
+)

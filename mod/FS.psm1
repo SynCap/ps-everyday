@@ -168,9 +168,3 @@ function Get-FreeSpace {
                 }
             }
 }
-
-function Get-UPath ($Path) {
-    '/mnt/' + ((Resolve-Path $Path) -replace '\\','/') -replace '(\w+):',{$_.Groups[1].Value.ToLower()}
-}
-
-Set-Alias upath -Value Get-UPath

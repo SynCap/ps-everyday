@@ -34,6 +34,7 @@ function .exps ([parameter(ValueFromPipeline)][string]$s) {
     }
 }
 
+function def($o){(gcm $o).Definition}
 
 # Аналог GNU uname или DOS ver
 function ver {

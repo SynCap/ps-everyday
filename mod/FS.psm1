@@ -117,7 +117,7 @@ function logMon($LogFilePath, $match = "Error") {
     Get-Content $LogFilePath -Wait | Where-Object { $_ -Match $match }
 }
 
-filter tail  {
+filter tail {
     param (
         [Parameter(Mandatory,ValueFromPipeline)] $Name,
         [int] $Last=5

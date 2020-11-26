@@ -1,3 +1,4 @@
+$RC = "`e[0m"
 
 function stat($fName) {
     Get-ItemProperty $fName | Select-Object *
@@ -11,7 +12,7 @@ Set-Alias props -Value Get-ItemProperty
 function attr($f) { (Get-ItemProperty $f).Attributes }
 
 # Colored pretty wide list, like BASH ls
-function .l {
+function ls. {
     [CmdletBinding(SupportsShouldProcess)]
     Param (
         [Parameter(ValueFromPipeline,position=0)] [String[]] $Path = '.'
@@ -40,13 +41,13 @@ function .l {
                     'h' {$c += 4} # смещаем цвет в Teal/Cyan 36/96
                 }
                 $color = "`e[$c;${b}m"
-                @{('{0}{1}{2}' -f $color,$_.PSChildName,"`e[0m") = ''}
+                @{('{0}{1}{2}' -f $color,$_.PSChildName,$RC) = ''}
             } | Format-Wide @PSBoundParams
     }
 }
 
 # Like PS's ls but with extra sort
-function .ll {
+function ll {
     param (
         [Parameter(Position=0,ValueFromPipeline=$true)]$Path,
         [Alias('f')][Switch]$Force = $false,
@@ -63,7 +64,7 @@ function .ll {
                 Mode,
                 LastWriteTime,
                 @{l='Size';e={'Directory' -in $_.Attributes ? '' : ( 2kb -gt $_.Length ? ('{0,7} ' -f $_.Length) : ('{0,7:n1}k' -f ($_.Length/1kb)) )}},
-                @{l='Name';e={"`e[32m{0}`e[0m" -f $_.BaseName}},
+                @{l='Name';e={"`e[32m{0}$RC" -f $_.BaseName}},
                 @{l='Ext';e={($_.Extension.Length)?$_.Extension.Substring(1):''}},
                 FullName `
                 -AutoSize
@@ -98,9 +99,14 @@ function touch {
 function rm2($f) {
     $f | ForEach-Object{
         print 'Remove ';
-        println "`e[33m", $_ ,"`e[0m"
-        Remove-Item $_ -Force -Recurse -ErrorVariable rmrErr -ErrorAction 'SilentlyContinue'
-        $rmrErr | Foreach-Object{println "`e[31m",$_.Exception.Message}
+        print "`e[33m", $_ ,"$RC ☢"
+        if (Test-Path $_){
+            Remove-Item $_ -Force -Recurse -ErrorVariable rmrErr -ErrorAction 'SilentlyContinue'
+            if ($rmrErr.Count) { $rmrErr | Foreach-Object { print "`b`e[31m",$_.Exception.Message,$RC } } else {print 'OK'}
+        } else {
+            print "`e[36m",'not found',$RC
+        }
+        ''
     }
 }
 
@@ -111,7 +117,7 @@ function logMon($LogFilePath, $match = "Error") {
     Get-Content $LogFilePath -Wait | Where-Object { $_ -Match $match }
 }
 
-filter tail  {
+filter tail {
     param (
         [Parameter(Mandatory,ValueFromPipeline)] $Name,
         [int] $Last=5

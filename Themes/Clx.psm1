@@ -45,6 +45,14 @@ function Write-Theme {
     if ($path -eq '~') {
         $path = '   {0}   ' -f $sl.promptSymbols.homeChars[2]
     } else {
+        foreach ($subst in $sl.PathSubstitutions) {
+            if ($path -match ($subst.Pattern+'\\?')){
+                # println 'Found: ', $subst.Label
+                $path = ($path -replace $subst.Pattern, $subst.Label)
+                # println $path
+                break
+            }
+        }
         if ($path.Length -lt [Console]::WindowWidth / 3) { $pathSeparator = " ${pathSeparator} " }
         if ($path.Length -gt ($pathFieldWidth = [Console]::WindowWidth / 2 - 10)) {
             $m = $path -match '^(.*)[/\\](.+)$';
@@ -77,7 +85,19 @@ function Write-Theme {
     $prompt
 }
 
-$sl = $global:ThemeSettings #local settings
+$sl = $Global:ThemeSettings #local settings
+
+if ($null -eq $sl.PathSubstitutions) {
+    Add-Member -InputObject $sl -MemberType NoteProperty -Name 'PathSubstitutions' -Value @()
+}
+
+$sl.PathSubstitutions = @(
+    <# 0 #> @{ Label=" Alpine `u{e0b1} ";   Pattern='~\\AppData\\Local\\Packages\\36828agowa338.AlpineWSL_my43bytk1c4nr\\LocalState\\rootfs'},
+    <# 1 #> @{ Label=" Debian `u{e0b1} ";   Pattern='~\\AppData\\Local\\Packages\\TheDebianProject.DebianGNULinux_76v4gfsz19hv4\\LocalState\\rootfs'},
+    <# 2 #> @{ Label=" KALI `u{e0b1} ";     Pattern='~\\AppData\\Local\\Packages\\KaliLinux.54290C8133FEE_ey8k8hqnwqnmg\\LocalState\\rootfs'},
+    <# 3 #> @{ Label=" Ubuntu `u{e0b1} ";   Pattern='~\\AppData\\Local\\Packages\\CanonicalGroupLimited.Ubuntu20.04onWindows_79rhkp1fndgsc\\LocalState\\rootfs'},
+    <# 4 #> @{ Label={"`e[36m WSL`$ `e[33m{0}`e[97m `u{e0b1} " -f ($_.Groups[1].Value.Substring(0,1).ToUpper() + $_.Groups[1].Value.Substring(1).ToLower())}; Pattern='^Microsoft\.PowerShell\.Core\\FileSystem::\\\\wsl\$\\(\w+).*\\?'}
+)
 
 $sl.PromptSymbols.StartSymbol                    = '' # [char]::ConvertFromUtf32(0x9889)
 $sl.PromptSymbols.ElevatedSymbol                 = [char]::ConvertFromUtf32(0x26A1) # Hummer & Sickle

@@ -43,16 +43,20 @@ function Import-EvdModule {
 
     param(
         [Parameter(ValueFromPipeline)] [String[]] $Name,
-        [Alias('f')] [Switch] $Force
+        [Alias('f')] [Switch] $Force,
+        [Alias('e')] [Switch] $SupressErrors
     )
+    if ($SupressErrors) {$Error.Clear()}
     if (!$Name) {
         Import-EvdModulesAll -Force
     }
     if (Test-Path ($mp=(Join-Path $PSScriptRoot "Evd${Name}.psm1"))) {
-        Import-Module $mp -Force
+        Import-Module $mp -Force:($Force -or $SupressErrors)
         Write-EvdLog "Import Evd Module`t${Name}"
     }
 }
+
+Set-Alias -Name ievdm -Value Import-EvdModule
 
 $LogDir = Join-Path $PSScriptRoot 'Logs'
 $LogFilesMask = '*.log'

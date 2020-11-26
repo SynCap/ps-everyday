@@ -14,7 +14,13 @@ function gIgnore($mode) {
     curl -L -s "https://www.gitignore.io/api/$([string]$mode)"
 }
 
-function gAddIgnore([String[]] $mode = 'universal', [Alias('n')] [Switch] $New) {
+function gAddIgnore {
+    param (
+        # 'list' just show possible values, 'universl' for seversl OS and editors rules, or a set of values from `list`
+        [String[]] $mode = 'universal',
+        # Create new .gitignore file. Replace if exists
+        [Alias('n')] [Switch] $New
+    )
     Switch ($mode) {
         'list' {gIgnore list;break};
         'universal' {$rules = 'windows,linux,macos,visualstudiocode,sublimetext,vim';break}

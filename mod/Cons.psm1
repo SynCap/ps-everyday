@@ -26,7 +26,7 @@ function .c {
     }
 }
 
-function .cls {[Console]::Write("`ec")}
+function c. {[Console]::Write("`ec")}
 
 function hr{
     param(

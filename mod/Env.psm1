@@ -34,6 +34,8 @@ function .exps ([parameter(ValueFromPipeline)][string]$s) {
     }
 }
 
+function def($o){(gcm $o).Definition}
+
 # Аналог GNU uname или DOS ver
 function ver {
     $Properties = 'Caption', 'Version', 'BuildType', 'OSArchitecture', 'CSName', 'RegisteredUser', 'SerialNumber';
@@ -82,3 +84,15 @@ function lg {
 
 Set-Alias subl -Value $Env:Editor
 $Global:subl = $Env:Editor
+
+function Get-UPath {
+    param (
+        [Parameter(position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)][string[]] $Path,
+        [Alias('m')][Parameter(ValueFromPipelineByPropertyName)][Switch] $MntPrefix
+    )
+    foreach ($p in (Resolve-Path $Path)) {
+        ($MntPrefix ? '/mnt/' : '/') + ((Resolve-Path $p) -replace '\\','/') -replace '(\w+):',{$_.Groups[1].Value.ToLower()}
+    }
+}
+
+Set-Alias upath -Value Get-UPath

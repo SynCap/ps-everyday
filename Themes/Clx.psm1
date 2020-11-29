@@ -56,7 +56,7 @@ function Write-Theme {
         if ($path.Length -lt [Console]::WindowWidth / 3) { $pathSeparator = " ${pathSeparator} " }
         if ($path.Length -gt ($pathFieldWidth = [Console]::WindowWidth / 2 - 10)) {
             $m = $path -match '^(.*)[/\\](.+)$';
-            $ellipsed = $Matches[1].Substring(0, $pathFieldWidth - 3 - $Matches[2].Length)
+            $ellipsed = $Matches[1].Substring(0, ( 3 + $Matches[2].Length -lt $pathFieldWidth ? $pathFieldWidth - 3 - $Matches[2].Length : 0 ) )
             $path = $ellipsed + '… ' + $pathSeparator + "`e[1;93m" + $Matches[2]
             # $path = $path -replace '^(~|\w+:).*[/\\](.*)[\\/]?$','$1\ .. \$2'
         }

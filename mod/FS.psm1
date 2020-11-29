@@ -96,22 +96,22 @@ function touch {
 # @example: rmr( 'dist', '.cache' )
 # @example: rmr .dist , .cache
 
-function rm2($f) {
-    $f | ForEach-Object{
+function rmr {
+    param ([Parameter(ValueFromPipeline,ValueFromPipelineByPropertyName,position=0)][String[]]$Path='.\*')
+    $Path | ForEach-Object{
         print 'Remove ';
         print "`e[33m", $_ ,"$RC ☢"
         if (Test-Path $_){
             Remove-Item $_ -Force -Recurse -ErrorVariable rmrErr -ErrorAction 'SilentlyContinue'
-            if ($rmrErr.Count) { $rmrErr | Foreach-Object { print "`b`e[31m",$_.Exception.Message,$RC } } else {print 'OK'}
+            if ($rmrErr.Count) { $rmrErr | Foreach-Object { println "`b`e[31m",$_.Exception.Message,$RC } } else {println "`bOK"}
         } else {
-            print "`e[36m",'not found',$RC
+            println "`b`e[36m",'not found',$RC
         }
-        ''
     }
 }
 
 # Lagacy naming
-Set-Alias rmr rm2
+Set-Alias rm2 rmr
 
 function logMon($LogFilePath, $match = "Error") {
     Get-Content $LogFilePath -Wait | Where-Object { $_ -Match $match }

@@ -98,12 +98,12 @@ function touch {
 
 function rmr {
     param ([Parameter(ValueFromPipeline,ValueFromPipelineByPropertyName,position=0)][String[]]$Path='.\*')
-    $Path | ForEach-Object{
+    Resolve-Path $Path | ForEach-Object{
         print 'Remove ';
-        print "`e[33m", $_ ,"$RC ☢"
+        print "`e[33m", $_ , "`t`e[6;32m→`e[0m"
         if (Test-Path $_){
             Remove-Item $_ -Force -Recurse -ErrorVariable rmrErr -ErrorAction 'SilentlyContinue'
-            if ($rmrErr.Count) { $rmrErr | Foreach-Object { println "`b`e[31m",$_.Exception.Message,$RC } } else {println "`bOK"}
+            if ($rmrErr.Count) { $rmrErr | Foreach-Object { println "`b`e[31m",$_.Exception.Message,$RC } } else {println "`b Done"}
         } else {
             println "`b`e[36m",'not found',$RC
         }

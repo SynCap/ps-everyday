@@ -103,7 +103,7 @@ function rmr {
         print "`e[33m", $_ , "`t`e[6;32m→`e[0m"
         if (Test-Path $_){
             Remove-Item $_ -Force -Recurse -ErrorVariable rmrErr -ErrorAction 'SilentlyContinue'
-            if ($rmrErr.Count) { $rmrErr | Foreach-Object { println "`b`e[31m",$_.Exception.Message,$RC } } else {println "`b Done"}
+            if ($rmrErr.Count) { $rmrErr | Foreach-Object { println "`b`e[31m",$_.Exception.Message,$RC } } else {println "`b… done"}
         } else {
             println "`b`e[36m",'not found',$RC
         }

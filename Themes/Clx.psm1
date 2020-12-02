@@ -136,3 +136,6 @@ $sl.Colors.ClockBackground = [ConsoleColor]::Gray
 $sl.Colors.SessionInfoBackgroundColor = [ConsoleColor]::DarkYellow
 $sl.Colors.AdminIconForegroundColor = [consoleColor]::Black
 $sl.Colors.CommandFailedIconForegroundColor = [ConsoleColor]::DarkRed
+
+# PSReadLine
+(Get-PSReadLineOption).ContinuationPrompt = "`u{e0b1}"

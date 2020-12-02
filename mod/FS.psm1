@@ -168,3 +168,7 @@ function Get-FreeSpace {
                 }
             }
 }
+
+function urlget($url, $out) {
+    (New-Object System.Net.WebClient).DownloadFile($url, $out)
+}

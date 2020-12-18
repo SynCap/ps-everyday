@@ -75,16 +75,18 @@ function ll {
 # Like GNU touch changes file lastWriteTime or create new file if it not exists
 
 function touch {
-  Param(
+    Param(
     [Parameter(ValueFromPipeline)] [string[]] $Path = $PWD
-  )
-  foreach ($p in $Path) {
-      if (Test-Path -LiteralPath $p) {
-        (Get-Item -Path $p).LastWriteTime = Get-Date
-      } else {
-        New-Item -Type File -Path $p
+    )
+    PROCESS {
+      foreach ($p in $Path) {
+          if (Test-Path -LiteralPath $p) {
+            (Get-Item -Path $p).LastWriteTime = Get-Date
+          } else {
+            New-Item -Type File -Path $p
+          }
       }
-  }
+    }
 }
 
 # Рекурсивное удаление нескольких папок/файлов

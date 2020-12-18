@@ -75,16 +75,18 @@ function ll {
 # Like GNU touch changes file lastWriteTime or create new file if it not exists
 
 function touch {
-  Param(
+    Param(
     [Parameter(ValueFromPipeline)] [string[]] $Path = $PWD
-  )
-  foreach ($p in $Path) {
-      if (Test-Path -LiteralPath $p) {
-        (Get-Item -Path $p).LastWriteTime = Get-Date
-      } else {
-        New-Item -Type File -Path $p
+    )
+    PROCESS {
+      foreach ($p in $Path) {
+          if (Test-Path -LiteralPath $p) {
+            (Get-Item -Path $p).LastWriteTime = Get-Date
+          } else {
+            New-Item -Type File -Path $p
+          }
       }
-  }
+    }
 }
 
 # Рекурсивное удаление нескольких папок/файлов
@@ -98,12 +100,12 @@ function touch {
 
 function rmr {
     param ([Parameter(ValueFromPipeline,ValueFromPipelineByPropertyName,position=0)][String[]]$Path='.\*')
-    $Path | ForEach-Object{
+    Resolve-Path $Path -ErrorVariable rmrErr -ErrorAction 'SilentlyContinue' | ForEach-Object{
         print 'Remove ';
-        print "`e[33m", $_ ,"$RC ☢"
+        print "`e[33m", $_ , "`t`e[6;32m→`e[0m"
         if (Test-Path $_){
             Remove-Item $_ -Force -Recurse -ErrorVariable rmrErr -ErrorAction 'SilentlyContinue'
-            if ($rmrErr.Count) { $rmrErr | Foreach-Object { println "`b`e[31m",$_.Exception.Message,$RC } } else {println "`bOK"}
+            if ($rmrErr.Count) { $rmrErr | Foreach-Object { println "`b`e[31m",$_.Exception.Message,$RC } } else {println "`b… done"}
         } else {
             println "`b`e[36m",'not found',$RC
         }
@@ -167,4 +169,8 @@ function Get-FreeSpace {
                     'Space' = $Free
                 }
             }
+}
+
+function urlget($url, $out) {
+    (New-Object System.Net.WebClient).DownloadFile($url, $out)
 }

@@ -96,3 +96,11 @@ function Get-UPath {
 }
 
 Set-Alias upath -Value Get-UPath
+
+function errM. {
+    print "`e[31m"
+    $Global:Error | ForEach-Object {$_.Exception.Message} | Sort-Object -Unique
+    print $RC
+}
+
+function errC. { $Global:Error.Clear() }

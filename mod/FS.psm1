@@ -100,7 +100,7 @@ function touch {
 
 function rmr {
     param ([Parameter(ValueFromPipeline,ValueFromPipelineByPropertyName,position=0)][String[]]$Path='.\*')
-    Resolve-Path $Path | ForEach-Object{
+    Resolve-Path $Path -ErrorVariable rmrErr -ErrorAction 'SilentlyContinue' | ForEach-Object{
         print 'Remove ';
         print "`e[33m", $_ , "`t`e[6;32m→`e[0m"
         if (Test-Path $_){

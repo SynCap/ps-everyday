@@ -32,7 +32,6 @@ function pcl {
 }
 
 function dev {
-    cls;
     yarn dev
 }
 
@@ -42,7 +41,7 @@ function bld {
 
 # загрузить в Sublime тему от o-my-posh
 function Edit-Theme ($name) {
-    Get-Theme | Where-Object Name -ilike $name | %{
+    Get-Theme | Where-Object Name -ilike $name | ForEach-Object {
         Write-Verbose "Open theme `"{0}`" in SublimeText`n{1}" -f $_.Name,$_.Location
         subl $_.Location
     }

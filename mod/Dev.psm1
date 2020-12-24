@@ -27,8 +27,7 @@ function clrParcel {
 }
 
 function nxt {
-    clrNuxt;
-    node .\node_modules\nuxt\bin\nuxt.js
+    node $Pwd\node_modules\nuxt\bin\nuxt.js @Args
 }
 
 function pcl {

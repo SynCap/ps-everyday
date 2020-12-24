@@ -31,8 +31,7 @@ function nxt {
 }
 
 function pcl {
-    clrParcel;
-    node .\node_modules\parcel\bin\cli.js
+    node $Pwd\node_modules\parcel\bin\cli.js @Args
 }
 
 function dev {

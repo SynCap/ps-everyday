@@ -14,21 +14,24 @@ function sass2styl($f, [string]$OutDir = '.') {
 }
 
 function clrNuxt {
-    rmr('.nuxt/','dist/','node_modules/.cache/')
+    rmr .nuxt/*,dist/*,node_modules/.cache/*
+    rmr .nuxt,dist,node_modules/.cache
+    if ($Global:Error.Count) {
+        errm.
+    }
 }
 
 function clrParcel {
-    rmr('.cache/','dist/')
+    rmr .cache/*,dist/*
+    rmr .cache,dist
 }
 
 function nxt {
-    clrNuxt;
-    node .\node_modules\nuxt\bin\nuxt.js
+    node $Pwd\node_modules\nuxt\bin\nuxt.js @Args
 }
 
 function pcl {
-    clrParcel;
-    node .\node_modules\parcel\bin\cli.js
+    node $Pwd\node_modules\parcel\bin\cli.js @Args
 }
 
 function dev {

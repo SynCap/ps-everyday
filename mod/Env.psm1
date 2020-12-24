@@ -52,7 +52,7 @@ function which($cmd) {
             function/commandlet. Get-Command used under hood.
     #>
     $o = (Get-Command $cmd -ErrorAction 'SilentlyContinue');
-    if ([System.Management.Automation.CommandTypes]::Application){
+    if ([System.Management.Automation.CommandTypes]::Application -eq $o.CommandType){
         $o.Path
     } else {
         "[{0}]" -f $o.CommandType

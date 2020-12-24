@@ -22,7 +22,8 @@ function clrNuxt {
 }
 
 function clrParcel {
-    rmr('.cache/','dist/')
+    rmr .cache/*,dist/*
+    rmr .cache,dist
 }
 
 function nxt {

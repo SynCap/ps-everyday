@@ -46,30 +46,43 @@ function ls. {
     }
 }
 
-# Like PS's ls but with extra sort
-function ll {
+# Like PS's ls but with
+# Extra sort and
+# More field control
+filter ll {
     param (
-        [Parameter(Position=0,ValueFromPipeline=$true)]$Path,
+        [Parameter(
+            Position=0,
+            ValueFromPipeline=$true
+        )]
+        $Path,
+
+        [Alias('e')][Switch]$Expand = $false, # Expand Name --> Name + Ext + FullName
+        [Alias('r')][Switch]$Recurse = $false,
         [Alias('f')][Switch]$Force = $false,
         [Alias('h')][Switch]$Hidden = $false
     )
 
-    Process {
-        Get-ChildItem $Path -Force:$Force -Hidden:$Hidden | `
-            Sort-Object `
-                @{Expression='Mode';Descending=$true},`
-                @{Expression='Extension';Descending=$false},`
-                @{Expression='Name'} |`
-            Format-Table `
-                Mode,
-                LastWriteTime,
-                @{l='Size';e={'Directory' -in $_.Attributes ? '' : ( 2kb -gt $_.Length ? ('{0,7} ' -f $_.Length) : ('{0,7:n1}k' -f ($_.Length/1kb)) )}},
-                @{l='Name';e={"`e[32m{0}$RC" -f $_.BaseName}},
-                @{l='Ext';e={($_.Extension.Length)?$_.Extension.Substring(1):''}},
-                FullName `
-                -AutoSize
-    }
-                # @{l='Size';e={('Directory' -in $_.Attributes)?'':"{0:d}" -f $($_.Length/1kb)}},
+    $Fields = 'Mode','LastWriteTime',
+        @{l='Size';e={'Directory' -in $_.Attributes ? '' : ( 2kb -gt $_.Length ? ('{0,7} ' -f $_.Length) : ('{0,7:n1}k' -f ($_.Length/1kb)) )}}
+
+    print $Fields
+
+    $Fields += $Expand ? @(
+            @{l='Name';e={"`e[32m{0}$RC" -f $_.BaseName}},
+            @{l='Ext';e={($_.Extension.Length)?$_.Extension.Substring(1):''}},
+            'FullName'
+        )
+        : @('Name');
+
+    Get-ChildItem $Path -Force:$Force -Hidden:$Hidden -Recurse:$Recurse | `
+        Sort-Object `
+            @{Expression='Mode';Descending=$true},`
+            @{Expression='Extension';Descending=$false},`
+            @{Expression='Name'} |`
+        Format-Table $Fields -AutoSize
+
+    # @{l='Size';e={('Directory' -in $_.Attributes)?'':"{0:d}" -f $($_.Length/1kb)}},
 }
 
 # Like GNU touch changes file lastWriteTime or create new file if it not exists

@@ -78,7 +78,6 @@ function TCmd {
 
 function lg {
     # [Console]::Write("`ec")
-    Clear-Host
     lazygit.exe
 }
 
@@ -104,3 +103,7 @@ function errM. {
 }
 
 function errC. { $Global:Error.Clear() }
+
+function es($path) { explorer.exe /select,"`"$(Resolve-Path $path)`""}
+function exo($path) { explorer.exe /e,"`"$(Resolve-Path $path)`""}
+

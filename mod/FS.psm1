@@ -83,7 +83,6 @@ filter ll {
 }
 
 # Like GNU touch changes file lastWriteTime or create new file if it not exists
-
 function touch {
     Param(
     [Parameter(ValueFromPipeline)] [string[]] $Path = $PWD

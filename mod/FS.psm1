@@ -53,7 +53,8 @@ filter ll {
     param (
         [Parameter(
             Position=0,
-            ValueFromPipeline=$true
+            ValueFromPipeline=$true,
+            ValueFromPipelineByPropertyName=$true
         )]
         $Path,
 

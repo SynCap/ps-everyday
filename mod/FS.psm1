@@ -65,10 +65,8 @@ filter ll {
 
     $Fields = 'Mode','LastWriteTime',
         @{l='Size';e={'Directory' -in $_.Attributes ? '' : ( 2kb -gt $_.Length ? ('{0,7} ' -f $_.Length) : ('{0,7:n1}k' -f ($_.Length/1kb)) )}}
-
-    print $Fields
-
-    $Fields += $Expand ? @(
+        # @{l='Size';e={('Directory' -in $_.Attributes)?'':"{0:d}" -f $($_.Length/1kb)}},
+        + $Expand ? @(
             @{l='Name';e={"`e[32m{0}$RC" -f $_.BaseName}},
             @{l='Ext';e={($_.Extension.Length)?$_.Extension.Substring(1):''}},
             'FullName'
@@ -81,8 +79,6 @@ filter ll {
             @{Expression='Extension';Descending=$false},`
             @{Expression='Name'} |`
         Format-Table $Fields -AutoSize
-
-    # @{l='Size';e={('Directory' -in $_.Attributes)?'':"{0:d}" -f $($_.Length/1kb)}},
 }
 
 # Like GNU touch changes file lastWriteTime or create new file if it not exists

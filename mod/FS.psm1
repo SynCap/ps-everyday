@@ -56,6 +56,7 @@ filter ll {
             ValueFromPipeline=$true,
             ValueFromPipelineByPropertyName=$true
         )]
+        [String[]]
         $Path,
 
         [Alias('e')][Switch]$Expand = $false, # Expand Name --> Name + Ext + FullName
@@ -77,7 +78,7 @@ filter ll {
             ) :
             @('Name');
 
-    Get-ChildItem $Path -Force:$Force -Hidden:$Hidden -Recurse:$Recurse | `
+    Get-ChildItem -Path $Path -Force:$Force -Hidden:$Hidden -Recurse:$Recurse | `
         Sort-Object `
             @{Expression='Mode';Descending=$true},`
             @{Expression='Extension';Descending=$false},`

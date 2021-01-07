@@ -59,10 +59,10 @@ filter ll {
         [String[]]
         $Path,
 
-        [Alias('e')][Switch]$Expand = $false, # Expand Name --> Name + Ext + FullName
+        [Alias('e')][Switch]$Expand  = $false, # Expand Name --> Name + Ext + FullName
         [Alias('r')][Switch]$Recurse = $false,
-        [Alias('f')][Switch]$Force = $false,
-        [Alias('h')][Switch]$Hidden = $false
+        [Alias('f')][Switch]$Force   = $false,
+        [Alias('h')][Switch]$Hidden  = $false
     )
 
     $Fields = `

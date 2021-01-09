@@ -50,6 +50,8 @@ function ls. {
 # Extra sort and
 # More field control
 filter ll {
+    [CmdletBinding()]
+
     param (
         [Parameter(
             Position=0,
@@ -59,19 +61,25 @@ filter ll {
         [String[]]
         $Path,
 
-        [Alias('e')]   [Switch] $Expand    = $false, # Expand Name --> Name + Ext + FullName
-        [Alias('r')]   [Switch] $Recurse   = $false,
-        [Alias('f')]   [Switch] $Force     = $false,
-        [Alias('dir')] [Switch] $Directory = $false,
-        [Alias('fl')]  [Switch] $File      = $false,
-        [Alias('h')]   [Switch] $Hidden    = $false
+        [Switch] $Expand    = $false, # Expand Name --> Name + Ext + FullName
+        [Switch] $Recurse   = $false,
+        [Switch] $Force     = $false,
+        [Switch] $Directory = $false,
+        [Switch] $File      = $false,
+        [Switch] $Hidden    = $false
     )
 
     $Fields = `
         'Mode',
         'LastWriteTime',
-        @{l='Size';e={'Directory' -in $_.Attributes ? '' : ( 2kb -gt $_.Length ? ('{0,7} ' -f $_.Length) : ('{0,7:n1}k' -f ($_.Length/1kb)) )}}
-        # @{l='Size';e={('Directory' -in $_.Attributes)?'':"{0:d}" -f $($_.Length/1kb)}},
+        @{l='Size';e={
+					'Directory' -in $_.Attributes ? '' :
+					( 2kb -gt $_.Length ? ('{0,7:n0} ' -f $_.Length) :
+						2mb -gt $_.Length ? ('{0,7:n1}K' -f ($_.Length/1kb)) :
+						2gb -gt $_.Length ? ('{0,7:n1}M' -f ($_.Length/1mb)) :
+							('{0,7:n1}G' -f ($_.Length/1gb))
+					)}
+				}
     $Fields += $Expand ?
             @(
                 @{l='Name';e={"`e[32m{0}$RC" -f $_.BaseName}},

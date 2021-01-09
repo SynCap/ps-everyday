@@ -72,8 +72,14 @@ filter ll {
     $Fields = `
         'Mode',
         'LastWriteTime',
-        @{l='Size';e={'Directory' -in $_.Attributes ? '' : ( 2kb -gt $_.Length ? ('{0,7} ' -f $_.Length) : ('{0,7:n1}k' -f ($_.Length/1kb)) )}}
-        # @{l='Size';e={('Directory' -in $_.Attributes)?'':"{0:d}" -f $($_.Length/1kb)}},
+        @{l='Size';e={
+					'Directory' -in $_.Attributes ? '' :
+					( 2kb -gt $_.Length ? ('{0,7:n0} ' -f $_.Length) :
+						2mb -gt $_.Length ? ('{0,7:n1}K' -f ($_.Length/1kb)) :
+						2gb -gt $_.Length ? ('{0,7:n1}M' -f ($_.Length/1mb)) :
+							('{0,7:n1}G' -f ($_.Length/1gb))
+					)}
+				}
     $Fields += $Expand ?
             @(
                 @{l='Name';e={"`e[32m{0}$RC" -f $_.BaseName}},

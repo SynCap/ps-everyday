@@ -50,6 +50,8 @@ function ls. {
 # Extra sort and
 # More field control
 filter ll {
+    [CmdletBinding()]
+
     param (
         [Parameter(
             Position=0,

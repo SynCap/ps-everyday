@@ -61,12 +61,12 @@ filter ll {
         [String[]]
         $Path,
 
-        [Alias('e')]   [Switch] $Expand    = $false, # Expand Name --> Name + Ext + FullName
-        [Alias('r')]   [Switch] $Recurse   = $false,
-        [Alias('f')]   [Switch] $Force     = $false,
-        [Alias('dir')] [Switch] $Directory = $false,
-        [Alias('fl')]  [Switch] $File      = $false,
-        [Alias('h')]   [Switch] $Hidden    = $false
+        [Switch] $Expand    = $false, # Expand Name --> Name + Ext + FullName
+        [Switch] $Recurse   = $false,
+        [Switch] $Force     = $false,
+        [Switch] $Directory = $false,
+        [Switch] $File      = $false,
+        [Switch] $Hidden    = $false
     )
 
     $Fields = `

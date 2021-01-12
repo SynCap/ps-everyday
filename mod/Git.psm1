@@ -39,7 +39,13 @@ function gAddIgnore {
 }
 
 # initialize git repository here
-function InitGitRepo($remoteUrl) {
+function InitGitRepo {
+    [CmdletBinding()]
+    param (
+        [Parameter(position=0)][String] $RemoteUrl,
+        [String] $BranchName,
+        [Switch] $NoDevBranch
+    )
     Get-Date;
     hr;
     # create .gitignore file if not exists
@@ -51,16 +57,20 @@ function InitGitRepo($remoteUrl) {
         hr;
     }
     # init repository in current directory and push it to origin
-    git init
+    git init ($BranchName ? "--initial-branch=$BranchName" : '')
     git add .
     git commit -m 'init'
-    if ( $null -ne $remoteUrl ) {
+    if($RemoteUrl) {
         hr
-        git remote add origin $remoteUrl
-        git push -u origin master
+        git remote add origin $RemoteUrl
+        git push -u origin ($BranchName ?? (git config --get init.defaultBranch))
     }
-    hr
-    git checkout -b develop
+    hr;
+    if(-not $NoDevBranch) {
+        git checkout -b develop
+    }
     git log
+    draw "Branches" Yellow
+    hr
     git branch --all
 }

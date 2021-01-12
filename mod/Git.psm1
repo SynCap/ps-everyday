@@ -16,7 +16,7 @@ function gIgnore($mode) {
 
 function gAddIgnore {
     param (
-        # 'list' just show possible values, 'universl' for seversl OS and editors rules, or a set of values from `list`
+        # `list` just show possible values, `universl` for seversl OS and editors rules, or a set of values from `list`
         [String[]] $mode = 'universal',
         # Create new .gitignore file. Replace if exists
         [Alias('n')] [Switch] $New

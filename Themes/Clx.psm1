@@ -34,9 +34,21 @@ function Write-Theme {
 
     $lastColor = $sl.Colors.PromptBackgroundColor
 
-    $timestamp = "{0:HH}:{0:mm}:{0:ss}┋" -f (Get-Date)
+    # Clock section
+    # possible to display time of finish previous command and/or it's duration
 
-    $prompt += Write-Prompt $timeStamp -BackgroundColor $sl.Colors.PromptBackgroundColor -ForegroundColor $sl.Colors.ClockForeground
+    if ($sl.ClxClock -contains 'Time') {
+        $timestamp = "⌚{0:HH}:{0:mm}:{0:ss}" -f (Get-Date)
+    }
+
+    $history = Get-History
+    if (0 -lt $history.Count -and $sl.ClxClock -contains 'Dur') {
+        $dur = '⌛' + ( ($history | Select-Object -Last 1).Duration.ToString() ` -Replace '^[0:]*','' -Replace '\d{4}$','' )
+    }
+
+    $clock = (@($timestamp,$dur) -Join ' '),'┋' -join ''
+
+    $prompt += Write-Prompt $clock -BackgroundColor $sl.Colors.PromptBackgroundColor -ForegroundColor $sl.Colors.ClockForeground
 
     # Writes the Path portion
     $pathSeparator = $sl.promptSymbols.PathSeparatorSymbol
@@ -86,6 +98,14 @@ function Write-Theme {
 }
 
 $sl = $Global:ThemeSettings #local settings
+
+# show timestamp and/or duration of previously executed command (taken from history)
+# Array of 'Time', 'Dur' (duration). Show respective value when aray contains one or both
+if ($null -eq $sl.ClxClock) {
+    Add-Member -InputObject $sl -MemberType NoteProperty -Name 'ClxClock' -Value @()
+}
+
+$sl.ClxClock = @(<#'Time', #>'Dur')
 
 if ($null -eq $sl.PathSubstitutions) {
     Add-Member -InputObject $sl -MemberType NoteProperty -Name 'PathSubstitutions' -Value @()

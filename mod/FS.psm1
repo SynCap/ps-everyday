@@ -37,12 +37,12 @@ function ls. {
                     $b = 40;
                 }
                 switch -regex ($f.Mode) {
-                    'd' {$c += 60} # папки более якрике - 30+60 = `e[92m
+                    'd' {$c += 60} # папки более яркике - 30+60 = `e[92m
                     'h' {$c += 4} # смещаем цвет в Teal/Cyan 36/96
                 }
                 $color = "`e[$c;${b}m"
                 @{('{0}{1}{2}' -f $color,$_.PSChildName,$RC) = ''}
-            } | Format-Wide @PSBoundParams
+            } | Format-Wide -AutoSize
     }
 }
 
@@ -122,17 +122,26 @@ function touch {
 # @example: rmr .dist , .cache
 
 function rmr {
-    param ([Parameter(ValueFromPipeline,ValueFromPipelineByPropertyName,position=0)][String[]]$Path='.\*')
-    Resolve-Path $Path -ErrorVariable rmrErr -ErrorAction 'SilentlyContinue' | ForEach-Object{
-        print 'Remove ';
-        print "`e[33m", $_ , "`t`e[6;32m→`e[0m"
-        if (Test-Path $_){
-            Remove-Item $_ -Force -Recurse -ErrorVariable rmrErr -ErrorAction 'SilentlyContinue'
-            if ($rmrErr.Count) { $rmrErr | Foreach-Object { println "`b`e[31m",$_.Exception.Message,$RC } } else {println "`b… done"}
-        } else {
-            println "`b`e[36m",'not found',$RC
+    param (
+        [Parameter(
+            ValueFromPipeline,
+            ValueFromPipelineByPropertyName,
+            position=0
+        )] [String[]] $Path='.\*'
+    )
+    Resolve-Path -Path $Path -ErrorVariable rmrErr -ErrorAction 'SilentlyContinue' |
+        ForEach-Object{
+            print 'Remove ';
+            print "`e[33m", $_ , "`t`e[6;32m→`e[0m"
+            if (Test-Path $_){
+                Remove-Item $_ -Force -Recurse -ErrorVariable rmrErr -ErrorAction 'SilentlyContinue'
+                if ($rmrErr.Count) {
+                    $rmrErr | Foreach-Object { println "`b`e[31m",$_.Exception.Message,$RC }
+                } else {println "`b… done"}
+            } else {
+                println "`b`e[36m",'not found',$RC
+            }
         }
-    }
 }
 
 # Lagacy naming

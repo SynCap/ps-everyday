@@ -71,7 +71,7 @@ function TCmd {
         If $Path specifies the file, open folder and select that file if exists.
     #>
     param([Parameter(ValueFromPipeline)] $Path = '.')
-    $Cmd = "{0}\totalcmd\TOTALCMD64.EXE" -f $env:ProgramFiles
+    $Cmd = Join-Path $env:ProgramFiles 'totalcmd\TOTALCMD64.EXE'
     $Params =  @( '/O','/T','/S', (Resolve-Path $Path).Path )
     & $Cmd $Params
 }
@@ -86,8 +86,14 @@ $Global:subl = $Env:Editor
 
 function Get-UPath {
     param (
-        [Parameter(position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)][string[]] $Path,
-        [Alias('m')][Parameter(ValueFromPipelineByPropertyName)][Switch] $MntPrefix
+        [Parameter(
+					position=0,ValueFromPipeline,ValueFromPipelineByPropertyName
+					)]
+				[string[]] $Path,
+        [Parameter(
+					ValueFromPipelineByPropertyName
+					)]
+				[Switch] $MntPrefix
     )
     foreach ($p in (Resolve-Path $Path)) {
         ($MntPrefix ? '/mnt/' : '/') + ((Resolve-Path $p) -replace '\\','/') -replace '(\w+):',{$_.Groups[1].Value.ToLower()}

@@ -105,7 +105,13 @@ if ($null -eq $sl.ClxClock) {
     Add-Member -InputObject $sl -MemberType NoteProperty -Name 'ClxClock' -Value @()
 }
 
-$sl.ClxClock = @(<#'Time', #>'Dur')
+function Set-ClxThemeClock {
+    param(
+        [ValidateSet('Time','Dur')]
+        [String[]]$Visible = @()
+    )
+    $sl.ClxClock = @('Dur')
+}
 
 if ($null -eq $sl.PathSubstitutions) {
     Add-Member -InputObject $sl -MemberType NoteProperty -Name 'PathSubstitutions' -Value @()

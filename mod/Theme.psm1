@@ -18,7 +18,7 @@ function Set-ClxClock {
         [String[]]$Sections = ($NoClock ? @() : @('Dur')),
         [Switch] $NoClock
     )
-    $Global:ThemeSettings.ClxClock = $Visible
+    $Global:ThemeSettings.ClxClock = $Sections
 }
 
 function Set-EvdTheme {

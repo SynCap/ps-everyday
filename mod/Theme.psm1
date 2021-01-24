@@ -11,6 +11,16 @@ function Get-EvdTheme {
     $themes
 }
 
+function Set-ClxClock {
+    param(
+        [ValidateSet('Time','Dur')]
+        [Parameter(Position=0)]
+        [String[]]$Sections = ($NoClock ? @() : @('Dur')),
+        [Switch] $NoClock
+    )
+    $Global:ThemeSettings.ClxClock = $Visible
+}
+
 function Set-EvdTheme {
     <#
         .Synopsis

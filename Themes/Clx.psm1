@@ -43,10 +43,10 @@ function Write-Theme {
 
     $history = Get-History
     if (0 -lt $history.Count -and $sl.ClxClock -contains 'Dur') {
-        $dur = '⌛' + ( ($history | Select-Object -Last 1).Duration.ToString() ` -Replace '^[0:]*','' -Replace '\d{4}$','' )
+        $dur = '⌛' + ( ($history | Select-Object -Last 1).Duration.ToString() -Replace '^[0:]*','' -Replace '\d{4}$','' )
     }
 
-    $clock = (@($timestamp,$dur) -Join ' '),'┋' -join ''
+    $clock = (@($timestamp,$dur) -Join ''),( [boolean]$timestamp -or [boolean]$dur ? '┋' : $null ) -join ''
 
     $prompt += Write-Prompt $clock -BackgroundColor $sl.Colors.PromptBackgroundColor -ForegroundColor $sl.Colors.ClockForeground
 
@@ -105,14 +105,6 @@ if ($null -eq $sl.ClxClock) {
     Add-Member -InputObject $sl -MemberType NoteProperty -Name 'ClxClock' -Value @()
 }
 
-function Set-ClxThemeClock {
-    param(
-        [ValidateSet('Time','Dur')]
-        [String[]]$Visible = @()
-    )
-    $sl.ClxClock = @('Dur')
-}
-
 if ($null -eq $sl.PathSubstitutions) {
     Add-Member -InputObject $sl -MemberType NoteProperty -Name 'PathSubstitutions' -Value @()
 }
@@ -126,7 +118,7 @@ $sl.PathSubstitutions = @(
 )
 
 $sl.PromptSymbols.StartSymbol                    = '' # [char]::ConvertFromUtf32(0x9889)
-$sl.PromptSymbols.ElevatedSymbol                 = [char]::ConvertFromUtf32(0x26A1) # Hummer & Sickle
+$sl.PromptSymbols.ElevatedSymbol                 = [char]::ConvertFromUtf32(0x26A1)
 $sl.PromptSymbols.PromptIndicator                = [char]::ConvertFromUtf32(0xE0B1) #(0x276F) - ❯
 $sl.PromptSymbols.PathSeparatorSymbol            = "`e[96m{0}`e[97m" -f [char]::ConvertFromUtf32(0xe0bb) # 0x2573
 $sl.PromptSymbols.SegmentStartSymbol             = [char]::ConvertFromUtf32(0xE0ba)
@@ -135,7 +127,7 @@ $sl.PromptSymbols.SegmentForwardSymbol           = [char]::ConvertFromUtf32(0xE0
 $sl.PromptSymbols.SegmentFinishSymbol            = [char]::ConvertFromUtf32(0xE0bc)
 $sl.PromptSymbols.SegmentSeparatorForwardSymbol  = [char]::ConvertFromUtf32(0xE0B1)
 $sl.PromptSymbols.SegmentSeparatorBackwardSymbol = [char]::ConvertFromUtf32(0xE0B3)
-$sl.PromptSymbols.FailedCommandSymbol            = [char]::ConvertFromUtf32(0x274C)
+$sl.PromptSymbols.FailedCommandSymbol            = [char]::ConvertFromUtf32(0x2573)
 
 # ﮟﳐ
 $sl.PromptSymbols.homeChars = (
@@ -160,8 +152,8 @@ $sl.Colors.VirtualEnvForegroundColor = [System.ConsoleColor]::White
 $sl.Colors.ClockForeground = [ConsoleColor]::DarkCyan
 $sl.Colors.ClockBackground = [ConsoleColor]::Gray
 $sl.Colors.SessionInfoBackgroundColor = [ConsoleColor]::DarkYellow
-$sl.Colors.AdminIconForegroundColor = [consoleColor]::Black
-$sl.Colors.CommandFailedIconForegroundColor = [ConsoleColor]::DarkRed
+$sl.Colors.AdminIconForegroundColor = [consoleColor]::Blue
+$sl.Colors.CommandFailedIconForegroundColor = [ConsoleColor]::Red
 
 # PSReadLine
 (Get-PSReadLineOption).ContinuationPrompt = "`u{e0b1}"

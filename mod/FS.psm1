@@ -9,6 +9,7 @@ function ... { Set-Location ..\.. }
 function .... { Set-Location ..\..\.. }
 
 Set-Alias props -Value Get-ItemProperty
+
 function attr($f) { (Get-ItemProperty $f).Attributes }
 
 # Colored pretty wide list, like BASH ls

@@ -34,17 +34,16 @@ function Set-EvdTheme {
     param (
         [Parameter(Mandatory=$true)] [string] $Name
     )
+    write-host "Set-EvdTheme: ThemesDir = $ThemesDir, Name = $Name"
     if (Test-Path (Join-Path $ThemesDir "${Name}.psm1")) {
-        Set-Theme (Join-Path $ThemesDir "${Name}.psm1")
+        Set-PoshPrompt (Join-Path $ThemesDir "${Name}.psm1")
     }
     elseif (Test-Path "$Name") {
-        Set-Theme "$Name"
+        Set-PoshPrompt "$Name"
     }
     else {
         Write-Warning "Theme $Name not found. Available themes are:"
         Get-EvdTheme
     }
-    Set-Prompt
+    Set-PoshPrompt
 }
-
-Set-EvdTheme CLX

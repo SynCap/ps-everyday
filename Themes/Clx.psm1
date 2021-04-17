@@ -130,7 +130,7 @@ $sl.PromptSymbols.homeChars = (
 )
 
 # ''
-# ''
+# '     '
 $sl.PromptSymbols.WslDistributions = @{
     'Alpine' = [char]::ConvertFromUtf32(0xF300) # ''
     'Debian' = [char]::ConvertFromUtf32(0xE77D) # ''

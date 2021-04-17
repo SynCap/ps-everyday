@@ -104,20 +104,42 @@ $Global:Bars = [char[]]'│┆┊┃┇┋≈‒–—―─━═╌╍▀▁�
 
 function Show-Bars {$Global:Bars | ForEach-Object -Begin {$i=0} -Process { @{$("{0,5:d}. 0x{1:x} : {2}" -f $i++,[int]$_,$_) = $_}} | Format-Wide -a}
 
+function Get-FlatArray ($Source) {
+    $Source | ForEach-Object {$_} | Where-Object {$_ -ne $null}
+}
+
 function Get-NerdSymbols {
+
     $charList = ''
-    foreach ($chr in 0xE000..0xF8FF) {
+    $Diapasons = @(
+        @(0XE000..0XE00A),
+        @(0XE0A0..0XE0A5),
+        @(0XE0B0..0XE0D4),
+        @(0XE200..0XE2A9),
+        @(0XE300..0XE3E3),
+        @(0XE5FA..0XE62E),
+        @(0XE700..0XE7C5),
+        @(0XF000..0XF0B2),
+        @(0XF0C0..0XF2E0),
+        @(0XF300..0XF31C),
+        @(0XF400..0XF4A9),
+        @(0XF500..0XF8FF)
+    )
 
-        # $charItem = @{
-        #     Char = [char]$chr;
-        #     Index = $chr;
-        #     Hex = ('0x{0:x}' -f $chr)
-        # }
+    foreach ($D in $Diapasons) {
+        foreach ($chr in $D) {
 
-        # $charList.Add($charItem)
+            # $charItem = @{
+            #     Char = [char]$chr;
+            #     Index = $chr;
+            #     Hex = ('0x{0:x}' -f $chr)
+            # }
 
-        $charItem = "$('{0:x}' -f $chr)`u{00a0}$([char]$chr)`t"
-        $charList += $charItem
+            # $charList.Add($charItem)
+
+            $charItem = "$('{0:x}' -f $chr)`u{00a0}$([char]$chr)`t"
+            $charList += $charItem
+        }
     }
     $charList
 }

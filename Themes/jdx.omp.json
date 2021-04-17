@@ -1,0 +1,109 @@
+{
+	"$schema": "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json",
+	"blocks": [
+		{
+			"type": "prompt",
+			"alignment": "left",
+			"segments": [
+				{
+					"type": "root",
+					"style": "plain",
+					"foreground": "#f33",
+					"background": "yellow",
+					"properties": {
+						"root_icon": "\uF43D "
+					}
+				},
+				{
+					"type": "exit",
+					"style": "plain",
+					"foreground": "#ffffff",
+					"background": "#0037DA",
+					"properties": {
+						"display_exit_code": false,
+						"always_enabled": false,
+						"error_color": "#f1184c",
+						"color_background": true,
+						"prefix": " \uF5AC "
+					}
+				},
+				{
+					"type": "executiontime",
+					"style": "plain",
+					"foreground": "#aaaaaa",
+					"background": "#2f2f2f",
+					"properties": {
+						"style": "dallas"
+					}
+				},
+				{
+					"type": "path",
+					"style": "diamond",
+					"powerline_symbol": "\uE0B0",
+					"leading_diamond": "",
+					"trailing_diamond": "\uE0B0",
+					"foreground": "#eeeeee",
+					"background": "#0037DA",
+					"mixed_threshold ": 8,
+					"properties" : {
+						"home_icon": "\uF7DB ",
+						"folder_icon": "\uF115 ",
+						"folder_separator_icon": "<cyan>\uE0B1</>",
+						"style": "agnoster_full",
+						"mapped_locations": [
+							["C:\\Temp", "\uE799 "],
+							["D:\\JOB", "\uE20F "],
+							["D:\\Alpha", "\uE0CF "],
+							["D:\\Alpha\\GitHub", "\uF408 "],
+
+							["\\\\wsl$\\Alpine",  "\uF300 "],
+							["\\\\wsl$\\Debian\\",  "\uE77D "],
+							["\\\\wsl$\\Kali\\",    "\uE712 "],
+							["\\\\wsl$\\Ubuntu\\",  "\uE73A "],
+
+							["\\\\wsl$\\Linux\\", "\uE712 "],
+							["Microsoft.PowerShell.CoreFileSystem::\\\\WSL$\\",  "\uE712"]
+
+						]
+					}
+				},
+				{
+					"type": "git",
+					"style": "powerline",
+					"powerline_symbol": "\uE0B0",
+					"foreground": "#111",
+					"background": "#ec9706",
+					"properties": {
+						"branch_identical_icon": "\uFC8B ",
+						"branch_ahead_icon": "\uF176",
+						"branch_behind_icon": "\uF175",
+						"branch_gone_icon": "\u2262",
+						"display_stash_count": true,
+						"display_upstream_icon": true,
+						"status_colors_enabled": true
+					}
+				}
+			]
+		},
+    {
+      "type": "newline"
+    },
+    {
+      "type": "prompt",
+      "alignment": "left",
+      "segments": [
+        {
+          "type": "text",
+          "style": "plain",
+          "foreground": "#3B78FF",
+          "properties": {
+            "prefix": "",
+            "text": "\u276F"
+          }
+        }
+      ]
+    }
+
+	],
+	"final_space": false
+}

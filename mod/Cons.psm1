@@ -104,6 +104,24 @@ $Global:Bars = [char[]]'│┆┊┃┇┋≈‒–—―─━═╌╍▀▁�
 
 function Show-Bars {$Global:Bars | ForEach-Object -Begin {$i=0} -Process { @{$("{0,5:d}. 0x{1:x} : {2}" -f $i++,[int]$_,$_) = $_}} | Format-Wide -a}
 
+function Get-NerdSymbols {
+    $charList = ''
+    foreach ($chr in 0xE000..0xF8FF) {
+
+        # $charItem = @{
+        #     Char = [char]$chr;
+        #     Index = $chr;
+        #     Hex = ('0x{0:x}' -f $chr)
+        # }
+
+        # $charList.Add($charItem)
+
+        $charItem = "$('{0:x}' -f $chr)`u{00a0}$([char]$chr)`t"
+        $charList += $charItem
+    }
+    $charList
+}
+
 set-alias grep -Value Select-String -Force
 
 filter mgrep {

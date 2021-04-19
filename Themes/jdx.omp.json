@@ -55,13 +55,14 @@
 							["D:\\JOB", "\uE20F "],
 							["D:\\Alpha", "\uE0CF "],
 							["D:\\Alpha\\GitHub", "\uF408 "],
+							["D:\\Books", "\uE28B "],
 
 							["\\\\wsl$\\Alpine",  "\uF300 "],
-							["\\\\wsl$\\Debian\\",  "\uE77D "],
-							["\\\\wsl$\\Kali\\",    "\uE712 "],
-							["\\\\wsl$\\Ubuntu\\",  "\uE73A "],
+							["\\\\wsl$\\Debian",  "\uE77D "],
+							["\\\\wsl$\\Kali",    "\uE712 "],
+							["\\\\wsl$\\Ubuntu",  "\uE73A "],
 
-							["\\\\wsl$\\Linux\\", "\uE712 "],
+							["\\\\wsl$\\Linux", "\uE712 "],
 							["Microsoft.PowerShell.CoreFileSystem::\\\\WSL$\\",  "\uE712"]
 
 						]

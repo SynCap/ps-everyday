@@ -52,17 +52,25 @@
 						"style": "agnoster_full",
 						"mapped_locations": [
 							["C:\\Temp", "\uE799 "],
-							["D:\\JOB", "\uE20F "],
-							["D:\\Alpha", "\uE0CF "],
-							["D:\\Alpha\\GitHub", "\uF408 "],
-							["D:\\Books", "\uE28B "],
+
+							["D:\\Alpha",          "\uE0CF "],
+							["D:\\Alpha\\GitHub",  "\uF408 "],
+
+							["D:\\Books", "\uF02D "],
+
+							["D:\\JOB",             "\uE20F "],
+							["D:\\JOB\\CodePen",    "\uF674 "],
+							["D:\\JOB\\JS",         "\uE781 "],
+							["D:\\JOB\\JS\\Vue",    "\uFD42 "],
+							["D:\\JOB\\JS\\React",  "\uE7BA "],
+							["D:\\JOB\\LAB",        "\uF592 "],
 
 							["\\\\wsl$\\Alpine",  "\uF300 "],
 							["\\\\wsl$\\Debian",  "\uE77D "],
 							["\\\\wsl$\\Kali",    "\uE712 "],
 							["\\\\wsl$\\Ubuntu",  "\uE73A "],
 
-							["\\\\wsl$\\Linux", "\uE712 "],
+							["\\\\wsl$\\Linux",                                  "\uE712 "],
 							["Microsoft.PowerShell.CoreFileSystem::\\\\WSL$\\",  "\uE712"]
 
 						]

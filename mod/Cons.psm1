@@ -161,3 +161,34 @@ filter mgrep {
 }
 
 function EasyView($Seconds=.5) { process { $_; Start-Sleep -Seconds $Seconds}}
+
+function m2 {
+   param(
+     [Parameter(ValueFromPipeline=$true)]
+     [System.Management.Automation.PSObject]$InputObject
+   )
+
+   begin {
+      $type = [System.Management.Automation.CommandTypes]::Cmdlet
+      $wrappedCmd = $ExecutionContext.InvokeCommand.GetCommand('Out-Host', $type)
+      $scriptCmd = {& $wrappedCmd @PSBoundParameters -Paging }
+      $steppablePipeline = $scriptCmd.GetSteppablePipeline($myInvocation.CommandOrigin)
+      $steppablePipeline.Begin($PSCmdlet)
+   }
+
+   process {
+      try {
+         $steppablePipeline.Process($_)
+      }
+      catch {
+        break;
+      }
+   }
+
+   end {
+      $steppablePipeline.End()
+   }
+
+   #.ForwardHelpTargetName Out-Host
+   #.ForwardHelpCategory Cmdlet
+}

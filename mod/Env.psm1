@@ -106,7 +106,7 @@ Set-Alias upath -Value Get-UPath
 
 function errM. {
     print "`e[31m"
-    $Global:Error | ForEach-Object {$_.Exception.Message} | Sort-Object -Unique
+    $Global:Error | ForEach-Object {$_.Exception.Message} | Sort-Object -Unique | ForEach-Object {">`n$_"}
     print $RC
 }
 

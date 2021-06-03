@@ -84,6 +84,8 @@ function lg {
 Set-Alias subl -Value $Env:Editor
 $Global:subl = $Env:Editor
 
+Set-Alias gvim -Value "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Vim 8.2\gVim.lnk"
+
 function Get-UPath {
     param (
         [Parameter(

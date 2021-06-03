@@ -112,6 +112,6 @@ function errM. {
 
 function errC. { $Global:Error.Clear() }
 
-function es($path) { explorer.exe /select,"`"$(Resolve-Path $path)`""}
-function exo($path) { explorer.exe /e,"`"$(Resolve-Path $path)`""}
+function exps($path) { explorer.exe /select,"`"$(Resolve-Path $path)`""}
+function expo($path) { explorer.exe /e,"`"$(Resolve-Path $path)`""}
 

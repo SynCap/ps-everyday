@@ -11,5 +11,18 @@ function dlwp {
 		explorer.exe /select,$FName
 	} else {
 		Write-Error 'Bad URL'
+		$False
 	}
+}
+
+function ParseUrl([String]$Url) {
+	$re = '^((?<Scheme>\w+)://)?(?<Site>[^/]+)(?<Path>[^#?]*?(?<FileName>[^/#?>]*?)?)(\?(?<Query>[^#]*))?(#(?<Hash>.*))?$';
+
+	$res = $Url -match $re ? $Matches : $False
+
+	if ($res.FileName -match '\.([^.]+)$') {
+		$res.Ext = $Matches[1]
+	}
+
+	$res
 }

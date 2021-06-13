@@ -169,7 +169,7 @@ function Mount-Symlink ($Target, $Link) {
 # Convert size to human friendly look
 function ShortSize {
     param  (
-        [Parameter(Position=0)] [UInt] $Length = 0
+        [Parameter(Position=0)] [UInt64] $Length = 0
     )
 
     switch ($Length) {

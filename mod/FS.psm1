@@ -259,6 +259,7 @@ filter Get-SubfolderSizes {
         # Directories only
         [Switch] $DirsOnly,
         # Width of Size field to align with table view
+        [UInt] $szWidth = 16 # to get proper length use doubled length because of color data
     )
 
     # function hlm ($s) {return $s.Insert($s.Length - 1, "`e[96m") + "`e[0m"}

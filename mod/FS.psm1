@@ -252,18 +252,21 @@ filter Get-SubfolderSizes {
         [Parameter(position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [string] $Path = $PWD,
 
+        # Include Hidden and System folders
+        [Switch] $Force = $False,
         # ExtraFields – FullName of dirs and calculated human readable lingth as Size field
         [Switch] $ExtraFields,
+        # Directories only
+        [Switch] $DirsOnly,
         # Width of Size field to align with table view
-        [UInt] $szWidth = 16 # to get proper length use doubled length because of color data
     )
 
     # function hlm ($s) {return $s.Insert($s.Length - 1, "`e[96m") + "`e[0m"}
 
-    Get-ChildItem $Path -Directory |
+    Get-ChildItem $Path -Directory:$DirsOnly -Force:$Force |
         ForEach-Object {
+            $len = (Get-FolderSize $_ -Force:$Force)
             $rec = New-Object PSObject
-            $len = (Get-FolderSize $_)
 
             Add-Member -InputObject $rec -MemberType NoteProperty -Name "Name" -Value $_.Name
             if ($ExtraFields) {

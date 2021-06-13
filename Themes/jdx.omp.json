@@ -51,18 +51,22 @@
 						"folder_separator_icon": "<cyan>\uE0B1</>",
 						"style": "agnoster_full",
 						"mapped_locations": [
-							["C:\\Temp", "\uE799 "],
+							["C:\\Temp", "\uF014 "],
 
 							["D:\\Alpha",          "\uE0CF "],
 							["D:\\Alpha\\GitHub",  "\uF408 "],
+							["D:\\Books",          "\uF02D "],
+							["D:\\Downloads",      "\uF6D9" ],
+							["D:\\Graphics",       "\uF03E "],
+							["D:\\Music",          "\uF832 "],
+							["D:\\Video",          "\uF880 "],
 
-							["D:\\Books", "\uF02D "],
-
+							["D:\\DOX",             "\uFC89 "],
 							["D:\\JOB",             "\uE20F "],
 							["D:\\JOB\\CodePen",    "\uF674 "],
 							["D:\\JOB\\JS",         "\uE781 "],
-							["D:\\JOB\\JS\\Vue",    "\uFD42 "],
 							["D:\\JOB\\JS\\React",  "\uE7BA "],
+							["D:\\JOB\\JS\\Vue",    "\uFD42 "],
 							["D:\\JOB\\LAB",        "\uF592 "],
 
 							["\\\\wsl$\\Alpine",  "\uF300 "],
@@ -71,7 +75,7 @@
 							["\\\\wsl$\\Ubuntu",  "\uE73A "],
 
 							["\\\\wsl$\\Linux",                                  "\uE712 "],
-							["Microsoft.PowerShell.CoreFileSystem::\\\\WSL$\\",  "\uE712"]
+							["Microsoft.PowerShell.CoreFileSystem::\\\\WSL$\\",  "\uE712 "]
 
 						]
 					}
@@ -83,13 +87,13 @@
 					"foreground": "#111",
 					"background": "#ec9706",
 					"properties": {
-						"branch_identical_icon": "\uFC8B ",
-						"branch_ahead_icon": "\uF176",
-						"branch_behind_icon": "\uF175",
-						"branch_gone_icon": "\u2262",
-						"display_stash_count": true,
-						"display_upstream_icon": true,
-						"status_colors_enabled": true
+						"branch_identical_icon" : "\uFC8B ",
+						"branch_ahead_icon"     : "\uF176",
+						"branch_behind_icon"    : "\uF175",
+						"branch_gone_icon"      : "\u2262",
+						"display_stash_count"   : true,
+						"display_upstream_icon" : true,
+						"status_colors_enabled" : true
 					}
 				}
 			]

@@ -244,6 +244,7 @@ filter Get-SubfolderSizesHT {
     Get-ChildItem $Path -Directory -Force:$Force | ForEach-Object{ @{ $_.Name = (Get-FolderSize $_) } }
 }
 
+# Calculate sizes of ol subfolders
 filter Get-SubfolderSizes {
     [CmdletBinding()]
     param (

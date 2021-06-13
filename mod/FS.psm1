@@ -286,14 +286,23 @@ function Show-FolderSizes {
     [CmdletBinding()]
     param (
         [Parameter(position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
-        [string] $Path = $PWD
+        [string] $Path = $PWD,
+
+        [Switch] $DirsOnly,
+        [Switch] $Force = $False,
+        [Switch] $AscendingSort = $False,
+        [Switch] $SortBySize = $False
     )
 
     process {
         hr;
         println "`e[33m",(Resolve-Path $Path),"`e[0m"
-        Get-SubfolderSizes $Path -ExtraFields | Sort-Object Length -Descending | Select-Object Name,Date,Time,Size
+        if ($SortBySize) {
+            Get-SubfolderSizes $Path -ExtraFields -DirsOnly:$DirsOnly -Force:$Force | Sort-Object Length -Descending:(!$AscendingSort) | Select-Object Name,Date,Time,Size
+        } else {
+            Get-SubfolderSizes $Path -ExtraFields -DirsOnly:$DirsOnly -Force:$Force | Select-Object Name,Date,Time,Size
+        }
         hr;
-        "Total length: `e[33m{0}`e[0m" -f (ShortSize (Get-FolderSize $Path))
+        "Total size: `e[33m{0}`e[0m" -f (ShortSize (Get-FolderSize $Path -Force:$Force))
     }
 }

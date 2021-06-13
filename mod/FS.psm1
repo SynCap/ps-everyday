@@ -222,20 +222,26 @@ filter Get-FolderSize {
     [CmdletBinding()]
     param (
         [Parameter(position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
-        [string] $Path = $PWD
+        [string] $Path = $PWD,
+
+        [Switch] $Force = $False
     )
 
-   (Get-ChildItem $Path -Recurse -Force | Measure-Object Length -Sum).sum
+   Write-Verbose "Path: $Path"
+   Write-Verbose "Force: $Force"
+   (Get-ChildItem $Path -Recurse -Force:$Force | Measure-Object Length -Sum).sum
 }
 
 filter Get-SubfolderSizesHT {
     [CmdletBinding()]
     param (
         [Parameter(position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
-        [string] $Path = $PWD
+        [string] $Path = $PWD,
+
+        [Switch] $Force = $False
     )
 
-    Get-ChildItem $Path -Directory | ForEach-Object{ @{ $_.Name = (Get-FolderSize $_) } }
+    Get-ChildItem $Path -Directory -Force:$Force | ForEach-Object{ @{ $_.Name = (Get-FolderSize $_) } }
 }
 
 filter Get-SubfolderSizes {

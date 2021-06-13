@@ -9,6 +9,7 @@ function ... { Set-Location ..\.. }
 function .... { Set-Location ..\..\.. }
 
 Set-Alias props -Value Get-ItemProperty
+
 function attr($f) { (Get-ItemProperty $f).Attributes }
 
 # Colored pretty wide list, like BASH ls
@@ -151,6 +152,7 @@ function logMon($LogFilePath, $match = "Error") {
     Get-Content $LogFilePath -Wait | Where-Object { $_ -Match $match }
 }
 
+# Analogue of GNU tail command – write last lines of file to stdout
 filter tail {
     param (
         [Parameter(Mandatory,ValueFromPipeline)] $Name,
@@ -159,16 +161,23 @@ filter tail {
     Get-Content $Name -Last $Last
 }
 
+# Make symlink
 function Mount-Symlink ($Target, $Link) {
     New-Item -Path $Link -Value $Target -ItemType SymbolicLink
 }
 
-function ShortSize ($val) {
-    switch ($val) {
-        {$val -gt 1Gb} {return '{0:n1}G' -f ($val/1Gb)}
-        {$val -gt 1Mb} {return '{0:n1}M' -f ($val/1Mb)}
-        {$val -gt 1Kb} {return '{0:n1}k' -f ($val/1Kb)}
-        default {return '{0:n0} ' -f $val}
+# Convert size to human friendly look
+function ShortSize {
+    param  (
+        [Parameter(Position=0)] [UInt] $Length = 0
+    )
+
+    switch ($Length) {
+        {$Length -gt 1Tb} {return "{0:n1}`e[95mT`e[m" -f ($Length / 1Tb)}
+        {$Length -gt 1Gb} {return "{0:n1}`e[91mG`e[m" -f ($Length / 1Gb)}
+        {$Length -gt 1Mb} {return "{0:n1}`e[93mM`e[m" -f ($Length / 1Mb)}
+        {$Length -gt 1Kb} {return "{0:n1}`e[96mK`e[m" -f ($Length / 1Kb)}
+        default {return "{0:n0}`e[32mb`e[m" -f $Length}
     }
 }
 
@@ -180,29 +189,100 @@ function Get-FreeSpace {
             ValueFromPipelineByPropertyName,
             Position=0,
             ValueFromRemainingArguments
-        )] $Drive
+        )] $Drives
     )
 
-    [System.IO.DriveInfo]::GetDrives() |
-        Where-Object {$_.IsReady -and $Drive -contains $_.Name} |
-            ForEach-Object {
-                if (!$_.TotalFreeSpace) {
-                    $FreePct = 0
-                    $Free = 0
-                } else {
-                    $FreePct = [System.Math]::Round(100 * $_.TotalFreeSpace / $_.TotalSize, 2)
-                    $Free = ShortSize $_.TotalFreeSpace
-                }
+    process {
+        [System.IO.DriveInfo]::GetDrives() |
+            Where-Object {$_.IsReady -and $Drives -contains $_.Name.ToLower()} |
+                ForEach-Object {
+                    if (!$_.TotalFreeSpace) {
+                        $FreePct = 0
+                        $Free = 0
+                    } else {
+                        $FreePct = [System.Math]::Round(100 * $_.TotalFreeSpace / $_.TotalSize, 2)
+                        $Free = ShortSize $_.TotalFreeSpace
+                    }
 
-                New-Object -TypeName psobject -Property @{
-                    Drive     = $_.Name
-                    DriveType = $_.DriveType
-                    '%' = $FreePct
-                    'Space' = $Free
+                    New-Object -TypeName psobject -Property @{
+                        Drive     = $_.Name
+                        DriveType = $_.DriveType
+                        '%' = $FreePct
+                        'Space' = $Free
+                    }
                 }
-            }
+    }
 }
 
-function urlget($url, $out) {
-    (New-Object System.Net.WebClient).DownloadFile($url, $out)
+function urlget($Url, $Out) {
+    (New-Object System.Net.WebClient).DownloadFile($Url, $Out)
+}
+
+filter Get-FolderSize {
+    [CmdletBinding()]
+    param (
+        [Parameter(position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
+        [string] $Path = $PWD
+    )
+
+   (Get-ChildItem $Path -Recurse -Force | Measure-Object Length -Sum).sum
+}
+
+filter Get-SubfolderSizesHT {
+    [CmdletBinding()]
+    param (
+        [Parameter(position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
+        [string] $Path = $PWD
+    )
+
+    Get-ChildItem $Path -Directory | ForEach-Object{ @{ $_.Name = (Get-FolderSize $_) } }
+}
+
+filter Get-SubfolderSizes {
+    [CmdletBinding()]
+    param (
+        # Target path of parent folder in wich the immediate descendants sizes are calculated
+        [Parameter(position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
+        [string] $Path = $PWD,
+
+        # ExtraFields – FullName of dirs and calculated human readable lingth as Size field
+        [Switch] $ExtraFields,
+        # Width of Size field to align with table view
+        [UInt] $szWidth = 16 # to get proper length use doubled length because of color data
+    )
+
+    # function hlm ($s) {return $s.Insert($s.Length - 1, "`e[96m") + "`e[0m"}
+
+    Get-ChildItem $Path -Directory |
+        ForEach-Object {
+            $rec = New-Object PSObject
+            $len = (Get-FolderSize $_)
+
+            Add-Member -InputObject $rec -MemberType NoteProperty -Name "Name" -Value $_.Name
+            if ($ExtraFields) {
+                # Add-Member -InputObject $rec -MemberType NoteProperty -Name "FullName" -Value $_.FullName
+                Add-Member -InputObject $rec -MemberType NoteProperty -Name "Date" -Value $_.LastWriteTime.ToShortDateString()
+                Add-Member -InputObject $rec -MemberType NoteProperty -Name "Time" -Value ('{0,8}' -f ($_.LastWriteTime.ToLongTimeString()))
+                Add-Member -InputObject $rec -MemberType NoteProperty -Name "Size" -Value ("{0,$szWidth}" -f (ShortSize $len))
+            }
+            Add-Member -InputObject $rec -MemberType NoteProperty -Name "Length" -Value $len
+
+            $rec
+        }
+}
+
+function Show-FolderSizes {
+    [CmdletBinding()]
+    param (
+        [Parameter(position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
+        [string] $Path = $PWD
+    )
+
+    process {
+        hr;
+        println "`e[33m",(Resolve-Path $Path),"`e[0m"
+        Get-SubfolderSizes $Path -ExtraFields | Sort-Object Length -Descending | Select-Object Name,Date,Time,Size
+        hr;
+        "Total length: `e[33m{0}`e[0m" -f (ShortSize (Get-FolderSize $Path))
+    }
 }

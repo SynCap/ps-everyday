@@ -38,15 +38,15 @@ function Write-Theme {
     # possible to display time of finish previous command and/or it's duration
 
     if ($sl.ClxClock -contains 'Time') {
-        $timestamp = "⌚{0:HH}:{0:mm}:{0:ss}" -f (Get-Date)
+        $timestamp = "{0}{1:HH}:{1:mm}:{1:ss}" -f $sl.PromptSymbols.ClockTimeSymbol,(Get-Date)
     }
 
     $history = Get-History
     if (0 -lt $history.Count -and $sl.ClxClock -contains 'Dur') {
-        $dur = '⌛' + ( ($history | Select-Object -Last 1).Duration.ToString() -Replace '^[0:]*','' -Replace '\d{4}$','' )
+        $dur = $sl.PromptSymbols.ClockDurSymbol + ( ($history | Select-Object -Last 1).Duration.ToString() -Replace '^[0:]*','' -Replace '\d{4}$','' )
     }
 
-    $clock = (@($timestamp,$dur) -Join ''),( [boolean]$timestamp -or [boolean]$dur ? '┋' : $null ) -join ''
+    $clock = (@($timestamp,$dur) -Join ''),( [boolean]$timestamp -or [boolean]$dur ? $sl.PromptSymbols.ClockDividerSymbol : $null ) -join ''
 
     $prompt += Write-Prompt $clock -BackgroundColor $sl.Colors.PromptBackgroundColor -ForegroundColor $sl.Colors.ClockForeground
 
@@ -55,12 +55,12 @@ function Write-Theme {
     $path = Get-FullPath -dir $pwd
 
     if ($path -eq '~') {
-        $path = '   {0}   ' -f $sl.promptSymbols.homeChars[2]
+        $path = '   {0}   ' -f $sl.promptSymbols.HomeDirSymbol
     } else {
         foreach ($subst in $sl.PathSubstitutions) {
             if ($path -match ($subst.Pattern+'\\?')){
                 # println 'Found: ', $subst.Label
-                $path = ($path -replace $subst.Pattern, $subst.Label)
+                $path = $sl.PromptSymbols.WslDistributions[$subst.Label] + ($path -replace $subst.Pattern, $subst.Label)
                 # println $path
                 break
             }
@@ -117,18 +117,6 @@ $sl.PathSubstitutions = @(
     <# 4 #> @{ Label={"`e[36m WSL`$ `e[33m{0}`e[97m `u{e0b1} " -f ($_.Groups[1].Value.Substring(0,1).ToUpper() + $_.Groups[1].Value.Substring(1).ToLower())}; Pattern='^Microsoft\.PowerShell\.Core\\FileSystem::\\\\wsl\$\\(\w+).*\\?'}
 )
 
-$sl.PromptSymbols.StartSymbol                    = '' # [char]::ConvertFromUtf32(0x9889)
-$sl.PromptSymbols.ElevatedSymbol                 = [char]::ConvertFromUtf32(0x26A1)
-$sl.PromptSymbols.PromptIndicator                = [char]::ConvertFromUtf32(0xE0B1) #(0x276F) - ❯
-$sl.PromptSymbols.PathSeparatorSymbol            = "`e[96m{0}`e[97m" -f [char]::ConvertFromUtf32(0xe0bb) # 0x2573
-$sl.PromptSymbols.SegmentStartSymbol             = [char]::ConvertFromUtf32(0xE0ba)
-$sl.PromptSymbols.SegmentBackwardSymbol          = [char]::ConvertFromUtf32(0xE0be)
-$sl.PromptSymbols.SegmentForwardSymbol           = [char]::ConvertFromUtf32(0xE0c6)
-$sl.PromptSymbols.SegmentFinishSymbol            = [char]::ConvertFromUtf32(0xE0bc)
-$sl.PromptSymbols.SegmentSeparatorForwardSymbol  = [char]::ConvertFromUtf32(0xE0B1)
-$sl.PromptSymbols.SegmentSeparatorBackwardSymbol = [char]::ConvertFromUtf32(0xE0B3)
-$sl.PromptSymbols.FailedCommandSymbol            = [char]::ConvertFromUtf32(0x2573)
-
 # ﮟﳐ
 $sl.PromptSymbols.homeChars = (
     [char]::ConvertFromUtf32(0x2263), <# Extremally exact equal math symbol #>
@@ -141,18 +129,44 @@ $sl.PromptSymbols.homeChars = (
     [char]::ConvertFromUtf32(0xfcd0)
 )
 
-$sl.Colors.PromptForegroundColor = [ConsoleColor]::White
-$sl.Colors.PromptSymbolColor = [ConsoleColor]::Cyan
-$sl.Colors.PromptHighlightColor = [ConsoleColor]::DarkBlue
-$sl.Colors.GitForegroundColor = [ConsoleColor]::Black
-$sl.Colors.WithForegroundColor = [ConsoleColor]::DarkRed
-$sl.Colors.WithBackgroundColor = [ConsoleColor]::Magenta
-$sl.Colors.VirtualEnvBackgroundColor = [System.ConsoleColor]::Red
-$sl.Colors.VirtualEnvForegroundColor = [System.ConsoleColor]::White
-$sl.Colors.ClockForeground = [ConsoleColor]::DarkCyan
-$sl.Colors.ClockBackground = [ConsoleColor]::Gray
-$sl.Colors.SessionInfoBackgroundColor = [ConsoleColor]::DarkYellow
-$sl.Colors.AdminIconForegroundColor = [consoleColor]::Blue
+# ''
+# '     '
+$sl.PromptSymbols.WslDistributions = @{
+    'Alpine' = [char]::ConvertFromUtf32(0xF300) # ''
+    'Debian' = [char]::ConvertFromUtf32(0xE77D) # ''
+    'Kali'   = [char]::ConvertFromUtf32(0xE712) # ''
+    'Ubuntu' = [char]::ConvertFromUtf32(0xE73A) # ''
+    'Linux'  = [char]::ConvertFromUtf32(0xE712) # ''
+}
+
+$sl.PromptSymbols.StartSymbol                    = '' # [char]::ConvertFromUtf32(0x9889)
+$sl.PromptSymbols.ElevatedSymbol                 = [char]::ConvertFromUtf32(0x26A1) # (0xe315) # '' # (0xF740) #  # (0xF741) #  # (0xFBD3) # ﯓ
+$sl.PromptSymbols.PromptIndicator                = [char]::ConvertFromUtf32(0xE0B1) # (0x276F) # '❯'
+$sl.PromptSymbols.PathSeparatorSymbol            = "`e[96m{0}`e[97m" -f [char]::ConvertFromUtf32(0xE0BB) # 0x2573
+$sl.PromptSymbols.SegmentStartSymbol             = [char]::ConvertFromUtf32(0xE0ba)
+$sl.PromptSymbols.SegmentBackwardSymbol          = [char]::ConvertFromUtf32(0xE0be)
+$sl.PromptSymbols.SegmentForwardSymbol           = [char]::ConvertFromUtf32(0xE0c6)
+$sl.PromptSymbols.SegmentFinishSymbol            = [char]::ConvertFromUtf32(0xE0bc)
+$sl.PromptSymbols.SegmentSeparatorForwardSymbol  = [char]::ConvertFromUtf32(0xE0B1)
+$sl.PromptSymbols.SegmentSeparatorBackwardSymbol = [char]::ConvertFromUtf32(0xE0B3)
+$sl.PromptSymbols.FailedCommandSymbol            = [char]::ConvertFromUtf32(0xE20D) #  # (0x2573) # ╳
+$sl.PromptSymbols.ClockTimeSymbol                = ''
+$sl.PromptSymbols.ClockDurSymbol                 = '↕' #
+$sl.PromptSymbols.ClockDividerSymbol             = '|'
+$sl.PromptSymbols.HomeDirSymbol                  = $sl.PromptSymbols.homeChars[4]
+
+$sl.Colors.PromptForegroundColor            = [ConsoleColor]::White
+$sl.Colors.PromptSymbolColor                = [ConsoleColor]::Cyan
+$sl.Colors.PromptHighlightColor             = [ConsoleColor]::DarkBlue
+$sl.Colors.GitForegroundColor               = [ConsoleColor]::Black
+$sl.Colors.WithForegroundColor              = [ConsoleColor]::DarkRed
+$sl.Colors.WithBackgroundColor              = [ConsoleColor]::Magenta
+$sl.Colors.VirtualEnvBackgroundColor        = [ConsoleColor]::Red
+$sl.Colors.VirtualEnvForegroundColor        = [ConsoleColor]::White
+$sl.Colors.ClockForeground                  = [ConsoleColor]::DarkCyan
+$sl.Colors.ClockBackground                  = [ConsoleColor]::Gray
+$sl.Colors.SessionInfoBackgroundColor       = [ConsoleColor]::DarkYellow
+$sl.Colors.AdminIconForegroundColor         = [consoleColor]::Black
 $sl.Colors.CommandFailedIconForegroundColor = [ConsoleColor]::Red
 
 # PSReadLine

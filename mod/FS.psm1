@@ -291,7 +291,7 @@ function Show-FolderSizes {
         [Switch] $DirsOnly,
         [Switch] $Force = $False,
         [Switch] $AscendingSort = $False,
-        [Switch] $SortBySize = $False
+        [Switch] $SortBySize = $False -or $AscendingSort
     )
 
     process {

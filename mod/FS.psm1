@@ -169,7 +169,7 @@ function Mount-Symlink ($Target, $Link) {
 # Convert size to human friendly look
 function ShortSize {
     param  (
-        [Parameter(Position=0)] [UInt] $Length = 0
+        [Parameter(Position=0)] [UInt64] $Length = 0
     )
 
     switch ($Length) {
@@ -194,7 +194,7 @@ function Get-FreeSpace {
 
     process {
         [System.IO.DriveInfo]::GetDrives() |
-            Where-Object {$_.IsReady -and $Drives -contains $_.Name.ToLower()} |
+            Where-Object {$_.IsReady -and $Drives -contains $_.Name.Chars(0)} |
                 ForEach-Object {
                     if (!$_.TotalFreeSpace) {
                         $FreePct = 0
@@ -204,7 +204,7 @@ function Get-FreeSpace {
                         $Free = ShortSize $_.TotalFreeSpace
                     }
 
-                    New-Object -TypeName psobject -Property @{
+                    New-Object -TypeName PSObject -Property @{
                         Drive     = $_.Name
                         DriveType = $_.DriveType
                         '%' = $FreePct
@@ -222,22 +222,29 @@ filter Get-FolderSize {
     [CmdletBinding()]
     param (
         [Parameter(position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
-        [string] $Path = $PWD
+        [string] $Path = $PWD,
+
+        [Switch] $Force = $False
     )
 
-   (Get-ChildItem $Path -Recurse -Force | Measure-Object Length -Sum).sum
+   Write-Verbose "Path: $Path"
+   Write-Verbose "Force: $Force"
+   (Get-ChildItem $Path -Recurse -Force:$Force | Measure-Object Length -Sum).sum
 }
 
 filter Get-SubfolderSizesHT {
     [CmdletBinding()]
     param (
         [Parameter(position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
-        [string] $Path = $PWD
+        [string] $Path = $PWD,
+
+        [Switch] $Force = $False
     )
 
-    Get-ChildItem $Path -Directory | ForEach-Object{ @{ $_.Name = (Get-FolderSize $_) } }
+    Get-ChildItem $Path -Directory -Force:$Force | ForEach-Object{ @{ $_.Name = (Get-FolderSize $_) } }
 }
 
+# Calculate sizes of ol subfolders
 filter Get-SubfolderSizes {
     [CmdletBinding()]
     param (
@@ -245,18 +252,22 @@ filter Get-SubfolderSizes {
         [Parameter(position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [string] $Path = $PWD,
 
+        # Include Hidden and System folders
+        [Switch] $Force = $False,
         # ExtraFields – FullName of dirs and calculated human readable lingth as Size field
         [Switch] $ExtraFields,
+        # Directories only
+        [Switch] $DirsOnly,
         # Width of Size field to align with table view
         [UInt] $szWidth = 16 # to get proper length use doubled length because of color data
     )
 
     # function hlm ($s) {return $s.Insert($s.Length - 1, "`e[96m") + "`e[0m"}
 
-    Get-ChildItem $Path -Directory |
+    Get-ChildItem $Path -Directory:$DirsOnly -Force:$Force |
         ForEach-Object {
+            $len = (Get-FolderSize $_ -Force:$Force)
             $rec = New-Object PSObject
-            $len = (Get-FolderSize $_)
 
             Add-Member -InputObject $rec -MemberType NoteProperty -Name "Name" -Value $_.Name
             if ($ExtraFields) {
@@ -275,14 +286,23 @@ function Show-FolderSizes {
     [CmdletBinding()]
     param (
         [Parameter(position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
-        [string] $Path = $PWD
+        [string] $Path = $PWD,
+
+        [Switch] $DirsOnly,
+        [Switch] $Force = $False,
+        [Switch] $AscendingSort = $False,
+        [Switch] $SortBySize = $False
     )
 
     process {
         hr;
         println "`e[33m",(Resolve-Path $Path),"`e[0m"
-        Get-SubfolderSizes $Path -ExtraFields | Sort-Object Length -Descending | Select-Object Name,Date,Time,Size
+        if ($SortBySize) {
+            Get-SubfolderSizes $Path -ExtraFields -DirsOnly:$DirsOnly -Force:$Force | Sort-Object Length -Descending:(!$AscendingSort) | Select-Object Name,Date,Time,Size
+        } else {
+            Get-SubfolderSizes $Path -ExtraFields -DirsOnly:$DirsOnly -Force:$Force | Select-Object Name,Date,Time,Size
+        }
         hr;
-        "Total length: `e[33m{0}`e[0m" -f (ShortSize (Get-FolderSize $Path))
+        "Total size: `e[33m{0}`e[0m" -f (ShortSize (Get-FolderSize $Path -Force:$Force))
     }
 }

@@ -6,14 +6,18 @@
 # make .gitignore file here via gitignore.io
 #
 # show posible configuratios list
-# @example: gitignore list
+# @example: gIgnore list
 #
 # make common configuration
-# @example: gitignore windows,macos,node
+# @example: gIgnore windows,macos,node
 function gIgnore($mode) {
     curl -L -s "https://www.gitignore.io/api/$([string]$mode)"
 }
 
+# Add/replace `.gitignore` file at current location
+#
+# replace existing file with `universal`
+# @example: gAddIgnore -n
 function gAddIgnore {
     param (
         # `list` just show possible values, `universl` for seversl OS and editors rules, or a set of values from `list`
@@ -39,12 +43,19 @@ function gAddIgnore {
 }
 
 # initialize git repository here
+#
+# init local repo with `main` default branch and no `develop` branch
+# @example    : InitGitRepo -b main
+#
+# init repo with remote origin and `stream` default branch also make `develop`
+# branch and switch to it
+# @example    : InitGitRepo -b main -d git@github.com:SynCap/ps-everyday.git
 function InitGitRepo {
     [CmdletBinding()]
     param (
         [Parameter(position=0)][String] $RemoteUrl,
         [String] $BranchName,
-        [Switch] $NoDevBranch
+        [Switch] $DevBranch
     )
     Get-Date;
     hr;
@@ -66,7 +77,7 @@ function InitGitRepo {
         git push -u origin ($BranchName ?? (git config --get init.defaultBranch))
     }
     hr;
-    if(-not $NoDevBranch) {
+    if($NoDevBranch) {
         git checkout -b develop
     }
     git log

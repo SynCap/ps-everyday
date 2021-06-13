@@ -204,7 +204,7 @@ function Get-FreeSpace {
                         $Free = ShortSize $_.TotalFreeSpace
                     }
 
-                    New-Object -TypeName psobject -Property @{
+                    New-Object -TypeName PSObject -Property @{
                         Drive     = $_.Name
                         DriveType = $_.DriveType
                         '%' = $FreePct

@@ -194,7 +194,7 @@ function Get-FreeSpace {
 
     process {
         [System.IO.DriveInfo]::GetDrives() |
-            Where-Object {$_.IsReady -and $Drives -contains $_.Name.ToLower()} |
+            Where-Object {$_.IsReady -and $Drives -contains $_.Name.Chars(0)} |
                 ForEach-Object {
                     if (!$_.TotalFreeSpace) {
                         $FreePct = 0

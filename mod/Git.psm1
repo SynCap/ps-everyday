@@ -28,7 +28,7 @@ function gAddIgnore {
     Switch ($mode) {
         'list' {gIgnore list;break};
         'universal' {$rules = 'windows,linux,macos,visualstudiocode,sublimetext,vim';break}
-        default {$rules = $mode}
+        default {$rules = ($mode -join ',')}
     }
     if ($New) {
         gIgnore $rules > .gitignore
@@ -38,7 +38,7 @@ function gAddIgnore {
     print "`e[93;40m",".gitignore","`e[0m"," from ","`e[96;40m","gitignore.io","`e[om`n"
     "-" * 35
     println "`e[93m",($New ? "Created new:" : "Added:")
-    println "`e[33m",($mode -join ','),"`e[0m"
+    println "`e[33m",($mode -join ', '),"`e[0m"
     $rules | Sort-Object
 }
 

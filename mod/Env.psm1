@@ -1,12 +1,12 @@
 # Управление сессионной переменной окружения PATH
-function .pc {$env:Path.Split(';')[-3..-1]}
-function .pp {if($env:Path -NotLike "*;$pwd"){$env:Path+=";$pwd"};.pc}
-function .pd {$env:Path=$env:Path.Split(';')[0..-2].Join(';');.pc}
+function epc {$env:Path.Split(';')[-3..-1]}
+function epp {if($env:Path -NotLike "*;$pwd"){$env:Path+=";$pwd"};.pc}
+function epd {$env:Path=$env:Path.Split(';')[0..-2].Join(';');.pc}
 
 # PowerShell:PSAvoidGlobalVars=$False
 $Script:EvdSPF = @{}
 
-function .spf ($SpecialFolderAlias) {
+function spf ($SpecialFolderAlias) {
 	if ($SpecialFolderAlias) {
 		[Environment]::GetFolderPath($SpecialFolderAlias)
 	} else {
@@ -20,7 +20,7 @@ function .spf ($SpecialFolderAlias) {
 }
 
 # разворачивает %$<строки>%
-function .exp ($s) {[System.Environment]::ExpandEnvironmentVariables($s)}
+function exp ($s) {[System.Environment]::ExpandEnvironmentVariables($s)}
 
 function .exps ([parameter(ValueFromPipeline)][string]$s) {
 	$re = '#\(\s*(\w+?)\s*\)'
@@ -33,7 +33,7 @@ function .exps ([parameter(ValueFromPipeline)][string]$s) {
 	}
 }
 
-function def($o){(Get-Command $o).Definition}
+function def($Cmd){(Get-Command $Cmd).Definition}
 
 # Аналог GNU uname или DOS ver
 function ver {
@@ -109,13 +109,13 @@ function Get-UPath {
 
 Set-Alias upath -Value Get-UPath
 
-function .errM {
+function ErrM {
 	print "`e[31m"
 	$Global:Error | ForEach-Object {$_.Exception.Message} | Sort-Object -Unique | ForEach-Object {">`n$_"}
 	print $RC
 }
 
-function .errC { $Global:Error.Clear() }
+function ErrC { $Global:Error.Clear() }
 
-function exps($path) { explorer.exe /select, "`"$(Resolve-Path $path)`""}
-function expo($path) { explorer.exe /e, "`"$(Resolve-Path $path)`""}
+function Select-InExplorer($path) { explorer.exe /select, "`"$(Resolve-Path $path)`""}
+function Open-InExplorer($path) { explorer.exe /e, "`"$(Resolve-Path $path)`""}

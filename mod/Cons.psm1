@@ -13,20 +13,23 @@ $lf = [System.Environment]::NewLine
 # here
 function lf {[System.Environment]::NewLine}
 
-function .c {
+# Wtih NO params - send ASNI "Clear buffer" command
+# else gets numeric values for console colors and
+# return esc sequence string to control console colors
+function c {
 	param (
 		[Alias('f')][Parameter(position=0)] [int] $FgColor,
 		[Alias('b')][Parameter(position=1)] [int] $BgColor
 	)
-	if($FgColor && $BgColor) {
+	if(!$FgColor && !$BgColor) {
+		[Console]::Write("`ec")
+	} elseif($FgColor && $BgColor) {
 		"`e[${FgColor};${BgColor}m"
 	} else {
 		if ($FgColor) { "`e[${FgColor}m"}
 		if ($BgColor) { "`e[${BgColor}m"}
 	}
 }
-
-function c. {[Console]::Write("`ec")}
 
 function hr{
 	param(

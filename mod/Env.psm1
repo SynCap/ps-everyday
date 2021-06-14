@@ -79,9 +79,9 @@ function TCmd {
 }
 
 function lg {
-	c. # [Console]::Write("`ec")
+	[Console]::Write("`ec")
 	lazygit.exe
-	c. # [Console]::Write("`ec")
+	[Console]::Write("`ec")
 }
 
 Set-Alias subl -Value $Env:Editor

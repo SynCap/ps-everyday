@@ -13,22 +13,24 @@ $lf = [System.Environment]::NewLine
 # here
 function lf {[System.Environment]::NewLine}
 
-# Wtih NO params - send ASNI "Clear buffer" command
-# else gets numeric values for console colors and
-# return esc sequence string to control console colors
-function c {
+# "Clear console" ANSI command
+function c {[Console]::Write("`ec")}
+
+# Generate ANSI Esc sequence to set console text color
+function p {
+	# [CmdletBinding()]
 	param (
-		[Alias('f')][Parameter(position=0)] [int] $FgColor,
-		[Alias('b')][Parameter(position=1)] [int] $BgColor
+		[Alias('f')][Parameter(position=0)] [int] $FgColor = -1,
+		[Alias('b')][Parameter(position=1)] [int] $BgColor = -1
 	)
-	if(!$FgColor && !$BgColor) {
-		[Console]::Write("`ec")
-	} elseif($FgColor && $BgColor) {
+	if(0 -le $FgColor && 0 -le $BgColor) {
 		"`e[${FgColor};${BgColor}m"
-	} else {
-		if ($FgColor) { "`e[${FgColor}m"}
-		if ($BgColor) { "`e[${BgColor}m"}
+	} elseif (0 -le $FgColor) {
+		"`e[$( $FgColor )m"
+	} elseif (0 -le $BgColor) {
+		"`e[${BgColor}m"
 	}
+	# Write-Debug "FG: ${FgColor}, BG: ${BgColor}"
 }
 
 function hr{
@@ -78,8 +80,8 @@ Set-Alias -Name shansi -Value Show-AnsiColorSample
 .Synopsys
 Quick info about current screen settings
 #>
-function .scr([switch]$c) {$host.ui.RawUI;if($c){Show-AnsiColorSample}}
-function .scrr{cls;.scr;shansi 40}
+function scr([switch]$c) {$host.ui.RawUI;if($c){Show-AnsiColorSample}}
+function scrr{c;scr;shansi 40}
 
 function Show-PowerLineSymbols {
 	"`t       "
@@ -105,11 +107,13 @@ $Global:Bars = [char[]]'│┆┊┃┇┋≈‒–—―─━═╌╍▀▁�
 # [Char]::ConvertFromUtf32(0x254c), # Box drawing light double dash horizontal
 # [Char]::ConvertFromUtf32(0x254d)  # Box drawing light heavy double dash horz
 
-function Show-Bars {$Global:Bars | ForEach-Object `
-  -Begin {$i=0} `
-  -Process {`
-	@{$("{0,5:d}. 0x{1:x} : {2}" -f $i++,[int]$_,$_) = $_}} | Format-Wide -a `
-  }
+function Show-Bars {
+	$Global:Bars |
+		ForEach-Object -Begin {$i=0} -Process {
+			@{$("{0,5:d}. 0x{1:x} : {2}" -f $i++,[int]$_,$_) = $_}
+		} |
+			Format-Wide -a
+}
 
 function Get-FlatArray ($Source) {
 	$Source | ForEach-Object {$_} | Where-Object {$_ -ne $null}

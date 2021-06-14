@@ -33,7 +33,7 @@ function .exps ([parameter(ValueFromPipeline)][string]$s) {
 	}
 }
 
-function def($o){(gcm $o).Definition}
+function def($o){(Get-Command $o).Definition}
 
 # Аналог GNU uname или DOS ver
 function ver {
@@ -70,9 +70,12 @@ function TCmd {
 		If $Path specifies the file, open folder and select that file if exists.
 	#>
 	param([Parameter(ValueFromPipeline)] $Path = '.')
-	$Cmd = Join-Path $env:ProgramFiles 'totalcmd\TOTALCMD64.EXE'
-	$Params =  @( '/O','/T','/S', (Resolve-Path $Path).Path )
-	& $Cmd $Params
+
+	process {
+		$Cmd = Join-Path $env:ProgramFiles 'totalcmd\TOTALCMD64.EXE'
+		$Params =  @( '/O','/T','/S', (Resolve-Path $Path).Path )
+		& $Cmd $Params
+	}
 }
 
 function lg {

@@ -118,5 +118,6 @@
     }
 
 	],
+	"console_title": true,
 	"final_space": false
 }

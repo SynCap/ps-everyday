@@ -43,11 +43,11 @@ function ybld {
 }
 
 function ndev {
-	npm start dev
+	npm run dev
 }
 
 function nbld {
-	npm start build
+	npm run build
 }
 
 function dev {

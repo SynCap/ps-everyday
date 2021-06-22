@@ -130,6 +130,9 @@ function rmr {
             position=0
         )] [String[]] $Path='.\*'
     )
+    if (1 -eq $Path.Count -and (Test-Path $Path)) {
+        $Path = (join-path $Path '*' -Resolve) + (resolve-path $Path).Path
+    }
     Resolve-Path -Path $Path -ErrorVariable rmrErr -ErrorAction 'SilentlyContinue' |
         ForEach-Object{
             print 'Remove ';

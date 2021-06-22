@@ -35,8 +35,7 @@ function p {
 
 function hr{
 	param(
-		[Alias('c')][Parameter(position=0)][String] $Char =
-			[Char]::ConvertFromUtf32(0x2013), # En dash
+		[Alias('c')][Parameter(position=0)][String] $Char = "`u{2013}", # En dash
 
 		[Alias('q')][Parameter(position=1)][Single] $Count = .4 # ≈40% of window width
 	)

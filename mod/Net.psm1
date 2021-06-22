@@ -1,3 +1,24 @@
+function dlst {
+	param(
+		[parameter(mandatory,position=0)] [String[]] $urlList,
+		[parameter(position=1)] [String] $Dest = '.'
+	)
+	$Cnt = 1
+	foreach ($Url in $urlList) {
+		$r = Invoke-WebRequest $Url
+		$m = (ParseUrl $Url)
+		if ($m) {
+			$FName = Join-Path -Path $Dest -ChildPath ('{0:d3}.{1}' -f $Cnt, ($m.Ext ?? (($r.Headers['Content-Type'] -split '/')[1] ?? '')) -join '')
+			Set-Content -AsByteStream -Value $r.Content -Path $FName
+		} else {
+			Write-Error 'Bad URL'
+			$False
+		}
+		$Cnt++
+	}
+	explorer.exe $Dest
+}
+
 function dlwp {
 	param(
 		[parameter(mandatory,position=0)] [String] $Url,

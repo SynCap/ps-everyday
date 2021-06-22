@@ -1,7 +1,9 @@
 # Управление сессионной переменной окружения PATH
-function epc {$env:Path.Split(';')[-3..-1]}
-function epp {if($env:Path -NotLike "*;$pwd"){$env:Path+=";$pwd"};.pc}
-function epd {$env:Path=$env:Path.Split(';')[0..-2].Join(';');.pc}
+# для быстрого добавления текущей папки в PATH
+# работает только в текущей сессии
+function eps {$env:Path.Split(';')[-3..-1]}
+function epp {if($env:Path -NotLike "*;$pwd"){$env:Path+=";$pwd"};eps}
+function epd {$env:Path=$env:Path.Split(';')[0..-2].Join(';');eps}
 
 # PowerShell:PSAvoidGlobalVars=$False
 $Script:EvdSPF = @{}
@@ -33,7 +35,7 @@ function .exps ([parameter(ValueFromPipeline)][string]$s) {
 	}
 }
 
-function def($Cmd){(Get-Command $Cmd).Definition}
+function def($Cmd){(Get-Command $Cmd -ErrorAction SilentlyContinue).Definition}
 
 # Аналог GNU uname или DOS ver
 function ver {
@@ -79,9 +81,9 @@ function TCmd {
 }
 
 function lg {
-	c. # [Console]::Write("`ec")
+	[Console]::Write("`ec")
 	lazygit.exe
-	c. # [Console]::Write("`ec")
+	[Console]::Write("`ec")
 }
 
 Set-Alias subl -Value $Env:Editor

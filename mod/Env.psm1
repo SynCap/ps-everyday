@@ -35,7 +35,7 @@ function .exps ([parameter(ValueFromPipeline)][string]$s) {
 	}
 }
 
-function def($Cmd){(Get-Command $Cmd).Definition}
+function def($Cmd){(Get-Command $Cmd -ErrorAction SilentlyContinue).Definition}
 
 # Аналог GNU uname или DOS ver
 function ver {

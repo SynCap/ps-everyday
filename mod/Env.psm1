@@ -121,3 +121,9 @@ function ErrC { $Global:Error.Clear() }
 
 function Select-InExplorer($path) { explorer.exe /select, "`"$(Resolve-Path $path)`""}
 function Open-InExplorer($path) { explorer.exe /e, "`"$(Resolve-Path $path)`""}
+
+function Get-DeepHistory {
+	Get-Content (Get-PSReadlineOption).HistorySavePath
+}
+
+Set-Alias hh -Value Get-DeepHistory -Description 'Show inter sessions PSReadline history'

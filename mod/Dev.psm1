@@ -6,7 +6,7 @@
 function sass2styl($f, [string]$OutDir = '.') {
 	draw 'Convert file: '
 	draw $f.FullName Cyan
-	echo ''
+	''
 	if ($f.Extension -ne '.scss') {
 		Write-Warning 'Extension is not SCSS!'
 	}

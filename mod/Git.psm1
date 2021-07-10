@@ -85,3 +85,13 @@ function InitGitRepo {
     hr
     git branch --all
 }
+
+function Get-GitHubDir {
+
+    [CmdletBinding()]
+    param (
+        [Parameter(mandatory=$true,position=0)][String] $RepoName,
+        [Parameter(Position=1)][String] $dir
+    )
+    git archive --format zip --remote "https://github.com/$repo.git" HEAD $path | 7z x -si -o(Join-Path $pwd ('packages/playground/' -split '[/\\]')[-2]);
+}

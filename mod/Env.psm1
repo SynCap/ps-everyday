@@ -86,8 +86,8 @@ function lg {
 	[Console]::Write("`ec")
 }
 
-Set-Alias subl -Value $Env:Editor
 $Global:subl = $Env:Editor
+Set-Alias subl ($Env:Editor)
 
 Set-Alias gvim -Value "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Vim 8.2\gVim.lnk"
 
@@ -121,3 +121,9 @@ function ErrC { $Global:Error.Clear() }
 
 function Select-InExplorer($path) { explorer.exe /select, "`"$(Resolve-Path $path)`""}
 function Open-InExplorer($path) { explorer.exe /e, "`"$(Resolve-Path $path)`""}
+
+function Get-DeepHistory {
+	Get-Content (Get-PSReadlineOption).HistorySavePath
+}
+
+Set-Alias hh -Value Get-DeepHistory -Description 'Show inter sessions PSReadline history'

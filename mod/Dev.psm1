@@ -6,7 +6,7 @@
 function sass2styl($f, [string]$OutDir = '.') {
 	draw 'Convert file: '
 	draw $f.FullName Cyan
-	echo ''
+	''
 	if ($f.Extension -ne '.scss') {
 		Write-Warning 'Extension is not SCSS!'
 	}
@@ -34,36 +34,29 @@ function pcl {
 	node $Pwd\node_modules\parcel\bin\cli.js @Args
 }
 
-function ydev {
-	yarn dev
+function vite {
+	node .\node_modules\vite\bin\vite.js @Args
 }
 
-function ybld {
-	yarn build
-}
-
-function ndev {
-	npm run dev
-}
-
-function nbld {
-	npm run build
+function Start-PackageJsonScript([String] $Cmd) {
+	$r = (Test-Path yarn.lock) ?
+			'yarn',$Cmd :
+			((Test-Path pnpm-lock.yaml) ?
+				'pnpm','run',$Cmd :
+				 'npm','run',$Cmd)
+	& $r[0] $r[1,-1]
 }
 
 function dev {
-	if (Test-Path yarn.lock) {
-		ydev
-	} else {
-		ndev
-	}
+	Start-PackageJsonScript 'dev'
+}
+
+function stg {
+	Start-PackageJsonScript 'stage'
 }
 
 function bld {
-	if (Test-Path yarn.lock) {
-		ybld
-	} else {
-		nbld
-	}
+	Start-PackageJsonScript 'build'
 }
 
 # загрузить в Sublime тему от o-my-posh
@@ -73,3 +66,5 @@ function Edit-Theme ($name) {
 		subl $_.Location
 	}
 }
+
+Set-Alias pp -Value 'pnpm' -Description 'Just alias for PNPM 😜'

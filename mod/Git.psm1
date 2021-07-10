@@ -54,8 +54,8 @@ function InitGitRepo {
     [CmdletBinding()]
     param (
         [Parameter(position=0)][String] $RemoteUrl,
-        [String] $BranchName,
-        [Switch] $DevBranch
+        [String] $BranchName = (git config --get init.defaultBranch),
+        [String] $DevBranch
     )
     Get-Date;
     hr;
@@ -67,21 +67,22 @@ function InitGitRepo {
         & $env:EDITOR .gitignore;
         hr;
     }
-    # init repository in current directory and push it to origin
+    # init repository in current directory and push it to origin if any
     git init ($BranchName ? "--initial-branch=$BranchName" : '')
     git add .
     git commit -m 'init'
     if($RemoteUrl) {
         hr
         git remote add origin $RemoteUrl
-        git push -u origin ($BranchName ?? (git config --get init.defaultBranch))
+        git push -u origin $BranchName
     }
     hr;
-    if($NoDevBranch) {
-        git checkout -b develop
+    if($DevBranch) {
+        git checkout -b $DevBranch
+        git push -u origin
     }
     git log
-    draw "Branches" Yellow
+    draw "Branches`n" Yellow
     hr
     git branch --all
 }

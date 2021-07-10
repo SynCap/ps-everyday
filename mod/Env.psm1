@@ -86,8 +86,8 @@ function lg {
 	[Console]::Write("`ec")
 }
 
-Set-Alias subl -Value $Env:Editor
 $Global:subl = $Env:Editor
+Set-Alias subl ($Env:Editor)
 
 Set-Alias gvim -Value "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Vim 8.2\gVim.lnk"
 

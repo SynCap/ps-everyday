@@ -127,3 +127,19 @@ function Get-DeepHistory {
 }
 
 Set-Alias hh -Value Get-DeepHistory -Description 'Show inter sessions PSReadline history'
+
+function .sp {
+	[CmdletBinding()]
+	param (
+		[Parameter(position=0)] [String] $Name,
+		[Parameter(position=1)] [String] $Dir = $PWD
+	)
+	if (Test-Path $Name -ErrorAction SilentlyContinue) {
+		$Name,$Dir = $null,$Name
+	}
+	Write-Verbose "Profile name: $Name"
+	Write-Verbose "Target dir: $Dir"
+	$Params = "sp -d $Dir$($Name ? " -p $Name" : '')"
+	Write-Verbose "Command: wt $Params"
+	& wt ($Params -split ' ')
+}

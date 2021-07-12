@@ -35,7 +35,7 @@ function pcl {
 }
 
 function vite {
-	node .\node_modules\vite\bin\vite.js @Args
+	node $PWD\node_modules\vite\bin\vite.js @Args
 }
 
 function Start-PackageJsonScript([String] $Cmd) {

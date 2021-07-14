@@ -55,7 +55,8 @@ function InitGitRepo {
     param (
         [Parameter(position=0)][String] $RemoteUrl,
         [String] $BranchName = (git config --get init.defaultBranch),
-        [String] $DevBranch
+        [String] $DevBranch,
+        [Alias('m')][String] $CommitMessage = 'init'
     )
     Get-Date;
     hr;
@@ -70,7 +71,7 @@ function InitGitRepo {
     # init repository in current directory and push it to origin if any
     git init ($BranchName ? "--initial-branch=$BranchName" : '')
     git add .
-    git commit -m 'init'
+    git commit -m $CommitMessage
     if($RemoteUrl) {
         hr
         git remote add origin $RemoteUrl

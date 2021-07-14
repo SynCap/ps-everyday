@@ -274,7 +274,7 @@ filter Get-SubfolderSizes {
 
             Add-Member -InputObject $rec -MemberType NoteProperty -Name "Name" -Value $_.Name
             if ($ExtraFields) {
-                # Add-Member -InputObject $rec -MemberType NoteProperty -Name "FullName" -Value $_.FullName
+                Add-Member -InputObject $rec -MemberType NoteProperty -Name "RelativeName" -Value (Resolve-Path -Relative $_.FullName)
                 Add-Member -InputObject $rec -MemberType NoteProperty -Name "Date" -Value $_.LastWriteTime.ToShortDateString()
                 Add-Member -InputObject $rec -MemberType NoteProperty -Name "Time" -Value ('{0,8}' -f ($_.LastWriteTime.ToLongTimeString()))
                 Add-Member -InputObject $rec -MemberType NoteProperty -Name "Size" -Value ("{0,$szWidth}" -f (ShortSize $len))

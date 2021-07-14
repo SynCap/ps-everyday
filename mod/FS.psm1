@@ -299,12 +299,15 @@ function Show-FolderSizes {
     )
 
     process {
-        hr;
-        println "`e[33m",(Resolve-Path $Path),"`e[0m"
+        "`e[33m$(Resolve-Path $Path)`e[0m"
         if ($SortBySize) {
-            Get-SubfolderSizes $Path -ExtraFields -DirsOnly:$DirsOnly -Force:$Force | Sort-Object Length -Descending:(!$AscendingSort) | Select-Object Name,Date,Time,Size
+            Get-SubfolderSizes $Path -ExtraFields -DirsOnly:$DirsOnly -Force:$Force |
+                Sort-Object Length -Descending:(!$AscendingSort) |
+                    Select-Object Name,Date,Time,Size
         } else {
-            Get-SubfolderSizes $Path -ExtraFields -DirsOnly:$DirsOnly -Force:$Force | Select-Object Name,Date,Time,Size
+            Get-SubfolderSizes $Path -ExtraFields -DirsOnly:$DirsOnly -Force:$Force |
+                Sort-Object RelativeName,Name -Descending:(!$AscendingSort) |
+                    Select-Object RelativeName,Date,Time,Size
         }
         hr;
         "Total size: `e[33m{0}`e[0m" -f (ShortSize (Get-FolderSize $Path -Force:$Force))

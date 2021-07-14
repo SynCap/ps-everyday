@@ -285,6 +285,7 @@ filter Get-SubfolderSizes {
         }
 }
 
+# Calc and show subfolders' sizes
 function Show-FolderSizes {
     [CmdletBinding()]
     param (

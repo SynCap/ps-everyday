@@ -50,7 +50,7 @@ function ls. {
 # Like PS's ls but with
 # Extra sort and
 # More field control
-filter ll {
+function ll {
     [CmdletBinding()]
 
     param (
@@ -292,24 +292,26 @@ function Show-FolderSizes {
         [Parameter(position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [string] $Path = $PWD,
 
-        [Switch] $DirsOnly,
-        [Switch] $Force = $False,
-        [Switch] $AscendingSort = $False,
-        [Switch] $SortBySize = $False -or $AscendingSort
+        [Switch] $FilesToo,
+        [Switch] $Force,
+        [Switch] $Descending,
+        [Switch] $SortBySize
     )
 
     process {
-        "`e[33m$(Resolve-Path $Path)`e[0m"
+        println "`e[33m",$(Resolve-Path $Path),"`e[0m"
         if ($SortBySize) {
-            Get-SubfolderSizes $Path -ExtraFields -DirsOnly:$DirsOnly -Force:$Force |
-                Sort-Object Length -Descending:(!$AscendingSort) |
+            Get-SubfolderSizes $Path -ExtraFields -DirsOnly:(!$FilesToo) -Force:$Force |
+                Sort-Object Length -Descending:($Descending) |
                     Select-Object Name,Date,Time,Size
         } else {
-            Get-SubfolderSizes $Path -ExtraFields -DirsOnly:$DirsOnly -Force:$Force |
-                Sort-Object RelativeName,Name -Descending:(!$AscendingSort) |
+            Get-SubfolderSizes $Path -ExtraFields -DirsOnly:(!$FilesToo) -Force:$Force |
+                Sort-Object RelativeName,Name -Descending:($Descending) |
                     Select-Object RelativeName,Date,Time,Size
         }
         hr;
-        "Total size: `e[33m{0}`e[0m" -f (ShortSize (Get-FolderSize $Path -Force:$Force))
+        println ("Total size: `e[33m{0}`e[0m" -f (ShortSize (Get-FolderSize $Path -Force:$Force)))
     }
 }
+
+Set-Alias dsz Show-FolderSizes -Description 'Show subdirectories sizes'

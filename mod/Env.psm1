@@ -139,7 +139,7 @@ function .sp {
 	}
 	Write-Verbose "Profile name: $Name"
 	Write-Verbose "Target dir: $Dir"
-	$Params = "sp -d $Dir$($Name ? " -p $Name" : '')"
+	$Params = 'sp','-d',(Join-Path $Dir ($Name ? " -p $Name" : ''))
 	Write-Verbose "Command: wt $Params"
-	& wt ($Params -split ' ')
+	wt @Params
 }

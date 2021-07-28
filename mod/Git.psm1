@@ -20,7 +20,8 @@ function gIgnore($mode) {
 # @example: gAddIgnore -n
 function gAddIgnore {
     param (
-        # `list` just show possible values, `universl` for seversl OS and editors rules, or a set of values from `list`
+        # `list` just show possible values, `universl` for seversl OS
+        # and editors rules, or a set of values from `list`
         [String[]] $mode = 'universal',
         # Create new .gitignore file. Replace if exists
         [Switch] $New
@@ -88,12 +89,14 @@ function InitGitRepo {
     git branch --all
 }
 
+# try to download subdir of repo at GitHub
 function Get-GitHubDir {
-
     [CmdletBinding()]
     param (
         [Parameter(mandatory=$true,position=0)][String] $RepoName,
         [Parameter(Position=1)][String] $dir
     )
-    git archive --format zip --remote "https://github.com/$repo.git" HEAD $path | 7z x -si -o(Join-Path $pwd ('packages/playground/' -split '[/\\]')[-2]);
+    git archive --format zip --remote "https://github.com/$repo.git" HEAD $path |
+        7z x -si -o(Join-Path $pwd ('packages/playground/' -split '[/\\]')[-2]);
+}
 }

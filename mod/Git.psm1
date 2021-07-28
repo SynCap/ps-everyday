@@ -121,4 +121,12 @@ function Rename-GitBranch {
     git push $UpstreamName $NewName
     # Reset the upstream branch for the NewName local branch
     git push $UpstreamName -u $NewName
+	# Somtimes when delete of branch is prohibited at remote server (at GitHub for example)
+	# then delete remote operation fails and old refs stay locally
+	# even you kill manually old branch at remote server
+	# so old refs have to be cleaned at local repo configs
+	$oldRef = Join-Path (git rev-parse --show-toplevel) ".git\refs\remotes\$UpstreamName\$OldName"
+	if (Test-Path $oldRf) {
+		Remove-Item $oldRef
+	}
 }

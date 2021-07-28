@@ -36,6 +36,30 @@ function dlwp {
 	}
 }
 
+function downloadFiles {
+	param(
+		[parameter(mandatory)]
+		[String[]] $List,
+		[String] $Dest = '.',
+		[String] $BaseUrl = ''
+	)
+	$Cnt = 0
+	foreach ($File in $List) {
+		println ("{0,2}/{1} Download file: `e[33m{2}`e[0m" -f ++$Cnt,$List.Count,$File)
+		$Url = "$BaseUrl$File"
+		$r = Invoke-WebRequest $Url
+		if ($r -and $r.StatusDescription -eq 'OK') {
+			$FName = Join-Path -Path $Dest -ChildPath $File
+			Write-Debug $FName
+			Set-Content -Path $FName -Value $r.Content -Encoding utf8
+		} else {
+			throw 'Bad URL'
+			$False
+		}
+	}
+	explorer.exe $Dest
+}
+
 function ParseUrl([String]$Url) {
 	$re = '^((?<Scheme>\w+)://)?(?<Site>[^/]+)(?<Path>[^#?]*?(?<FileName>[^/#?>]*?)?)(\?(?<Query>[^#]*))?(#(?<Hash>.*))?$';
 	$matched = $Url -match $re ? $Matches : $False

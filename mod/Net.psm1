@@ -38,12 +38,9 @@ function dlwp {
 
 function ParseUrl([String]$Url) {
 	$re = '^((?<Scheme>\w+)://)?(?<Site>[^/]+)(?<Path>[^#?]*?(?<FileName>[^/#?>]*?)?)(\?(?<Query>[^#]*))?(#(?<Hash>.*))?$';
-
-	$res = $Url -match $re ? $Matches : $False
-
-	if ($res.FileName -match '\.([^.]+)$') {
-		$res.Ext = $Matches[1]
+	$matched = $Url -match $re ? $Matches : $False
+	if ($matched.FileName -match '\.([^.]+)$') {
+		$matched.Ext = $Matches[1]
 	}
-
-	$res
+	$matched
 }

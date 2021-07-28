@@ -128,20 +128,27 @@ function Get-DeepHistory {
 
 Set-Alias hh -Value Get-DeepHistory -Description 'Show inter sessions PSReadline history'
 
+# split Windows Terminal with exact Profile and specified starting directory
+# Current profile and directory are default
 function sp. {
 	[CmdletBinding()]
 	param (
 		[Parameter(position=0)] [String] $Name,
-		[Parameter(position=1)] [String] $Dir = $PWD
+		[Parameter(position=1)] [String] $Dir = $PWD,
+		[Switch] $NewPanel
 	)
 	if (Test-Path $Name -ErrorAction SilentlyContinue) {
 		$Name,$Dir = $null,$Name
 	}
 	Write-Verbose "Profile name: $Name"
 	Write-Verbose "Target dir: $Dir"
-	$Params = 'sp','-d',(Join-Path $Dir ($Name ? " -p $Name" : ''))
+	$Params = ($NewPanel ? 'nt' : 'sp'),'-d',(Join-Path $Dir ($Name ? " -p $Name" : ''))
 	Write-Verbose "Command: wt $Params"
 	wt @Params
+}
+
+function np {
+	sp. @Args -NewPanel
 }
 
 function AddPathToEnvPATH {

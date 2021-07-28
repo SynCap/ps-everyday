@@ -315,3 +315,38 @@ function Show-FolderSizes {
 }
 
 Set-Alias dsz Show-FolderSizes -Description 'Show subdirectories sizes'
+
+# Recursively find subsolders whith no files and then erase them
+# If subfolder contains other empty subfolders then it will erased too
+function Remove-EmptySubfolders {
+    [CmdletBinding(
+        SupportsShouldProcess = $true
+    )]
+    param (
+        # Path where to look for empty subfolders
+        [String] $Path = $PWD,
+        # Like `-WhatIf` but less verbose
+        [Switch] $JustCalc
+    )
+
+    $cntErased = 0
+    $toSkip = @()
+    println (hr),"`nErase empty dirs"
+    for(;;) {
+        $dirs = Get-ChildItem $Path -Directory -Recurse |
+            Where-Object { -not ($_.FullName -in $toSkip) -and ( 0 -eq (Get-ChildItem $_).Count ) }
+        if (0 -lt $dirs.Count) {
+            $dirs | ForEach-Object {
+                println $_.Name;
+                if (-not $JustCalc -and $PSCmdlet.ShouldProcess( $_.Name, "Remove folder" ) ) {
+                    Remove-Item $_
+                    $cntErased += $dirs.Count
+                } else { $toSkip += $_.FullName }
+            }
+        } else { break }
+    }
+    println "Empty folders erased: `e[33m",$cntErased,"`e[0m"
+    if ($JustCalc -or $toSkip.Count) {
+        println "Empty folders that CAN be erased: `e[33m",$toSkip.Count,"`e[0m"
+    }
+}

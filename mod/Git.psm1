@@ -99,4 +99,26 @@ function Get-GitHubDir {
     git archive --format zip --remote "https://github.com/$repo.git" HEAD $path |
         7z x -si -o(Join-Path $pwd ('packages/playground/' -split '[/\\]')[-2]);
 }
+
+# Raname current branch Locally and Remote
+function Rename-GitBranch {
+    [CmdletBinding()]
+    param(
+        [Parameter(mandatory=$true)][String] $OldName,
+        [Parameter(mandatory=$true)][String] $NewName,
+        [String] $UpstreamName = 'origin'
+    )
+    # Rename the local branch to the new name
+    git branch -m $OldName $NewName
+    # Delete the old branch on remote - where $remote is, for example, origin
+    #   `git push $remote --delete $OldName`
+    # OR shorter way to delete remote branch [:]
+    git push $UpstreamName :$OldName
+    # Prevent git from using the old name when pushing in the next step.
+    # Otherwise, git will use the $OldName on upstream instead of $NewName.
+    git branch --unset-upstream $OldName
+    # Push the new branch to remote
+    git push $UpstreamName $NewName
+    # Reset the upstream branch for the NewName local branch
+    git push $UpstreamName -u $NewName
 }

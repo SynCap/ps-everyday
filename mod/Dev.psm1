@@ -59,6 +59,14 @@ function bld {
 	Start-PackageJsonScript 'build'
 }
 
+function gen {
+	Start-PackageJsonScript 'build'
+}
+
+function start {
+	Start-PackageJsonScript 'build'
+}
+
 # загрузить в Sublime тему от o-my-posh
 function Edit-Theme ($name) {
 	Get-Theme | Where-Object Name -ilike $name | ForEach-Object {

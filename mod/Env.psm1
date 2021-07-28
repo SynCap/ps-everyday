@@ -143,3 +143,29 @@ function sp. {
 	Write-Verbose "Command: wt $Params"
 	wt @Params
 }
+
+function AddPathToEnvPATH {
+	param(
+		[Parameter(Mandatory=$true)][String[]] $PathToAdd
+	)
+	$UserPathes = [System.Environment]::GetEnvironmentVariable('PATH',[System.EnvironmentVariableTarget]::User) -split ';'
+	$CurrentPathes = $Env:PATH -split ';'
+	$cntAddToUser = 0
+	$PathToAdd.ForEach( {
+		if(-not $_ -in $UserPathes) {
+			$UserPathes += $_
+			$cntAddToUser ++
+		}
+		if (-not $_ -in $CurrentPathes) {
+			$CurrentPathes += $_
+		}
+	})
+
+	# Current User Environment PATH wich will available in future started processes
+	if ($cntAddToUser) {
+		[System.Environment]::SetEnvironmentVariable('PATH',$UserPathes -join ';',[System.EnvironmentVariableTarget]::User)
+	}
+
+	# Set Environment for current terminal process
+	$Env:PATH = $CurrentPathes -join ';'
+}

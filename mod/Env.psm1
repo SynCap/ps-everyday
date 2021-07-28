@@ -128,7 +128,7 @@ function Get-DeepHistory {
 
 Set-Alias hh -Value Get-DeepHistory -Description 'Show inter sessions PSReadline history'
 
-function .sp {
+function sp. {
 	[CmdletBinding()]
 	param (
 		[Parameter(position=0)] [String] $Name,

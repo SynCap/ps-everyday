@@ -76,3 +76,4 @@ function Edit-Theme ($name) {
 }
 
 Set-Alias pp -Value 'pnpm' -Description 'Just alias for PNPM 😜'
+Set-Alias ppx -Value 'pnpx' -Description 'Just alias for PNPX 😜'

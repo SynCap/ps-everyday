@@ -52,7 +52,7 @@ function Start-PackageJsonScript {
 	$r = (Test-Path yarn.lock) ?
 			'yarn',$Cmd :
 			((Test-Path pnpm-lock.yaml) ?
-				'pnpm',$Cmd :
+				'pnpm','run',$Cmd :
 				 'npm','run',$Cmd)
 	Write-Debug "Command line: `e[7m $($r -join ' ') `e[0m"
 	if ($PSCmdlet.ShouldProcess($R -join ' ', 'Use command line')) {

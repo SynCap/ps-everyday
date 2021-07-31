@@ -130,7 +130,7 @@ Set-Alias hh -Value Get-DeepHistory -Description 'Show inter sessions PSReadline
 
 # split Windows Terminal with exact Profile and specified starting directory
 # Current profile and directory are default
-function sp. {
+function s {
 	[CmdletBinding()]
 	param (
 		[Parameter(position=0)] [String] $Name,
@@ -147,8 +147,8 @@ function sp. {
 	wt @Params
 }
 
-function np {
-	sp. @Args -NewPanel
+function nt {
+	s @Args -NewPanel
 }
 
 function AddPathToEnvPATH {

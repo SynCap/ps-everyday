@@ -47,6 +47,8 @@ function Start-PackageJsonScript([String] $Cmd) {
 	& $r[0] $r[1,-1]
 }
 
+Set-Alias nrun Start-PackageJsonScript -Description 'Start script from ``package.json`` of current project. See: ``Get-Help Start-PackageJsonScript``'
+
 function dev {
 	Start-PackageJsonScript 'dev'
 }

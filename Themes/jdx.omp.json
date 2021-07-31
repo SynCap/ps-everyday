@@ -99,24 +99,24 @@
 				}
 			]
 		},
-    {
-      "type": "newline"
-    },
-    {
-      "type": "prompt",
-      "alignment": "left",
-      "segments": [
-        {
-          "type": "text",
-          "style": "plain",
-          "foreground": "#3B78FF",
-          "properties": {
-            "prefix": "",
-            "text": "\u276F"
-          }
-        }
-      ]
-    }
+	{
+	  "type": "newline"
+	},
+	{
+	  "type": "prompt",
+	  "alignment": "left",
+	  "segments": [
+		{
+		  "type": "text",
+		  "style": "plain",
+		  "foreground": "#3B78FF",
+		  "properties": {
+			"prefix": "",
+			"text": "\u276F"
+		  }
+		}
+	  ]
+	}
 
 	],
 	"console_title": true,

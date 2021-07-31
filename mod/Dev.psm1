@@ -38,13 +38,26 @@ function vite {
 	node $PWD\node_modules\vite\bin\vite.js @Args
 }
 
-function Start-PackageJsonScript([String] $Cmd) {
+# Detect node package manager for project which
+# current location belong to and use that manager
+# to launch exact command from `package.json`
+# `script` section
+function Start-PackageJsonScript {
+	[CmdletBinding( SupportsShouldProcess = $true )]	param(
+		[String] $Cmd
+	)
+	Write-Debug "Script name to be run: `e[7m $Cmd `e[0m"
+	$p=$pwd;while(!(test-path (join-path $p package.json))) {$p = $p.Directory};$p;
+	Write-Debug "`e[36m``package.json```e[0m found at `e[7m $p `e[0m"
 	$r = (Test-Path yarn.lock) ?
 			'yarn',$Cmd :
 			((Test-Path pnpm-lock.yaml) ?
-				'pnpm','run',$Cmd :
+				'pnpm',$Cmd :
 				 'npm','run',$Cmd)
-	& $r[0] $r[1,-1]
+	Write-Debug "Command line: `e[7m $($r -join ' ') `e[0m"
+	if ($PSCmdlet.ShouldProcess($R -join ' ', 'Use command line')) {
+		& $r[0] @($r[1,-1] + $Args)
+	}
 }
 
 Set-Alias nrun Start-PackageJsonScript -Description 'Start script from ``package.json`` of current project. See: ``Get-Help Start-PackageJsonScript``'

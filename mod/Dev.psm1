@@ -63,23 +63,27 @@ function Start-PackageJsonScript {
 Set-Alias nrun Start-PackageJsonScript -Description 'Start script from ``package.json`` of current project. See: ``Get-Help Start-PackageJsonScript``'
 
 function dev {
-	Start-PackageJsonScript 'dev'
+	Start-PackageJsonScript 'dev' @Args
 }
 
 function stg {
-	Start-PackageJsonScript 'stage'
+	Start-PackageJsonScript 'stage' @Args
 }
 
 function bld {
-	Start-PackageJsonScript 'build'
+	Start-PackageJsonScript 'build' @Args
+}
+
+function srv {
+	Start-PackageJsonScript 'serve' @Args
 }
 
 function gen {
-	Start-PackageJsonScript 'build'
+	Start-PackageJsonScript 'build' @Args
 }
 
 function start {
-	Start-PackageJsonScript 'build'
+	Start-PackageJsonScript 'start' @Args
 }
 
 # загрузить в Sublime тему от o-my-posh

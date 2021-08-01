@@ -351,6 +351,9 @@ function Remove-EmptySubfolders {
 	}
 }
 
+# find nearest upper folder containing some object
+# @example find root of NodeJs project wich current dir belongs to
+# Get-UpDirOf `package.json`
 function Get-UpDirOf {
 	[CmdletBinding(
 		# SupportsShouldProcess=$true
@@ -382,6 +385,11 @@ function Get-UpDirOf {
 	return $p.Root.Name -ne $p.Name ? $p : $null
 }
 
+# Get topmost folder parent for specified or current location adn containg specified object (file or
+# directory)
+#
+# @example find master root of Git monorepo
+# Get-UpDirOf
 function Get-TopmostDirOf {
 	[CmdletBinding(
 		# SupportsShouldProcess=$true

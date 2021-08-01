@@ -60,7 +60,7 @@ function Start-PackageJsonScript {
 	}
 }
 
-Set-Alias nrun Start-PackageJsonScript -Description 'Start script from ``package.json`` of current project. See: ``Get-Help Start-PackageJsonScript``'
+Set-Alias run Start-PackageJsonScript -Description 'Start script from ``package.json`` of current project. See: ``Get-Help Start-PackageJsonScript``'
 
 function dev {
 	Start-PackageJsonScript 'dev' @Args

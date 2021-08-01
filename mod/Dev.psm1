@@ -41,6 +41,36 @@ function vite {
 }
 
 # Detect node package manager for project which
+# current location belong to
+# Neither recurson, neither FS Get-UpDirOf/Get-TopmostDirOf
+# used due to not provide extra arguments or functionality
+function Get-NodeProjectRoot {
+	param(
+		[Switch] $Topmost
+	)
+	function searchUp($p) {
+		while(
+			$p -and
+			!(test-path (join-path $p.FullName 'package.json'))
+		) {
+			$p = $p.Parent
+		};
+		$p
+	}
+	$p = (Get-Item $pwd);
+	if ($Topmost) {
+		$stack = @();
+		while($p) {$p = searchUp $p;if($p){$stack+=$p;$p=$p.Parent}}
+		$p=$stack.Length ? $stack : $null
+	} else {$p = searchUp $p}
+	if (!$p) {
+		throw "Not inside Node project"
+	}
+	$p
+}
+Set-Alias npr Get-NodeProjectRoot
+
+# Detect node package manager for project which
 # current location belong to and use that manager
 # to launch exact command from `package.json`
 # `script` section

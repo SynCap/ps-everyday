@@ -10,7 +10,9 @@ function sass2styl($f, [string]$OutDir = '.') {
 	if ($f.Extension -ne '.scss') {
 		Write-Warning 'Extension is not SCSS!'
 	}
-	curl -F "file=@$($f.FullName)" http://sass2stylus.com/api > "$OutDir\$($f.BaseName).styl"
+	curl -F "file=@$($f.FullName)" `
+		http://sass2stylus.com/api `
+		> "$OutDir\$($f.BaseName).styl"
 }
 
 function clrNuxt {

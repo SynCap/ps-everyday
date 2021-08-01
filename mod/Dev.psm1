@@ -47,7 +47,18 @@ function Start-PackageJsonScript {
 		[String] $Cmd
 	)
 	Write-Debug "Script name to be run: `e[7m $Cmd `e[0m"
-	$p=$pwd;while(!(test-path (join-path $p package.json))) {$p = $p.Directory};$p;
+	# Get Node project root
+	$p=Get-Item $pwd;
+	while(
+		!(test-path (join-path $p.FullName 'package.json'))
+	) {
+		$p = $p.Directory
+	};
+	if (!$p) {
+		throw "Not inside Node project"
+	}
+	println "Project directory: `e[33m",$p.FullName,"`e[0m";
+	Push-Location $p
 	Write-Debug "`e[36m``package.json```e[0m found at `e[7m $p `e[0m"
 	$r = (Test-Path yarn.lock) ?
 			'yarn',$Cmd :
@@ -58,6 +69,7 @@ function Start-PackageJsonScript {
 	if ($PSCmdlet.ShouldProcess($R -join ' ', 'Use command line')) {
 		& $r[0] @($r[1,-1] + $Args)
 	}
+	Pop-Location
 }
 
 Set-Alias run Start-PackageJsonScript -Description 'Start script from ``package.json`` of current project. See: ``Get-Help Start-PackageJsonScript``'

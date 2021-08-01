@@ -10,7 +10,9 @@ function sass2styl($f, [string]$OutDir = '.') {
 	if ($f.Extension -ne '.scss') {
 		Write-Warning 'Extension is not SCSS!'
 	}
-	curl -F "file=@$($f.FullName)" http://sass2stylus.com/api > "$OutDir\$($f.BaseName).styl"
+	curl -F "file=@$($f.FullName)" `
+		http://sass2stylus.com/api `
+		> "$OutDir\$($f.BaseName).styl"
 }
 
 function clrNuxt {
@@ -39,72 +41,122 @@ function vite {
 }
 
 # Detect node package manager for project which
-# current location belong to and use that manager
-# to launch exact command from `package.json`
-# `script` section
-function Start-PackageJsonScript {
-	[CmdletBinding( SupportsShouldProcess = $true )]	param(
-		[String] $Cmd
+# current location belong to
+# Neither recurson, neither FS Get-UpDirOf/Get-TopmostDirOf
+# used due to not provide extra arguments or functionality
+function Get-NodeProjectRoot {
+	param(
+		[Switch] $Topmost
 	)
-	Write-Debug "Script name to be run: `e[7m $Cmd `e[0m"
-	# Get Node project root
-	$p=Get-Item $pwd;
-	while(
-		!(test-path (join-path $p.FullName 'package.json'))
-	) {
-		$p = $p.Directory
-	};
+	function searchUp($p) {
+		while(
+			$p -and
+			!(test-path (join-path $p.FullName 'package.json'))
+		) {
+			$p = $p.Parent
+		};
+		$p
+	}
+	$p = (Get-Item $pwd);
+	if ($Topmost) {
+		$stack = @();
+		while($p) {$p = searchUp $p;if($p){$stack+=$p;$p=$p.Parent}}
+		$p=$stack.Length ? $stack : $null
+	} else {$p = searchUp $p}
 	if (!$p) {
 		throw "Not inside Node project"
 	}
-	println "Project directory: `e[33m",$p.FullName,"`e[0m";
-	Push-Location $p
+	$p
+}
+Set-Alias npr Get-NodeProjectRoot
+
+# Detect node package manager for project which
+# current location belong to and use that manager
+# to launch exact command from `package.json`
+# `script` section.
+# Deprecated. Use `Start-NodePackages` directly
+function Start-PackageJsonScript {
+	Start-NodePackage $Cmd @Args -RunScript
+}
+
+# Detect node package manager for project which
+# current location belong to, detect package manager
+# and use it to run installed package or run package
+# script
+function Start-NodePackage {
+	[CmdletBinding( SupportsShouldProcess = $true )]	param(
+		# Installed package having starter in `node_modules/bin` name
+		# Or name of the script specified in `scripts` section of
+		# `package.json` file
+		[Parameter(position=0)][String] $Cmd,
+		# Parameters to be passed to package manager
+		[parameter(Mandatory=$False,Position=1,ValueFromRemainingArguments=$True)]
+		[Object[]] $Arguments,
+		# What project root to use closest to current location or
+		# the topmost one
+		[Switch] $Topmost,
+		# Run script specified in `package.json` instead of package
+		# (package starter script from `node_modules/bin` - package
+		# managers looks for it by themself)
+		[Switch] $RunScript
+	)
+	Write-Debug "Script name to be run: `e[7m $Cmd `e[0m"
+	Push-Location (Get-NodeProjectRoot -Topmost:$Topmost)
+	println "Project root directory: `e[33m",$pwd.Path,"`e[0m";
 	Write-Debug "`e[36m``package.json```e[0m found at `e[7m $p `e[0m"
-	$r = (Test-Path yarn.lock) ?
-			'yarn',$Cmd :
-			((Test-Path pnpm-lock.yaml) ?
-				'pnpm','run',$Cmd :
-				 'npm','run',$Cmd)
-	Write-Debug "Command line: `e[7m $($r -join ' ') `e[0m"
+	$r = ((Test-Path '?yarn*') ?
+			'yarn' :
+			((Test-Path pnpm-*) ?
+				'pnpm' :
+				 'npm')),($RunScript ? 'run' :  'start'),$Cmd;
+	println "Command line: `e[7m $($r -join ' ') `e[0m"
 	if ($PSCmdlet.ShouldProcess($R -join ' ', 'Use command line')) {
-		& $r[0] @($r[1,-1] + $Args)
+		& $r[0] @($r[1,-1] + $Arguments)
 	}
 	Pop-Location
 }
 
-Set-Alias run Start-PackageJsonScript -Description 'Start script from ``package.json`` of current project. See: ``Get-Help Start-PackageJsonScript``'
+Set-Alias run Start-PackageJsonScript `
+	-Description "Start script from ``package.json`` `
+		of current project. `
+		See: ``Get-Help Start-PackageJsonScript``"
 
 function dev {
-	Start-PackageJsonScript 'dev' @Args
+	Start-NodePackage 'dev' @Args -RunScript
 }
 
 function stg {
-	Start-PackageJsonScript 'stage' @Args
+	Start-NodePackage 'stage' @Args -RunScript
 }
 
 function bld {
-	Start-PackageJsonScript 'build' @Args
+	Start-NodePackage 'build' @Args -RunScript
 }
 
 function srv {
-	Start-PackageJsonScript 'serve' @Args
+	Start-NodePackage 'serve' @Args -RunScript
 }
 
 function gen {
-	Start-PackageJsonScript 'build' @Args
+	Start-NodePackage 'build' @Args -RunScript
 }
 
-function start {
-	Start-PackageJsonScript 'start' @Args
+function stt {
+	Start-NodePackage 'start' @Args -RunScript
+}
+
+function nstt {
+	Start-NodePackage @Args
 }
 
 # загрузить в Sublime тему от o-my-posh
 function Edit-Theme ($name) {
 	Get-Theme | Where-Object Name -ilike $name | ForEach-Object {
-		Write-Verbose "Open theme `"{0}`" in SublimeText`n{1}" -f $_.Name,$_.Location
+		Write-Verbose "Open theme `"{0}`" in SublimeText`n{1}" `
+			-f $_.Name,$_.Location
 		subl $_.Location
 	}
 }
 
-Set-Alias pp -Value 'pnpm' -Description 'Just alias for PNPM 😜'
-Set-Alias ppx -Value 'pnpx' -Description 'Just alias for PNPX 😜'
+Set-Alias pp -Value 'pnpm' -Description 'Perfect Packager: Just alias for `e[97;7m PNPM `e[0m 😜'
+Set-Alias px -Value 'pnpx' -Description 'Perfect eXecutor: Just alias for `e[97;7m PNPX `e[0m 😜'

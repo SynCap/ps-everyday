@@ -106,5 +106,5 @@ function Edit-Theme ($name) {
 	}
 }
 
-Set-Alias pp -Value 'pnpm' -Description 'Just alias for PNPM 😜'
-Set-Alias ppx -Value 'pnpx' -Description 'Just alias for PNPX 😜'
+Set-Alias pp -Value 'pnpm' -Description 'Perfect Packager: Just alias for `e[97;7m PNPM `e[0m 😜'
+Set-Alias px -Value 'pnpx' -Description 'Perfect eXecutor: Just alias for `e[97;7m PNPX `e[0m 😜'

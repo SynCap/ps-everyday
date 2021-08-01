@@ -356,18 +356,21 @@ function Get-UpDirOf {
 		[Parameter(mandatory)][String] $Name,
 		[System.Management.Automation.FlagsExpression[System.IO.FileAttributes]] $Attributes,
 		[Switch] $Directory,
-		[Switch] $File
+		[Switch] $File,
+		[Switch] $Force
 	)
 	# $null -eq (ls 'package.json~' -ErrorAction SilentlyContinue)
 	$p = Get-Item $pwd
-	while($p.Directory -and `
-		$null -eq (Get-ChildItem (Join-Path $Name ) `
+	while($p.Parent -and `
+		$p.Root.Name -ne $p.FullName -and
+		$null -eq (Get-ChildItem (Join-Path $p.FullName $Name ) `
 			-Attributes:$Attributes `
 			-Directory:$Directory `
 			-File:$File `
+			-Force:$Force `
 			-ErrorAction SilentlyContinue)
 	) {
-		$p = $p.Directory
+		$p = $p.Parent
 	}
-	$p.FullName
+	return $p.Root.Name -ne $p.Name ? $p : $null
 }

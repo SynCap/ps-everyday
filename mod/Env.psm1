@@ -133,16 +133,21 @@ Set-Alias hh -Value Get-DeepHistory -Description 'Show inter sessions PSReadline
 function s {
 	[CmdletBinding()]
 	param (
-		[Parameter(position=0)] [String] $Name,
-		[Parameter(position=1)] [String] $Dir = $PWD,
+		[Parameter(position=0)] [String] $Path = $PWD,
+		[Parameter(position=1)] [String] $Name,
+		[Parameter(ValueFromRemainingArguments)] [String[]] $Rest,
 		[Switch] $NewPanel
 	)
-	if (Test-Path $Name -ErrorAction SilentlyContinue) {
-		$Name,$Dir = $null,$Name
-	}
+	Write-Verbose "Target dir: $Path"
 	Write-Verbose "Profile name: $Name"
-	Write-Verbose "Target dir: $Dir"
-	$Params = ($NewPanel ? 'nt' : 'sp'),'-d',(Join-Path $Dir ($Name ? " -p $Name" : ''))
+	$Params = @($NewPanel ? 'nt' : 'sp');
+	if ($Path) {
+		$Params += @("-d",$Path)
+	}
+	if ($Name){
+		$Params += @("-p",$Name)
+	}
+	$Params += $Rest;
 	Write-Verbose "Command: wt $Params"
 	wt @Params
 }

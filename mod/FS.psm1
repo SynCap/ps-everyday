@@ -354,7 +354,7 @@ function Remove-EmptySubfolders {
 function Get-UpDirOf {
 	param(
 		[Parameter(mandatory)][String] $Name,
-		[Switch] $Attributes,
+		[System.Management.Automation.FlagsExpression[System.IO.FileAttributes]] $Attributes,
 		[Switch] $Directory,
 		[Switch] $File
 	)

@@ -123,7 +123,7 @@ function Select-InExplorer($path) { explorer.exe /select, "`"$(Resolve-Path $pat
 function Open-InExplorer($path) { explorer.exe /e, "`"$(Resolve-Path $path)`""}
 
 function Get-DeepHistory {
-	Get-Content (Get-PSReadlineOption).HistorySavePath
+	Get-Content (Get-PSReadlineOption).HistorySavePath @Args
 }
 
 Set-Alias hh -Value Get-DeepHistory -Description 'Show inter sessions PSReadline history'

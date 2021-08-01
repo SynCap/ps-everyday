@@ -381,3 +381,30 @@ function Get-UpDirOf {
 	Write-Debug ("Result value `e[7;101m {0} `e[0m: " -f ($p.Root.Name -ne $p.Name ? $p : '$NULL'))
 	return $p.Root.Name -ne $p.Name ? $p : $null
 }
+
+function Get-TopmostDirOf {
+	[CmdletBinding(
+		# SupportsShouldProcess=$true
+	)]
+	param(
+		[Parameter(position=0,mandatory,ValueFromPipelineByPropertyName)][String] $Name,
+		[Parameter(position=1,ValueFromPipeline,ValueFromPipelineByPropertyName)][String] $Path = $PWD,
+		[System.Management.Automation.FlagsExpression[System.IO.FileAttributes]] $Attributes,
+		[Switch] $Directory,
+		[Switch] $File,
+		[Switch] $Force,
+		[Alias('A')][Switch] $GetAll
+	)
+	$Stack=@();
+	$p = Get-Item $Path;
+	while($p -and ($p.Root.Name -ne $p.Name)){
+		Write-Debug ("Search UpDir from `e[7m {0} `e[0m" -f $p.FullName)
+		$p = Get-UpDirOf -Name $Name -Path $p
+		if($p){
+			Write-Debug ("Found: `e[7m {0} `e[0m" -f $p.FullName)
+			$Stack+=$p;
+			$p=$p.Parent
+		}
+	}
+	$Stack.Length ? ($GetAll ? $Stack : $Stack[-1]) : $null
+}

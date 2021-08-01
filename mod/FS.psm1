@@ -352,15 +352,19 @@ function Remove-EmptySubfolders {
 }
 
 function Get-UpDirOf {
+	[CmdletBinding(
+		# SupportsShouldProcess=$true
+	)]
 	param(
-		[Parameter(mandatory)][String] $Name,
+		[Parameter(position=0,mandatory,ValueFromPipelineByPropertyName)][String] $Name,
+		[Parameter(position=1,ValueFromPipeline,ValueFromPipelineByPropertyName)][String] $Path = $PWD,
 		[System.Management.Automation.FlagsExpression[System.IO.FileAttributes]] $Attributes,
 		[Switch] $Directory,
 		[Switch] $File,
 		[Switch] $Force
 	)
-	# $null -eq (ls 'package.json~' -ErrorAction SilentlyContinue)
-	$p = Get-Item $pwd
+	Write-Debug "Search for: `e[34m $Name `e[0m"
+	$p = Get-Item $Path
 	while($p.Parent -and `
 		$p.Root.Name -ne $p.FullName -and
 		$null -eq (Get-ChildItem (Join-Path $p.FullName $Name ) `
@@ -370,7 +374,10 @@ function Get-UpDirOf {
 			-Force:$Force `
 			-ErrorAction SilentlyContinue)
 	) {
+		Write-Debug ("Chek for: `e[7m {0} `e[0m" -f $p.FullName)
 		$p = $p.Parent
 	}
+	Write-Debug ("Final value at: `e[31;7m {0} `e[0m" -f $p.FullName)
+	Write-Debug ("Result value `e[7;101m {0} `e[0m: " -f ($p.Root.Name -ne $p.Name ? $p : '$NULL'))
 	return $p.Root.Name -ne $p.Name ? $p : $null
 }

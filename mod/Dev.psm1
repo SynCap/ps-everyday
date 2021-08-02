@@ -103,7 +103,7 @@ function Start-NodePackage {
 	Write-Debug "Script name to be run: `e[7m $Cmd `e[0m"
 	Push-Location (Get-NodeProjectRoot -Topmost:$Topmost)
 	println "Project root directory: `e[33m",$pwd.Path,"`e[0m";
-	Write-Debug "`e[36m``package.json```e[0m found at `e[7m $p `e[0m"
+	Write-Debug "`e[36m``package.json```e[0m found at `e[7m $pwd `e[0m"
 	$r = ((Test-Path '?yarn*') ?
 			'yarn' :
 			((Test-Path pnpm-*) ?

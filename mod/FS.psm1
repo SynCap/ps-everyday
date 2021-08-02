@@ -148,9 +148,6 @@ function rmr {
 		}
 }
 
-# Lagacy naming
-Set-Alias rm2 rmr
-
 function logMon($LogFilePath, $match = "Error") {
 	Get-Content $LogFilePath -Wait | Where-Object { $_ -Match $match }
 }
@@ -161,7 +158,7 @@ filter tail {
 		[Parameter(Mandatory,ValueFromPipeline)] $Name,
 		[int] $Last=5
 	)
-	Get-Content $Name -Last $Last
+	Get-Content $Name -Tail $Last
 }
 
 # Make symlink

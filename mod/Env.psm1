@@ -123,7 +123,24 @@ function Select-InExplorer($path) { explorer.exe /select, "`"$(Resolve-Path $pat
 function Open-InExplorer($path) { explorer.exe /e, "`"$(Resolve-Path $path)`""}
 
 function Get-DeepHistory {
-	Get-Content (Get-PSReadlineOption).HistorySavePath @Args
+	[CmdletBinding()]
+	param(
+		# Filter history by RegExp match
+		[String[]] $Filter,
+		[int] $Last
+	)
+	$actualFilter = $Filter ?? @('^\w');
+	$noCommonFiter = @('^(if|function|param|ls|ll|lg|hh|scrr|.)\b')
+	Get-Content (Get-PSReadlineOption).HistorySavePath @Args | `
+		Where-Object { $_ -match $actualFilter -and $_ -notmatch $noCommonFiter }
+}
+
+function Clear-DeepHistory {
+	Remove-Item ((Get-PSReadLineOption).HistorySavePath)
+}
+
+function Compress-DeepHistory {
+	Get-DeepHistory | Sort-Object | Set-Content (Get-PSReadLineOption).HistorySavePath
 }
 
 Set-Alias hh -Value Get-DeepHistory -Description 'Show inter sessions PSReadline history'

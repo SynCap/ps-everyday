@@ -170,7 +170,24 @@ function s {
 }
 
 function n {
-	s @Args -NewPanel
+	[CmdletBinding()]
+	param (
+		[Parameter(position=0)] [String] $Path = $PWD,
+		[Parameter(position=1)] [String] $Name,
+		[Parameter(ValueFromRemainingArguments)] [String[]] $Rest,
+		[Switch] $NewPanel
+	)
+	Write-Verbose "Target dir: $Path"
+	Write-Verbose "Profile name: $Name"
+	if ($Path) {
+		$Params += @("-d",$Path)
+	}
+	if ($Name){
+		$Params += @("-p",$Name)
+	}
+	$Params = @('nt') + $Params + @(';','sp') + $Params + $Rest
+	Write-Verbose "Command: wt $Params"
+	wt @Params
 }
 
 function AddPathToEnvPATH {

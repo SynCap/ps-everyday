@@ -75,12 +75,24 @@ function Show-AnsiColorSample {
 }
 Set-Alias -Name shansi -Value Show-AnsiColorSample
 
+function Show-Ansi256([int]$mode=3) {
+	if($mode -bor 1){
+		$s=''; foreach($i in 0..255){ $s += (" `e[38;5;{0}m{0:d3}`e[0m {1}" -f $i,(($i+1) % 16?'':"`n")) };
+		println $s
+	}
+	if($mode -bor 2){
+		$s='';foreach($i in 0..255){ $s += ("`e[48;5;{0}m {0:d3} `e[0;30m{1}" -f $i,(($i+1) % 16?'':"`n")) };
+		print $s,"`e[0m"
+	}
+}
+Set-Alias -Name shansi2 -Value Show-Ansi256
+
 <#
 .Synopsys
 Quick info about current screen settings
 #>
 function scr([switch]$c) {$host.ui.RawUI;if($c){Show-AnsiColorSample}}
-function scrr{c;scr;shansi 40}
+function scrr{c;scr;shansi 40;'';hr;shansi2}
 
 function Show-PowerLineSymbols {
 	"`t       "

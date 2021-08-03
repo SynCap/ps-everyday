@@ -107,8 +107,9 @@ $Global:Bars = [char[]]'│┆┊┃┇┋≈‒–—―─━═╌╍▀▁�
 # [Char]::ConvertFromUtf32(0x254d)  # Box drawing light heavy double dash horz
 
 function Show-Bars {
+	$i=0
 	$Global:Bars |
-		ForEach-Object -Begin {$i=0} -Process {
+		ForEach-Object {
 			@{$("{0,5:d}. 0x{1:x} : {2}" -f $i++,[int]$_,$_) = $_}
 		} |
 			Format-Wide -a

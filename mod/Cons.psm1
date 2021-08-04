@@ -92,7 +92,7 @@ Set-Alias -Name shansi2 -Value Show-Ansi256
 Quick info about current screen settings
 #>
 function scr([switch]$c) {$host.ui.RawUI;if($c){Show-AnsiColorSample}}
-function scrr{c;scr;shansi 40;'';hr;shansi2}
+function scrr{c;scr;shansi 40;'';hr}
 
 function Show-PowerLineSymbols {
 	"`t       "

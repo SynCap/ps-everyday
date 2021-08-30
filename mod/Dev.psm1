@@ -76,6 +76,10 @@ Set-Alias npr Get-NodeProjectRoot
 # `script` section.
 # Deprecated. Use `Start-NodePackages` directly
 function Start-PackageJsonScript {
+	[CmdletBinding( SupportsShouldProcess = $true )]
+	param(
+		[string] $Cmd
+	)
 	Start-NodePackage $Cmd @Args -RunScript
 }
 

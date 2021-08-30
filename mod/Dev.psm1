@@ -28,16 +28,16 @@ function clrParcel {
 	rmr .cache,dist
 }
 
-function nxt {
-	node $Pwd\node_modules\nuxt\bin\nuxt.js @Args
+function nuxt {
+	node (Join-Path (Get-NodeProjectRoot) node_modules\nuxt\bin\nuxt.js) @Args
 }
 
-function pcl {
-	node $Pwd\node_modules\parcel\bin\cli.js @Args
+function parcel {
+	node (Join-Path (Get-NodeProjectRoot) node_modules\parcel\bin\cli.js) @Args
 }
 
 function vite {
-	node $PWD\node_modules\vite\bin\vite.js @Args
+	node (Join-Path (Get-NodeProjectRoot) node_modules\vite\bin\vite.js) @Args
 }
 
 # Detect node package manager for project which

@@ -88,7 +88,8 @@ function Start-PackageJsonScript {
 # and use it to run installed package or run package
 # script
 function Start-NodePackage {
-	[CmdletBinding( SupportsShouldProcess = $true )]	param(
+	[CmdletBinding( SupportsShouldProcess = $true )]
+	param(
 		# Installed package having starter in `node_modules/bin` name
 		# Or name of the script specified in `scripts` section of
 		# `package.json` file

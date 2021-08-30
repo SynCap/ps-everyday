@@ -130,9 +130,9 @@ function Get-DeepHistory {
 		[int] $Last
 	)
 	$actualFilter = $Filter ?? @('^\w');
-	$noCommonFiter = @('^(if|function|param|ls|ll|lg|hh|scrr|.)\b')
+	$noCommonFilter = @('^(if|function|param|ls|ll|lg|hh|scrr|which|def|dev|bld|stt|lg|.)\b')
 	Get-Content (Get-PSReadlineOption).HistorySavePath @Args | `
-		Where-Object { $_ -match $actualFilter -and $_ -notmatch $noCommonFiter }
+		Where-Object { $res = ($_ -ne $prvS -and $_ -match $actualFilter -and $_ -notmatch $noCommonFilter);$prvS=$_;$res }
 }
 
 function Clear-DeepHistory {

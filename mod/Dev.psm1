@@ -28,16 +28,16 @@ function clrParcel {
 	rmr .cache,dist
 }
 
-function nxt {
-	node $Pwd\node_modules\nuxt\bin\nuxt.js @Args
+function nuxt {
+	node (Join-Path (Get-NodeProjectRoot) node_modules\nuxt\bin\nuxt.js) @Args
 }
 
-function pcl {
-	node $Pwd\node_modules\parcel\bin\cli.js @Args
+function parcel {
+	node (Join-Path (Get-NodeProjectRoot) node_modules\parcel\bin\cli.js) @Args
 }
 
 function vite {
-	node $PWD\node_modules\vite\bin\vite.js @Args
+	node (Join-Path (Get-NodeProjectRoot) node_modules\vite\bin\vite.js) @Args
 }
 
 # Detect node package manager for project which
@@ -76,6 +76,10 @@ Set-Alias npr Get-NodeProjectRoot
 # `script` section.
 # Deprecated. Use `Start-NodePackages` directly
 function Start-PackageJsonScript {
+	[CmdletBinding( SupportsShouldProcess = $true )]
+	param(
+		[string] $Cmd
+	)
 	Start-NodePackage $Cmd @Args -RunScript
 }
 
@@ -84,7 +88,8 @@ function Start-PackageJsonScript {
 # and use it to run installed package or run package
 # script
 function Start-NodePackage {
-	[CmdletBinding( SupportsShouldProcess = $true )]	param(
+	[CmdletBinding( SupportsShouldProcess = $true )]
+	param(
 		# Installed package having starter in `node_modules/bin` name
 		# Or name of the script specified in `scripts` section of
 		# `package.json` file
@@ -102,9 +107,9 @@ function Start-NodePackage {
 	)
 	Write-Debug "Script name to be run: `e[7m $Cmd `e[0m"
 	Push-Location (Get-NodeProjectRoot -Topmost:$Topmost)
-	println "Project root directory: `e[33m",$pwd.Path,"`e[0m";
-	Write-Debug "`e[36m``package.json```e[0m found at `e[7m $pwd `e[0m"
-	$r = ((Test-Path '?yarn*') ?
+	println ("Project root directory: `e[97;7m {0} `e[0m" -f $pwd.Path)
+	Write-Debug "`e[36m``package.json```e[0m found at `e[7;36m $pwd `e[0m"
+	$r = ((Test-Path 'yarn*') ?
 			'yarn' :
 			((Test-Path pnpm-*) ?
 				'pnpm' :

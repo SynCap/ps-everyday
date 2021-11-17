@@ -68,3 +68,26 @@ function ParseUrl([String]$Url) {
 	}
 	$matched
 }
+
+function LocalIP {
+	(
+		Get-NetIPAddress `
+			-AddressFamily IPv4 `
+			-InterfaceIndex $(
+				Get-NetConnectionProfile
+			).InterfaceIndex
+	).IPAddress
+}
+
+function Get-IpInfo {
+	param (
+		[parameter(position=0)][string] $IP
+	)
+	$Response = Invoke-WebRequest http://ip-api.com/json/$IP
+	if ($Response.StatusDescription -eq 'OK') {
+		$Result = ConvertFrom-Json $Response.Content
+		$date = [DateTime]($Response.Headers.Date.Trim('{}'))
+		Add-Member -MemberType NoteProperty -Name 'date' -Value $date -InputObject $Result
+		$Result
+	}
+}

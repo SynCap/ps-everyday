@@ -146,7 +146,7 @@ function srv {
 }
 
 function gen {
-	Start-NodePackage 'build' @Args -RunScript
+	Start-NodePackage 'generate' @Args -RunScript
 }
 
 function stt {

@@ -116,9 +116,10 @@ function Start-NodePackage {
 			((Test-Path pnpm-*) ?
 				'pnpm' :
 				 'npm')),($RunScript ? 'run' :  'start'),$Cmd;
-	println "Command line: `e[7m $($r -join ' ') `e[0m"
+	$cmdParams = $r[1,-1] + $Arguments
+	println "Command line: `e[7m $($cmdParams -join ' ') `e[0m"
 	if ($PSCmdlet.ShouldProcess($R -join ' ', 'Use command line')) {
-		& $r[0] @($r[1,-1] + $Arguments)
+		& $r[0] @cmdParams
 	}
 	Pop-Location
 }

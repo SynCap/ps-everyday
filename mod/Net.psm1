@@ -79,11 +79,18 @@ function LocalIP {
 	).IPAddress
 }
 
+<#
+	.Synopsis
+		Returns EXTERNAL IP data
+#>
 function Get-IpInfo {
 	param (
-		[parameter(position=0)][string] $IP
+		# IP address or Domain to obtain detailed data.
+		# If omitted return descriptions for external IP
+		# of local system
+		[parameter(position=0)][string] $TargetHost
 	)
-	$Response = Invoke-WebRequest http://ip-api.com/json/$IP
+	$Response = Invoke-WebRequest http://ip-api.com/json/$TargetHost
 	if ($Response.StatusDescription -eq 'OK') {
 		$Result = ConvertFrom-Json $Response.Content
 		$date = [DateTime]($Response.Headers.Date.Trim('{}'))

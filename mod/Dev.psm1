@@ -38,9 +38,9 @@ function nuxt {
 # 	# node (Join-Path (Get-NodeProjectRoot) node_modules\parcel\lib\cli.js) @Args
 # }
 
-function vite {
-	node (Join-Path (Get-NodeProjectRoot) node_modules\vite\bin\vite.js) @Args
-}
+# function vite {
+# 	node (Join-Path (Get-NodeProjectRoot) node_modules\vite\bin\vite.js) @Args
+# }
 
 # Detect node package manager for project which
 # current location belong to

@@ -32,9 +32,11 @@ function nuxt {
 	node (Join-Path (Get-NodeProjectRoot) node_modules\nuxt\bin\nuxt.js) @Args
 }
 
-function parcel {
-	node (Join-Path (Get-NodeProjectRoot) node_modules\parcel\bin\cli.js) @Args
-}
+# function parcel {
+# 	println 'Evd-Dev call Parcel'
+# 	& (Join-Path (Get-NodeProjectRoot) node_modules\.bin\parcel.ps1) @Args
+# 	# node (Join-Path (Get-NodeProjectRoot) node_modules\parcel\lib\cli.js) @Args
+# }
 
 function vite {
 	node (Join-Path (Get-NodeProjectRoot) node_modules\vite\bin\vite.js) @Args

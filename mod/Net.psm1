@@ -68,3 +68,37 @@ function ParseUrl([String]$Url) {
 	}
 	$matched
 }
+
+function LocalIP {
+	(
+		Get-NetIPAddress `
+			-AddressFamily IPv4 `
+			-InterfaceIndex $(
+				Get-NetConnectionProfile
+			).InterfaceIndex
+	).IPAddress
+}
+
+<#
+	.Synopsis
+		Returns EXTERNAL IP data
+#>
+function Get-IpInfo {
+	param (
+		# IP address or Domain to obtain detailed data.
+		# If omitted return descriptions for external IP
+		# of local system
+		[parameter(position=0)][string] $TargetHost
+	)
+	$Response = Invoke-WebRequest http://ip-api.com/json/$TargetHost
+	if ($Response.StatusDescription -eq 'OK') {
+		$Result = ConvertFrom-Json $Response.Content
+		$date = [DateTime]($Response.Headers.Date.Trim('{}'))
+		Add-Member -MemberType NoteProperty -Name 'date' -Value $date -InputObject $Result
+		$Result
+	}
+}
+
+function Get-ExternalIP {
+	(Invoke-WebRequest https://myexternalip.com/raw).Content
+}

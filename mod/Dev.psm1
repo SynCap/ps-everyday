@@ -32,13 +32,15 @@ function nuxt {
 	node (Join-Path (Get-NodeProjectRoot) node_modules\nuxt\bin\nuxt.js) @Args
 }
 
-function parcel {
-	node (Join-Path (Get-NodeProjectRoot) node_modules\parcel\bin\cli.js) @Args
-}
+# function parcel {
+# 	println 'Evd-Dev call Parcel'
+# 	& (Join-Path (Get-NodeProjectRoot) node_modules\.bin\parcel.ps1) @Args
+# 	# node (Join-Path (Get-NodeProjectRoot) node_modules\parcel\lib\cli.js) @Args
+# }
 
-function vite {
-	node (Join-Path (Get-NodeProjectRoot) node_modules\vite\bin\vite.js) @Args
-}
+# function vite {
+# 	node (Join-Path (Get-NodeProjectRoot) node_modules\vite\bin\vite.js) @Args
+# }
 
 # Detect node package manager for project which
 # current location belong to
@@ -114,9 +116,10 @@ function Start-NodePackage {
 			((Test-Path pnpm-*) ?
 				'pnpm' :
 				 'npm')),($RunScript ? 'run' :  'start'),$Cmd;
-	println "Command line: `e[7m $($r -join ' ') `e[0m"
+	$cmdParams = $r[1,-1] + $Arguments
+	println "Command line: `e[7m $($cmdParams -join ' ') `e[0m"
 	if ($PSCmdlet.ShouldProcess($R -join ' ', 'Use command line')) {
-		& $r[0] @($r[1,-1] + $Arguments)
+		& $r[0] @cmdParams
 	}
 	Pop-Location
 }
@@ -143,7 +146,7 @@ function srv {
 }
 
 function gen {
-	Start-NodePackage 'build' @Args -RunScript
+	Start-NodePackage 'generate' @Args -RunScript
 }
 
 function stt {
@@ -165,3 +168,8 @@ function Edit-Theme ($name) {
 
 Set-Alias pp -Value 'pnpm' -Description 'Perfect Packager: Just alias for `e[97;7m PNPM `e[0m 😜'
 Set-Alias px -Value 'pnpx' -Description 'Perfect eXecutor: Just alias for `e[97;7m PNPX `e[0m 😜'
+
+# Draw QR code for NUXT dev server at local machine
+function Show-NuxtDevQR {
+	qrcode "URL:http://$(localIP):$($env:NUXT_PORT)"
+}

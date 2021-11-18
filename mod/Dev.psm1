@@ -168,3 +168,8 @@ function Edit-Theme ($name) {
 
 Set-Alias pp -Value 'pnpm' -Description 'Perfect Packager: Just alias for `e[97;7m PNPM `e[0m 😜'
 Set-Alias px -Value 'pnpx' -Description 'Perfect eXecutor: Just alias for `e[97;7m PNPX `e[0m 😜'
+
+# Draw QR code for NUXT dev server at local machine
+function Show-NuxtDevQR {
+	qrcode "URL:http://$(localIP):$($env:NUXT_PORT)"
+}

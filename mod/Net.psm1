@@ -98,3 +98,7 @@ function Get-IpInfo {
 		$Result
 	}
 }
+
+function Get-ExternalIP {
+	(Invoke-WebRequest https://myexternalip.com/raw).Content
+}
